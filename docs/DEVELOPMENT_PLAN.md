@@ -21,10 +21,11 @@ team, during a long-duration mission.
 
 ## Status (2026-11-09)
 
-Phases 1 and 2 are implemented: 62 backend tests and 18 frontend unit tests pass, and the production
-build succeeds. The end-to-end alert path (scenario → detection → alert → notification → acknowledge →
-resolve) was verified in the browser against a SQLite database. The PostgreSQL schema compiles for the
-asyncpg dialect, but the Docker Compose stack has not been run yet in this environment.
+Phases 1 and 2 are implemented: 62 backend unit/API tests, 1 PostgreSQL integration test and 18
+frontend unit tests pass, and the production build succeeds. The end-to-end alert path (scenario →
+detection → alert → notification → acknowledge → resolve) was verified in the browser on SQLite and
+on PostgreSQL 16 (embedded via `pgserver`, `scripts/local_postgres.py`). The Docker Compose stack
+has not been run in this environment because Docker Desktop's engine would not start.
 
 ## Phases
 

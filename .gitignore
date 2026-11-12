@@ -32,3 +32,6 @@ frontend/next-env.d.ts
 Thumbs.db
 .vscode/
 .idea/
+
+# Embedded PostgreSQL data (scripts/local_postgres.py)
+.pgdata/

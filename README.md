@@ -55,8 +55,23 @@ npm run dev
 ```
 
 The first backend start creates the schema and backfills 7 days of history (about a second).
-To use PostgreSQL locally, set `ASTRA_DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/astra_med`
+To use an existing PostgreSQL server, set `ASTRA_DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/astra_med`
 in `backend/.env` (see `backend/.env.example`).
+
+### Option C: PostgreSQL without Docker
+
+`pgserver` ships PostgreSQL 16 binaries as a Python package, so you get a real PostgreSQL server
+with no Docker and no system install. From `backend/`, with the virtualenv active:
+
+```bash
+pip install -r requirements-pg.txt
+python scripts/local_postgres.py serve
+```
+
+This starts PostgreSQL (data in `backend/.pgdata`), creates the `astra_med` and `astra_med_test`
+databases, and runs the API against it. Then start the frontend as in option B. Other commands:
+`start`, `url`, `status`, `stop`. The server listens on 127.0.0.1 only and uses passwordless local
+auth, so treat it as a development database.
 
 ### Try the alert path
 
@@ -70,7 +85,9 @@ The simulator also starts random scenarios (6 per hour by default, `ASTRA_RANDOM
 ## Tests and checks
 
 ```bash
-cd backend && .venv/Scripts/python -m pytest -q        # simulator, ECG, detection, API, WebSocket
+cd backend && .venv/Scripts/python -m pytest -q        # simulator, ECG, detection, API, WebSocket (SQLite)
+# PostgreSQL integration test (option C running; skipped unless the URL is set):
+cd backend && ASTRA_TEST_POSTGRES_URL=$(.venv/Scripts/python scripts/local_postgres.py url | sed 's/astra_med$/astra_med_test/') .venv/Scripts/python -m pytest tests/test_postgres.py
 cd backend && .venv/Scripts/python -m ruff check app tests
 cd frontend && npm test                                # reducer, thresholds, socket, formatting
 cd frontend && npm run typecheck && npm run lint && npm run build

@@ -8,6 +8,12 @@
       "port": 8000
     },
     {
+      "name": "backend-postgres",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": ["backend/scripts/local_postgres.py", "serve", "--host", "127.0.0.1", "--port", "8000"],
+      "port": 8000
+    },
+    {
       "name": "frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "frontend", "run", "dev"],

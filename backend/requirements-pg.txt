@@ -1,0 +1,4 @@
+# Optional: bundled PostgreSQL binaries for running without Docker (scripts/local_postgres.py).
+# Verified on Windows with Python 3.11; check https://pypi.org/project/pgserver/ for other platforms.
+-r requirements-dev.txt
+pgserver>=0.1.4
