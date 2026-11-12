@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import os
 from datetime import UTC, datetime
+
+# Phase 1-4 tests exercise the API without signing in. Security tests (tests/security) switch
+# authentication back on explicitly with Settings(auth_enabled=True).
+os.environ.setdefault("ASTRA_AUTH_ENABLED", "false")
+# Background jobs that tests drive explicitly when they need them.
+os.environ.setdefault("ASTRA_TWIN_BACKGROUND", "false")
 
 import pytest
 import pytest_asyncio

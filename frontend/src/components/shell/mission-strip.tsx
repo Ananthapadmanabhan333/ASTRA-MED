@@ -5,6 +5,7 @@ import { Radiation, Satellite } from "lucide-react";
 import { StatusIcon } from "@/components/status/status";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMissionStatus } from "@/lib/api/hooks";
+import { useCan } from "@/lib/auth/store";
 import { duration, fmt, missionElapsed } from "@/lib/format";
 import { useNow } from "@/lib/use-now";
 
@@ -27,13 +28,14 @@ function MissionClock({ elapsed, fetchedAt }: { elapsed: number; fetchedAt: numb
 }
 
 export function MissionStrip() {
-  const { data, dataUpdatedAt, isPending, error } = useMissionStatus();
+  const { data, dataUpdatedAt, isLoading, error } = useMissionStatus();
+  const allowed = useCan("health:read");
   const elevated = data && data.habitat_dose_rate_msv_day > 3;
 
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-bulkhead bg-[#081426]/90 px-4 py-2.5 backdrop-blur sm:px-6">
       <div className="flex min-w-0 items-baseline gap-2">
-        {isPending ? (
+        {isLoading ? (
           <Skeleton className="h-6 w-40 bg-bulkhead/60" />
         ) : data ? (
           <>
@@ -41,7 +43,9 @@ export function MissionStrip() {
             <span className="truncate text-sm text-ink-2">{data.phase}</span>
           </>
         ) : (
-          <span className="text-sm text-ink-2">{error ? "Mission status unavailable" : "—"}</span>
+          <span className="text-sm text-ink-2">
+            {!allowed ? "Crew status is not shown for your role" : error ? "Mission status unavailable" : "—"}
+          </span>
         )}
       </div>
 

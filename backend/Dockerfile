@@ -11,6 +11,7 @@ RUN pip install -r requirements.txt -r requirements-torch.txt
 
 COPY app ./app
 COPY scripts ./scripts
+COPY knowledge ./knowledge
 
 ENV ASTRA_AI_ARTIFACTS_DIR=/app/artifacts
 RUN useradd --create-home --uid 10001 astra && mkdir -p /app/artifacts && chown -R astra /app

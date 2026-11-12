@@ -842,13 +842,17 @@ class AIService:
                       if v is not None and (z := refs[s].z_or_none(v)) is not None}
             contributors = build_contributors(shares, values, refs)
             conf = confidence(0.4, ["anomaly models unavailable; statistical deviations only"])
-        rule = {
-            "threshold": (f"Threshold rule {record.rule_key}: {LABELS.get(record.metric, record.metric).lower()} "
-                          f"{'above' if record.direction == 'high' else 'below'} {record.threshold_value:g} {record.unit} "
-                          f"for 5 consecutive seconds (activity: {record.activity_state})."),
-            "rhythm": "Rhythm check: beat-to-beat irregularity of 0.12 or more in the synthetic ECG for 5 seconds.",
-            "baseline": "Personal-baseline check: |z| of 4 or more against the expected value for 20 seconds.",
-        }.get(record.category, record.rule_key)
+        # Built per category: only threshold alerts have a threshold_value (rhythm and baseline alerts
+        # carry None, which cannot be formatted).
+        if record.category == "threshold" and record.threshold_value is not None:
+            rule = (f"Threshold rule {record.rule_key}: {LABELS.get(record.metric, record.metric).lower()} "
+                    f"{'above' if record.direction == 'high' else 'below'} {record.threshold_value:g} {record.unit} "
+                    f"for 5 consecutive seconds (activity: {record.activity_state}).")
+        else:
+            rule = {
+                "rhythm": "Rhythm check: beat-to-beat irregularity of 0.12 or more in the synthetic ECG for 5 seconds.",
+                "baseline": "Personal-baseline check: |z| of 4 or more against the expected value for 20 seconds.",
+            }.get(record.category, record.rule_key)
         max_z = max((abs(c.z) for c in contributors if c.z is not None), default=0.0)
         explanation = Explanation(
             what_changed=(f"{record.message} Averaged over the surrounding 5-minute window: "

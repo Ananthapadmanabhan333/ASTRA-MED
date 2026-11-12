@@ -22,6 +22,9 @@ class Scenario(str, Enum):
     ABNORMAL_RESPIRATORY_RATE = "abnormal_respiratory_rate"
     IRREGULAR_RHYTHM = "irregular_rhythm"
     SOLAR_PARTICLE_EVENT = "solar_particle_event"
+    # Phase 5 emergency-simulator scenarios (operator-triggered only; never picked at random).
+    SLEEP_DISRUPTION = "sleep_disruption"
+    HABITAT_ATMOSPHERE = "habitat_atmosphere"
 
 
 @dataclass(frozen=True)
@@ -35,6 +38,8 @@ class ScenarioSpec:
     irregular_rhythm: bool = False
     crew_wide: bool = False
     dose_rate_multiplier: float = 1.0
+    # Deltas applied to the simulated habitat atmosphere (app/simulator/habitat.py) at intensity 1.0.
+    habitat_effects: dict[str, float] = field(default_factory=dict)
 
 
 SCENARIOS: dict[Scenario, ScenarioSpec] = {
@@ -88,6 +93,24 @@ SCENARIOS: dict[Scenario, ScenarioSpec] = {
         600,
         crew_wide=True,
         dose_rate_multiplier=40.0,
+    ),
+    Scenario.SLEEP_DISRUPTION: ScenarioSpec(
+        Scenario.SLEEP_DISRUPTION,
+        "Sleep disruption",
+        "Heart and breathing rate stay raised as after repeated waking; the emergency simulator also "
+        "shortens this crew member's simulated recent nights in an overlay (stored sleep is unchanged).",
+        600,
+        {"heart_rate": 9, "respiratory_rate": 2, "temperature_c": 0.15},
+    ),
+    Scenario.HABITAT_ATMOSPHERE: ScenarioSpec(
+        Scenario.HABITAT_ATMOSPHERE,
+        "Habitat atmosphere anomaly",
+        "Simulated cabin CO2 partial pressure and temperature rise for the whole crew, with a modest "
+        "rise in breathing and heart rate in the synthetic vitals.",
+        600,
+        {"respiratory_rate": 4, "heart_rate": 5},
+        crew_wide=True,
+        habitat_effects={"ppco2_mmhg": 3.0, "cabin_temperature_c": 2.0, "relative_humidity_pct": 8.0},
     ),
 }
 

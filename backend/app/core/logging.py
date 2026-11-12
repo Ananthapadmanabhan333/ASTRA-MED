@@ -19,3 +19,7 @@ def configure_logging(level: str = "INFO") -> None:
     # Keep the access log quieter; request logging middleware covers it.
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+    # httpx logs every request URL at INFO, query string included. NASA's api_key travels in the
+    # query string, so those lines would put the key in the logs. Warnings and errors still show.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)

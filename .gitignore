@@ -38,3 +38,9 @@ Thumbs.db
 
 # Trained model artifacts (regenerate with: python -m app.ai.train)
 backend/artifacts/
+
+# Local demo account credentials (backend/scripts/create_users.py dev)
+backend/.dev-users.json
+
+# Generated incident report exports
+backend/exports/

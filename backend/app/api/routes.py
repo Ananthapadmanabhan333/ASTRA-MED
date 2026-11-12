@@ -33,6 +33,7 @@ from app.schemas.insights import Insight
 from app.schemas.mission import MissionStatus, SystemHealth
 from app.schemas.radiation import RadiationOverview
 from app.schemas.simulation import ScenarioInfo, SimulationEvent, SimulationEventCreate
+from app.security.deps import require
 from app.services import health as health_service
 from app.services import history as history_service
 from app.services import mappers
@@ -41,12 +42,14 @@ from app.services.mission import mission_status, radiation_overview
 from app.simulator.scenarios import SCENARIOS
 
 router = APIRouter(prefix="/api", responses=ERROR_RESPONSES)
+# Unauthenticated liveness probe (no health data). Everything on ``router`` needs a signed-in user.
+public_router = APIRouter(prefix="/api", responses=ERROR_RESPONSES)
 
 MaxPoints = Annotated[int, Query(ge=30, le=1000, description="Upper bound on returned points")]
 
 
 # ------------------------------------------------------------------------ system ----
-@router.get("/system/health", response_model=SystemHealth, tags=["system"])
+@public_router.get("/system/health", response_model=SystemHealth, tags=["system"])
 async def system_health(monitor: Monitor, session: Session) -> SystemHealth:
     try:
         await session.execute(text("SELECT 1"))
@@ -203,12 +206,14 @@ async def get_alert(alert_id: str, monitor: Monitor, session: Session) -> Alert:
     return mappers.alert_schema(row)
 
 
-@router.post("/alerts/{alert_id}/acknowledge", response_model=Alert, tags=["alerts"])
+@router.post("/alerts/{alert_id}/acknowledge", response_model=Alert, tags=["alerts"],
+             dependencies=[require("alerts:manage")])
 async def acknowledge_alert(alert_id: str, monitor: Monitor, body: AlertAction | None = None) -> Alert:
     return await monitor.update_alert(alert_id, "acknowledge", body.note if body else None)
 
 
-@router.post("/alerts/{alert_id}/resolve", response_model=Alert, tags=["alerts"])
+@router.post("/alerts/{alert_id}/resolve", response_model=Alert, tags=["alerts"],
+             dependencies=[require("alerts:manage")])
 async def resolve_alert(alert_id: str, monitor: Monitor, body: AlertAction | None = None) -> Alert:
     return await monitor.update_alert(alert_id, "resolve", body.note if body else None)
 
@@ -235,7 +240,8 @@ async def list_scenarios() -> list[ScenarioInfo]:
             default_duration_s=spec.default_duration_s,
             crew_wide=spec.crew_wide,
             affected_metrics=sorted(spec.effects) + (["rhythm"] if spec.irregular_rhythm else [])
-            + (["radiation_dose_rate"] if spec.dose_rate_multiplier > 1 else []),
+            + (["radiation_dose_rate"] if spec.dose_rate_multiplier > 1 else [])
+            + (["habitat_atmosphere"] if spec.habitat_effects else []),
         )
         for spec in SCENARIOS.values()
     ]
@@ -260,6 +266,7 @@ async def list_simulation_events(
     response_model=SimulationEvent,
     status_code=201,
     tags=["simulation"],
+    dependencies=[require("simulation:control")],
     responses={403: ERROR_RESPONSES[404] | {"description": "Simulation control disabled"},
                409: ERROR_RESPONSES[404] | {"description": "Scenario already running"}},
 )
@@ -268,6 +275,7 @@ async def start_simulation_event(body: SimulationEventCreate, monitor: Monitor) 
     return await monitor.start_scenario(body)
 
 
-@router.delete("/simulation/events/{event_id}", response_model=SimulationEvent, tags=["simulation"])
+@router.delete("/simulation/events/{event_id}", response_model=SimulationEvent, tags=["simulation"],
+               dependencies=[require("simulation:control")])
 async def cancel_simulation_event(event_id: str, monitor: Monitor) -> SimulationEvent:
     return await monitor.cancel_scenario(event_id)

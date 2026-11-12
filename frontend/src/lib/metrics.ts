@@ -51,4 +51,6 @@ export const SCENARIO_LABEL: Record<string, string> = {
   abnormal_respiratory_rate: "Abnormal breathing rate",
   irregular_rhythm: "Irregular rhythm",
   solar_particle_event: "Solar particle event",
+  sleep_disruption: "Sleep disruption",
+  habitat_atmosphere: "Habitat atmosphere anomaly",
 };

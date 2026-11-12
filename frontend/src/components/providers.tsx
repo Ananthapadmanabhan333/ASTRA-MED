@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
-import { LiveBridge } from "@/components/shell/live-bridge";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ApiError } from "@/lib/api/client";
@@ -34,7 +33,6 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={getClient()}>
       <TooltipProvider delayDuration={200}>
-        <LiveBridge />
         {children}
         <Toaster theme="dark" position="bottom-right" closeButton />
       </TooltipProvider>

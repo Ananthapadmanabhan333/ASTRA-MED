@@ -2,6 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useCan } from "@/lib/auth/store";
+
 import { api, unwrap } from "./client";
 import type { AlertStatus, Metric, Severity, SimulationEventCreate, TimeRange } from "./types";
 
@@ -30,10 +32,13 @@ export interface AlertFilters {
 }
 
 export function useMissionStatus() {
+  // The mission strip is on every page; roles without crew health access must not poll it.
+  const allowed = useCan("health:read");
   return useQuery({
     queryKey: keys.mission,
     queryFn: () => unwrap(api.GET("/api/mission/status")),
     refetchInterval: 10_000,
+    enabled: allowed,
   });
 }
 

@@ -1,0 +1,33 @@
+{
+  "_comment": "Medical REVIEW PROCESS steps for the prototype: who looks at what, and how the review is recorded. These are workflow settings, NOT clinical protocols: they contain no diagnoses, treatments, medications or clinical thresholds. A real deployment must replace them with the mission's approved medical operations procedures.",
+  "escalation": {
+    "critical": {
+      "level": "immediate",
+      "label": "Escalate now to qualified medical personnel",
+      "who": "Flight surgeon on duty",
+      "why": "A critical-severity alert, or concurrent deviations across systems, can indicate a potentially serious situation that software must not assess on its own."
+    },
+    "caution": {
+      "level": "prompt",
+      "label": "Request flight-surgeon review",
+      "who": "Flight surgeon",
+      "why": "A caution-severity alert needs review by qualified medical personnel."
+    },
+    "advisory": {
+      "level": "routine",
+      "label": "Include in the routine medical review",
+      "who": "Mission operator, then the flight surgeon at the next routine review",
+      "why": "Advisory alerts are informational unless they persist or recur."
+    }
+  },
+  "steps": [
+    {"key": "notify", "label": "Notify the reviewer named in the escalation level", "role": "mission_operator", "severities": ["critical", "caution"]},
+    {"key": "check_simulation", "label": "Check whether a simulated test scenario explains the alert (shown under environmental context)", "role": "mission_operator", "severities": ["critical", "caution", "advisory"]},
+    {"key": "check_signal", "label": "Check signal quality: data completeness, gaps and sensor status listed under data quality", "role": "mission_operator", "severities": ["critical", "caution", "advisory"]},
+    {"key": "check_context", "label": "Review activity at the time, the baseline comparison and concurrent deviations in other systems", "role": "flight_surgeon", "severities": ["critical", "caution", "advisory"]},
+    {"key": "medical_review", "label": "Flight surgeon reviews the measurements and decides on any follow-up under the mission's own medical procedures", "role": "flight_surgeon", "severities": ["critical", "caution"]},
+    {"key": "document", "label": "Record the review outcome in an incident report (review status and reviewer note)", "role": "flight_surgeon", "severities": ["critical", "caution"]},
+    {"key": "close_alert", "label": "Acknowledge or resolve the alert in ASTRA-MED once reviewed", "role": "mission_operator", "severities": ["critical", "caution", "advisory"]}
+  ],
+  "escalate_on_patterns": true
+}

@@ -15,6 +15,8 @@ ScenarioKey = Literal[
     "abnormal_respiratory_rate",
     "irregular_rhythm",
     "solar_particle_event",
+    "sleep_disruption",
+    "habitat_atmosphere",
 ]
 
 

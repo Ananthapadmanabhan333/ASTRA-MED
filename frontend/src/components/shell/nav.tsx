@@ -2,6 +2,13 @@
 
 import {
   Activity,
+  Bot,
+  ClipboardList,
+  Fingerprint,
+  HeartPulse,
+  KeyRound,
+  Siren,
+  Stethoscope,
   BellRing,
   BrainCircuit,
   CalendarRange,
@@ -21,6 +28,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 
+import { useAuth } from "@/lib/auth/store";
 import { useLive } from "@/lib/live/store";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +36,8 @@ interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  /** Any one of these permissions shows the item (default: health:read). */
+  perms?: string[];
 }
 
 interface NavGroup {
@@ -50,17 +60,51 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: "Medical decision support",
+    items: [
+      { href: "/overview", label: "Mission health overview", icon: HeartPulse },
+      { href: "/twin", label: "Digital twin", icon: Fingerprint },
+      { href: "/medical", label: "Medical intelligence", icon: Stethoscope },
+      { href: "/assistant", label: "AI medical assistant", icon: Bot, perms: ["assistant:use"] },
+      { href: "/emergency", label: "Emergency simulator", icon: Siren },
+      { href: "/reports", label: "Incident reports", icon: ClipboardList, perms: ["reports:read"] },
+    ],
+  },
+  {
     label: "Space environment",
     items: [
-      { href: "/space/weather", label: "Space weather", icon: Sun },
+      { href: "/space/weather", label: "Space weather", icon: Sun, perms: ["space:read"] },
       { href: "/radiation", label: "Radiation intelligence", icon: Radiation },
-      { href: "/space/iss", label: "ISS environment", icon: Satellite },
-      { href: "/space/explorer", label: "NASA data explorer", icon: Database },
+      { href: "/space/iss", label: "ISS environment", icon: Satellite, perms: ["space:read"] },
+      { href: "/space/explorer", label: "NASA data explorer", icon: Database, perms: ["space:read"] },
       { href: "/space/timeline", label: "Mission timeline", icon: CalendarRange },
       { href: "/space/correlation", label: "Environment-health", icon: ChartScatter },
     ],
   },
+  {
+    label: "Administration",
+    items: [{ href: "/admin", label: "Users & audit log", icon: KeyRound, perms: ["users:manage", "audit:read"] }],
+  },
 ];
+
+function allowed(item: NavItem, permissions: string[] | undefined): boolean {
+  return (item.perms ?? ["health:read"]).some((p) => permissions?.includes(p));
+}
+
+/** Permissions that open a route: from the longest matching nav entry, else crew health records. */
+export function routePermissions(pathname: string): string[] {
+  const match = NAV_GROUPS.flatMap((g) => g.items)
+    .filter((i) => (i.href === "/" ? pathname === "/" : pathname === i.href || pathname.startsWith(`${i.href}/`)))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  return match?.perms ?? ["health:read"];
+}
+
+function useVisibleGroups(): NavGroup[] {
+  const permissions = useAuth((s) => s.session?.permissions);
+  return NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => allowed(i, permissions)) })).filter(
+    (g) => g.items.length > 0,
+  );
+}
 
 export const NAV: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
@@ -108,10 +152,11 @@ function NavLink({ item, pathname, layout }: { item: NavItem; pathname: string |
 }
 
 function NavList({ pathname, layout }: { pathname: string | null; layout: "rail" | "bar" }) {
+  const groups = useVisibleGroups();
   if (layout === "bar") {
     return (
       <ul className="flex gap-1">
-        {NAV.map((item) => (
+        {groups.flatMap((g) => g.items).map((item) => (
           <NavLink key={item.href} item={item} pathname={pathname} layout="bar" />
         ))}
       </ul>
@@ -119,7 +164,7 @@ function NavList({ pathname, layout }: { pathname: string | null; layout: "rail"
   }
   return (
     <div className="space-y-4">
-      {NAV_GROUPS.map((group) => (
+      {groups.map((group) => (
         <div key={group.label ?? "main"}>
           {group.label && (
             <p className="mb-1 px-3 text-[11px] font-medium tracking-wide text-ink-3 uppercase">{group.label}</p>

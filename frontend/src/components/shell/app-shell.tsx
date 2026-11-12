@@ -2,6 +2,9 @@ import { Orbit } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { RouteAccess } from "@/components/auth/route-access";
+import { UserMenu } from "@/components/auth/user-menu";
+
 import { MissionStrip } from "./mission-strip";
 import { Nav } from "./nav";
 
@@ -27,6 +30,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex-1 overflow-y-auto px-3">
           <Nav layout="rail" />
         </div>
+        <div className="border-t border-bulkhead">
+          <UserMenu />
+        </div>
         <p className="border-t border-bulkhead px-4 py-3 text-xs leading-relaxed text-ink-3">
           Research prototype for NASA Space Apps 2026. Not a medical device. Not clinically validated.
         </p>
@@ -36,6 +42,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-30">
           <div className="flex items-center gap-3 border-b border-bulkhead bg-sidebar px-4 py-2 lg:hidden">
             <Wordmark />
+            <div className="ml-auto">
+              <UserMenu compact />
+            </div>
           </div>
           {/* relative: makes this scroller clip absolutely-positioned children (sr-only badge labels) */}
           <div className="relative overflow-x-auto border-b border-bulkhead bg-sidebar px-2 py-1.5 lg:hidden">
@@ -44,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <MissionStrip />
         </header>
         <main id="main" className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-5 sm:px-6 sm:py-6">
-          {children}
+          <RouteAccess>{children}</RouteAccess>
         </main>
       </div>
     </div>

@@ -20,6 +20,19 @@ team, during a long-duration mission.
 | Risk scoring, v1 | Configurable point rules (`risk_config.json`) | Inspectable and adjustable; a probabilistic risk model only after validation on real data. |
 | Insights, v1 | Deterministic rule engine with cited evidence | Every statement can be traced to data. LLM summarisation is a later, optional layer. |
 
+## Status (2026-11-13)
+
+Phase 5 is implemented (see [MEDICAL_DECISION_SUPPORT.md](MEDICAL_DECISION_SUPPORT.md) and
+[SECURITY.md](SECURITY.md)):
+
+- **Medical decision support:** digital twin, multisystem intelligence, explainable decision support,
+  emergency simulator, incident reports with PDF, the cited medical data assistant and the mission
+  health overview.
+- **Security:** authentication, role-based access and an audit log.
+- **Dashboard:** seven new pages.
+- **Tests:** the backend suite has 268 tests (including 3 opt-in PostgreSQL tests); the frontend has
+  27.
+
 ## Status (2026-11-12)
 
 Phase 4 is implemented (see [SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md) and
@@ -84,9 +97,18 @@ Still open from the phase 3 brief:
 - Mission timeline in UTC with display timezones; exploratory correlation with autocorrelation and
   multiple-comparison control.
 
-### Phase 5 — Hardening
-- Alembic migrations, authentication for operator actions, audit log, TimescaleDB hypertables
-  for long histories, end-to-end tests (Playwright), accessibility audit.
+### Phase 5 — Digital twin and medical decision support (this iteration)
+- Digital twin, six-system health intelligence, explainable decision support with a process-only
+  review workflow, emergency simulator, incident reports with review sign-off and PDF export,
+  source-grounded assistant with a safety layer, mission health overview.
+- Authentication (scrypt, server-side sessions, CSRF), four roles with a permission matrix, audit log,
+  security headers.
+
+### Phase 6 — Hardening
+- Alembic migrations, TimescaleDB hypertables for long histories, end-to-end tests (Playwright),
+  accessibility audit, multi-factor authentication, row-level (per crew member) access, a
+  tamper-evident audit store, a shared rate-limit store, and an approved aerospace-medicine
+  reference library for the assistant.
 
 ## Working agreement
 - Modules land one at a time with tests before the next starts.

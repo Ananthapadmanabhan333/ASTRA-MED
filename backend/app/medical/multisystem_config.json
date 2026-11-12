@@ -1,0 +1,87 @@
+{
+  "_comment": "Statistical deviation bands (z = standard deviations from this crew member's own baseline) and co-deviation patterns for decision support. These are software settings chosen for a simulated prototype, NOT clinical thresholds. Edit and restart to change behaviour.",
+  "z_deviation": 2.0,
+  "z_marked": 3.0,
+  "sleep_reference_nights": 14,
+  "recovery_reference_days": 14,
+  "space_weather_lookback_hours": 72,
+  "exercise_shortfall_fraction": 0.5,
+  "systems": {
+    "cardiovascular": {
+      "label": "Cardiovascular",
+      "signals": ["heart_rate", "systolic", "diastolic", "rhythm", "hrv_rmssd_ms"],
+      "description": "Heart rate, blood pressure, rhythm regularity and heart-rate variability."
+    },
+    "respiratory": {
+      "label": "Respiratory",
+      "signals": ["spo2", "respiratory_rate", "habitat_ppco2"],
+      "description": "Oxygen saturation and breathing rate, with simulated cabin CO2 when an environmental scenario runs."
+    },
+    "thermoregulation": {
+      "label": "Thermoregulation",
+      "signals": ["temperature_c", "habitat_temperature"],
+      "description": "Body temperature, with simulated cabin temperature when an environmental scenario runs."
+    },
+    "sleep_circadian": {
+      "label": "Sleep and circadian",
+      "signals": ["sleep_duration", "sleep_efficiency", "sleep_debt_7d", "awake_in_sleep_window"],
+      "description": "Last night's sleep against this crew member's recent nights, and sleep-schedule adherence."
+    },
+    "activity_recovery": {
+      "label": "Activity and recovery",
+      "signals": ["exercise_minutes", "resting_heart_rate", "activity_met"],
+      "description": "Exercise volume against the plan and resting heart rate against recent days."
+    },
+    "radiation": {
+      "label": "Radiation exposure indicators",
+      "signals": ["daily_dose", "spe_recent", "career_fraction", "habitat_dose_rate", "nasa_space_weather"],
+      "description": "Simulated crew dose and real NASA space-weather indicators (context only, never converted into dose)."
+    }
+  },
+  "patterns": [
+    {
+      "key": "cardiorespiratory",
+      "label": "Concurrent cardiovascular and respiratory deviation",
+      "systems": ["cardiovascular", "respiratory"],
+      "review": "Review heart and breathing signals together; check sensor contact and the activity log."
+    },
+    {
+      "key": "thermo_cardiovascular",
+      "label": "Temperature and cardiovascular signals deviating together",
+      "systems": ["thermoregulation", "cardiovascular"],
+      "review": "Review temperature and heart-rate trends together with activity and cabin conditions."
+    },
+    {
+      "key": "sleep_cardiovascular",
+      "label": "Sleep shortfall alongside cardiovascular deviation",
+      "systems": ["sleep_circadian", "cardiovascular"],
+      "review": "Review recent sleep with resting heart-rate and variability trends."
+    },
+    {
+      "key": "sleep_recovery",
+      "label": "Sleep shortfall alongside reduced activity or recovery",
+      "systems": ["sleep_circadian", "activity_recovery"],
+      "review": "Review sleep and exercise schedule adherence over the last days."
+    },
+    {
+      "key": "respiratory_thermo",
+      "label": "Respiratory and temperature deviation together",
+      "systems": ["respiratory", "thermoregulation"],
+      "review": "Review breathing, saturation and temperature together, including cabin conditions."
+    },
+    {
+      "key": "habitat_respiratory",
+      "label": "Simulated cabin CO2 deviation with respiratory change",
+      "systems": ["respiratory"],
+      "requires": ["habitat_ppco2", "respiratory_rate"],
+      "review": "Review cabin atmosphere data with the life-support team alongside crew breathing rate."
+    },
+    {
+      "key": "space_weather_dose",
+      "label": "Space-weather indicators active while simulated dose is elevated",
+      "systems": ["radiation"],
+      "requires": ["nasa_space_weather", "daily_dose"],
+      "review": "Co-occurrence only: real NASA indicators are context and are never converted into crew dose."
+    }
+  ]
+}

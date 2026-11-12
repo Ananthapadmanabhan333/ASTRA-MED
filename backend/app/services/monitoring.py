@@ -259,6 +259,40 @@ class MonitoringService:
         logger.info("operator started %s for %s", scenario.value, target or "crew")
         return mappers.scenario_schema(active, now)
 
+    async def start_scenario_group(
+        self,
+        components: list[tuple[Scenario, float]],
+        astronaut_id: str | None,
+        duration_s: int,
+        now: datetime | None = None,
+    ) -> list[ActiveScenario]:
+        """Start several scenarios on one target at once (emergency simulator composites).
+
+        The same one-run-per-target rule applies: nothing may already be running on the target.
+        """
+        self._require_control()
+        now = now or utcnow()
+        crew_wide = all(SCENARIOS[s].crew_wide for s, _ in components)
+        target = None if crew_wide else astronaut_id
+        if target is not None and target not in self.engine.profiles:
+            raise NotFoundError(f"Astronaut {target} not found.")
+        clash = [s for s in self.engine.active_scenarios(now) if s.cancelled_at is None and s.astronaut_id == target]
+        if clash:
+            raise ConflictError("A test scenario is already running for this target.",
+                                details={"scenario_id": clash[0].id})
+        started = [
+            self.engine.start_scenario(scenario, target, now, intensity=intensity, duration_s=duration_s,
+                                       triggered_by="operator")
+            for scenario, intensity in components
+        ]
+        async with self.session_factory() as session:
+            await events_repo.upsert(session, started)
+            await session.commit()
+        for active in started:
+            await self._send_simulation("started", active, now)
+        logger.info("operator started %s for %s", "+".join(s.scenario.value for s in started), target or "crew")
+        return started
+
     async def cancel_scenario(self, scenario_id: str) -> SimulationEvent:
         self._require_control()
         now = utcnow()

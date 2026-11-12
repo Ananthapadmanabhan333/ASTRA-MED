@@ -38,6 +38,20 @@ class ForbiddenError(ApiError):
     code = "forbidden"
 
 
+class UnauthorizedError(ApiError):
+    status_code = 401
+    code = "unauthenticated"
+
+
+class RateLimitedError(ApiError):
+    status_code = 429
+    code = "rate_limited"
+
+    def __init__(self, message: str, *, retry_after_s: int, details: Any = None) -> None:
+        super().__init__(message, details=details)
+        self.retry_after_s = retry_after_s
+
+
 class InsufficientDataError(ApiError):
     status_code = 409
     code = "insufficient_data"
@@ -58,7 +72,12 @@ def _envelope(status: int, code: str, message: str, details: Any = None) -> JSON
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ApiError)
     async def _api_error(_: Request, exc: ApiError) -> JSONResponse:
-        return _envelope(exc.status_code, exc.code, exc.message, exc.details)
+        response = _envelope(exc.status_code, exc.code, exc.message, exc.details)
+        if isinstance(exc, RateLimitedError):
+            response.headers["Retry-After"] = str(exc.retry_after_s)
+        if isinstance(exc, UnauthorizedError):
+            response.headers["WWW-Authenticate"] = 'Bearer realm="astra-med"'
+        return response
 
     @app.exception_handler(RequestValidationError)
     async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:

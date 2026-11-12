@@ -41,6 +41,7 @@ from app.schemas.space import (
     Timeline,
     WeatherSummary,
 )
+from app.security.deps import require
 from app.services.mission import radiation_overview
 from app.space import classify, correlation, donki, eda, intel, osdr
 from app.space import repository as repo
@@ -151,7 +152,7 @@ async def sources(space: Space) -> SourcesResponse:
                            sync_enabled=space.settings.space_sync_enabled, categories=CATEGORY_LABELS)
 
 
-@router.post("/sync", response_model=SyncResult)
+@router.post("/sync", response_model=SyncResult, dependencies=[require("space:sync")])
 async def sync(body: SyncRequest, space: Space) -> SyncResult:
     """Run a synchronisation now (operator action; gated like simulation controls)."""
     if not space.settings.simulation_control_enabled:
@@ -225,7 +226,7 @@ async def space_alerts(session: Session, days: Annotated[int, Query(ge=1, le=365
 
 
 # ----------------------------------------------------------------------- radiation ----
-@router.get("/radiation", response_model=RadiationIntel)
+@router.get("/radiation", response_model=RadiationIntel, dependencies=[require("health:read")])
 async def radiation(session: Session, monitor: Monitor, space: Space,
                     days: Annotated[int, Query(ge=1, le=120)] = 30) -> RadiationIntel:
     now = utcnow()
@@ -345,7 +346,7 @@ async def osdr_studies(
 
 
 # ------------------------------------------------------------------------- timeline ----
-@router.get("/timeline", response_model=Timeline)
+@router.get("/timeline", response_model=Timeline, dependencies=[require("health:read")])
 async def timeline(
     request: Request, session: Session,
     mode: Annotated[str, Query(pattern="^(mission|iss)$")] = "mission",
@@ -378,7 +379,7 @@ async def timeline_nearby(session: Session, ts: datetime,
 
 
 # ---------------------------------------------------------------------- correlation ----
-@router.get("/correlation/series", response_model=list[CorrelationSeriesInfo])
+@router.get("/correlation/series", response_model=list[CorrelationSeriesInfo], dependencies=[require("health:read")])
 async def correlation_series(session: Session) -> list[CorrelationSeriesInfo]:
     return await correlation.catalogue(session)
 
@@ -390,7 +391,7 @@ def _check_period(start: date, end: date) -> None:
         raise ApiError("The analysis window is limited to three years.")
 
 
-@router.post("/correlation/analyze", response_model=CorrelationResult)
+@router.post("/correlation/analyze", response_model=CorrelationResult, dependencies=[require("health:read")])
 async def correlation_analyze(body: CorrelationRequest, session: Session, monitor: Monitor) -> CorrelationResult:
     """Exploratory pair analysis. Correlation does not establish causation."""
     _check_period(body.start, body.end)
@@ -402,7 +403,7 @@ async def correlation_analyze(body: CorrelationRequest, session: Session, monito
     return CorrelationResult(**clean(result))
 
 
-@router.post("/correlation/matrix", response_model=MatrixResult)
+@router.post("/correlation/matrix", response_model=MatrixResult, dependencies=[require("health:read")])
 async def correlation_matrix(body: MatrixRequest, session: Session, monitor: Monitor) -> MatrixResult:
     _check_period(body.start, body.end)
     try:

@@ -41,6 +41,12 @@
 | `api/` | Thin REST handlers and the WebSocket endpoint; `ai_routes.py` serves `/api/ai/*` |
 | `space/` | Phase 4 NASA open data: resilient HTTP client, DONKI, EDA and OSDR adapters (validation, normalisation, quality checks), repository, background synchronisation and source health, space-weather and radiation intelligence (categories A–D), mission timeline, correlation engine, data source report. See [SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md) |
 | `ai/` | Phase 3 intelligence engine: windows, personal baselines, causal features, five anomaly detectors + ensemble, forecasters with conformal intervals, rule-based risk, explanations, experiment runner and hash-verified model registry. See [AI_ENGINE.md](AI_ENGINE.md) |
+| `security/` | Phase 5: scrypt password hashing, server-side sessions with CSRF tokens, login throttling and lockout, role → permission matrix, `require(permission)` dependency, audit log. See [SECURITY.md](SECURITY.md) |
+| `twin/` | Phase 5 digital twin: daily summaries from stored or regenerated samples, mission stages, data categories, profile, timeline, trend and stage views |
+| `medical/` | Phase 5 multisystem engine (six systems, configurable bands and co-deviation patterns) and the eight-part decision-support packet with the review workflow |
+| `emergency/` | Phase 5 emergency simulator: scenario catalogue, grouped runs, sleep and habitat overlays, AI analysis snapshots, run timelines |
+| `reports/` | Phase 5 incident reports: frozen snapshots with SHA-256 integrity, review workflow, dependency-free PDF writer |
+| `assistant/` | Phase 5 medical data assistant: corpus (docs, NASA texts, approved references), TF-IDF retrieval, data tools, safety layer, optional Claude mode. See [MEDICAL_DECISION_SUPPORT.md](MEDICAL_DECISION_SUPPORT.md) |
 
 ### Runtime loop
 
@@ -56,6 +62,20 @@ Every `ASTRA_TICK_SECONDS` (1 s):
 A failing tick is logged and the loop continues. On startup the service backfills any gap in history
 (7 days at 5-minute resolution on a fresh database), reconstructs resolved alerts for past scenarios, and
 restores open alerts into the evaluator so a restart doesn't duplicate them.
+
+### Phase 5 at runtime
+
+`create_app` builds, after the phase 1–4 services:
+
+- `AuthService` and `AuditLog`;
+- `TwinService` (background build, then a 5-minute refresh);
+- `MultisystemEngine`, `EmergencyService` (wired into the multisystem engine for overlays);
+- `ReportService` and `AssistantService`.
+
+All of them read the existing stores and services; none of them writes to the phase 1–4 tables
+except through `MonitoringService` (scenarios). An HTTP middleware adds security headers, audits
+writes and record views, and turns unhandled errors into the error envelope inside the CORS
+middleware. Every router is mounted with a `require(permission)` dependency.
 
 ### Why these choices
 
@@ -98,7 +118,10 @@ dataset, never the live database, so evaluation labels cannot leak into serving.
 
 | Path | Responsibility |
 | --- | --- |
-| `app/` | Routes: `/` mission control, `/crew`, `/crew/[id]`, `/vitals`, `/alerts`, `/anomalies`, `/radiation`, `/sleep`, `/insights`; `error.tsx`, `not-found.tsx` |
+| `app/` | Routes: `/` mission control, `/crew`, `/crew/[id]`, `/vitals`, `/alerts`, `/anomalies`, `/radiation`, `/sleep`, `/insights`, `/intelligence`, `/space/*`; phase 5: `/overview`, `/twin`, `/medical`, `/assistant`, `/emergency`, `/reports`, `/admin`; `error.tsx`, `not-found.tsx` |
+| `lib/auth/` | Phase 5 session store (user, permissions, CSRF token in memory; the token itself stays in an HttpOnly cookie) and `useCan(permission)` |
+| `components/auth/` | `AuthGate` (sign-in screen at the requested URL; live socket only for roles with `health:read`), `RouteAccess` (notice for pages the role cannot use), `UserMenu` |
+| `components/medical/` | Phase 5 pages: twin, medical intelligence and decision packet, assistant, emergency simulator, reports, overview, admin; shared kind chips and status pills |
 | `lib/api/` | `schema.d.ts` (generated), typed client, error normalisation (`ApiError`), TanStack Query hooks and keys |
 | `lib/live/` | `LiveSocket` (reconnect with capped backoff, stale watchdog, ping), pure `reducer`, zustand `store`, mutable `ecg-buffer` |
 | `lib/` | Formatting (UTC mission time), metric metadata, crew identity encoding (validated colour + dash), threshold classifier, series merge |
@@ -126,5 +149,12 @@ Cache Components requires.
 | `simulation_events` | id, scenario, astronaut_id (null = crew-wide), intensity, started/ends/cancelled, triggered_by |
 | `sleep_sessions` | astronaut_id + night (unique), scheduled vs actual window, duration, efficiency |
 | `radiation_doses` | astronaut_id + day (unique), mission_day, dose_msv, solar_particle_event |
+| `users` | username (unique), display name, role, scrypt password hash, active, failed logins, lock-out, timestamps |
+| `auth_sessions` | SHA-256 of the session token (unique), user, CSRF token, created / expires / last seen / revoked, client |
+| `audit_log` | ts, user, role, action, resource type and id, outcome, status, client, request id, detail (identifiers only) |
+| `twin_daily` | astronaut_id + day (unique), mission day, stage, basis (stored / regenerated), complete, metrics, activity, sleep, radiation, events, coverage (JSON) |
+| `emergency_runs` | scenario, target, severity, intensity, duration, start / end / cancel, components (simulation events), overlay, analyses (JSON) |
+| `incident_reports` | title, astronaut, alert / run, occurred / created / updated, created by, review status and history, content (JSON snapshot), content SHA-256 |
 
-Schema creation uses `create_all` for the prototype; Alembic migrations are planned for phase 4.
+Schema creation uses `create_all` for the prototype (new tables are created on start-up); Alembic
+migrations are still planned.

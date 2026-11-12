@@ -309,3 +309,133 @@ class DataSyncRunRow(Base):
     invalid: Mapped[int] = mapped_column(Integer, default=0)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     detail: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+# --------------------------------------------------------------------------------------------
+# Phase 5: security. Passwords are stored only as scrypt hashes and session tokens only as
+# SHA-256 digests, so a database dump does not reveal working credentials.
+# --------------------------------------------------------------------------------------------
+
+
+class UserRow(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    display_name: Mapped[str] = mapped_column(String(120))
+    role: Mapped[str] = mapped_column(String(32))
+    password_hash: Mapped[str] = mapped_column(String(255))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    password_changed_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    last_login_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    failed_logins: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+
+
+class AuthSessionRow(Base):
+    __tablename__ = "auth_sessions"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    csrf_token: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    last_seen_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    revoked_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    ip: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    user_agent: Mapped[str | None] = mapped_column(String(200), nullable=True)
+
+
+class AuditLogRow(Base):
+    """Append-only record of who did or viewed what. Holds identifiers, never measurement values."""
+
+    __tablename__ = "audit_log"
+    __table_args__ = (Index("ix_audit_ts", "ts"), Index("ix_audit_user_ts", "user_id", "ts"))
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    ts: Mapped[datetime] = mapped_column(UTCDateTime)
+    user_id: Mapped[str | None] = mapped_column(String(32), nullable=True)  # no FK: survives deletion
+    username: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    role: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    action: Mapped[str] = mapped_column(String(64))
+    resource_type: Mapped[str | None] = mapped_column(String(48), nullable=True)
+    resource_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    outcome: Mapped[str] = mapped_column(String(16))  # success | denied | failure
+    status_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    ip: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    request_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    detail: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+# --------------------------------------------------------------------------------------------
+# Phase 5: digital twin, emergency simulation runs and incident reports. All of it is derived
+# from simulated crew data and carries data_source = "simulated".
+# --------------------------------------------------------------------------------------------
+
+
+class TwinDailyRow(Base):
+    """One day of a crew member's twin: summaries computed from stored (or regenerated) samples."""
+
+    __tablename__ = "twin_daily"
+    __table_args__ = (UniqueConstraint("astronaut_id", "day", name="uq_twin_day"),)
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    astronaut_id: Mapped[str] = mapped_column(ForeignKey("astronauts.id", ondelete="CASCADE"), index=True)
+    day: Mapped[date] = mapped_column(Date)
+    mission_day: Mapped[int] = mapped_column(Integer)
+    stage: Mapped[str] = mapped_column(String(32))
+    basis: Mapped[str] = mapped_column(String(16))  # stored | regenerated
+    complete: Mapped[bool] = mapped_column(Boolean, default=False)  # False while the day is still running
+    metrics: Mapped[dict] = mapped_column(JSON, default=dict)
+    activity: Mapped[dict] = mapped_column(JSON, default=dict)
+    sleep: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    radiation: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    events: Mapped[dict] = mapped_column(JSON, default=dict)  # alerts and test scenarios that day
+    coverage: Mapped[dict] = mapped_column(JSON, default=dict)
+    computed_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)
+
+
+class EmergencyRunRow(Base):
+    __tablename__ = "emergency_runs"
+    __table_args__ = (Index("ix_emergency_started", "started_at"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    scenario: Mapped[str] = mapped_column(String(48))
+    label: Mapped[str] = mapped_column(String(120))
+    astronaut_id: Mapped[str | None] = mapped_column(
+        ForeignKey("astronauts.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    severity: Mapped[str] = mapped_column(String(16))
+    intensity: Mapped[float] = mapped_column(Float)
+    duration_s: Mapped[int] = mapped_column(Integer)
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    ends_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    cancelled_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    created_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    components: Mapped[list] = mapped_column(JSON, default=list)  # simulation_events it started
+    overlay: Mapped[dict] = mapped_column(JSON, default=dict)  # simulated habitat / sleep overlay
+    analyses: Mapped[list] = mapped_column(JSON, default=list)  # AI analysis snapshots
+    data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)
+
+
+class IncidentReportRow(Base):
+    __tablename__ = "incident_reports"
+    __table_args__ = (Index("ix_report_created", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    title: Mapped[str] = mapped_column(String(200))
+    astronaut_id: Mapped[str] = mapped_column(ForeignKey("astronauts.id", ondelete="CASCADE"), index=True)
+    alert_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    run_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    occurred_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    created_by: Mapped[str] = mapped_column(String(64))
+    review_status: Mapped[str] = mapped_column(String(24))
+    review_history: Mapped[list] = mapped_column(JSON, default=list)
+    content: Mapped[dict] = mapped_column(JSON)  # frozen snapshot of every section
+    content_sha256: Mapped[str] = mapped_column(String(64))
+    data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)

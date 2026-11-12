@@ -21,6 +21,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login
+         * @description Browser sign-in. Sets an HttpOnly, SameSite=Strict session cookie and returns the CSRF token.
+         */
+        post: operations["login_api_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue Token
+         * @description Bearer token for scripts and other non-browser clients (no cookie, no CSRF token needed).
+         */
+        post: operations["issue_token_api_auth_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Me
+         * @description The signed-in user, their permissions and (for cookie sessions) the CSRF token.
+         */
+        get: operations["me_api_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Password
+         * @description Change your own password. Signs out your other sessions.
+         */
+        post: operations["change_password_api_auth_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Roles
+         * @description The role → permission matrix enforced by the API.
+         */
+        get: operations["roles_api_auth_roles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users_api_admin_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_api_admin_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_api_admin_users__user_id__patch"];
+        trace?: never;
+    };
+    "/api/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Audit Log
+         * @description Newest first. Entries hold identifiers only, never measurement values.
+         */
+        get: operations["audit_log_api_admin_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/astronauts": {
         parameters: {
             query?: never;
@@ -803,6 +975,423 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/twin/{astronaut_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Twin Profile
+         * @description Profile, current state, resting values vs early mission / configured / learned baselines, exposure.
+         */
+        get: operations["twin_profile_api_twin__astronaut_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/twin/{astronaut_id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Twin Timeline
+         * @description One entry per mission day: summaries, sleep, simulated dose, alerts, scenarios and real NASA
+         *     space-weather indicators for the same date.
+         */
+        get: operations["twin_timeline_api_twin__astronaut_id__timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/twin/{astronaut_id}/trends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Twin Trend
+         * @description Longitudinal daily series of one signal with a 7-day rolling mean and an autocorrelation-aware trend.
+         */
+        get: operations["twin_trend_api_twin__astronaut_id__trends_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/twin/{astronaut_id}/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Twin Stages
+         * @description Per mission stage: mean daily values and the change from the first stage.
+         */
+        get: operations["twin_stages_api_twin__astronaut_id__stages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/multisystem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Crew Systems
+         * @description Status of the six systems for every crew member.
+         */
+        get: operations["crew_systems_api_multisystem_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/multisystem/{astronaut_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Astronaut Systems
+         * @description Cardiovascular, respiratory, thermoregulation, sleep/circadian, activity/recovery and radiation
+         *     indicators: the inputs used, their status against this crew member's baseline, the Phase 3 model
+         *     outputs that concern each system, and cross-system co-deviations.
+         */
+        get: operations["astronaut_systems_api_multisystem__astronaut_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/decision-support/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Decision Queue
+         * @description Significant alerts (caution and critical by default) with their review escalation level.
+         */
+        get: operations["decision_queue_api_decision_support_queue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/decision-support/alerts/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Decision Packet
+         * @description Observation, measurements, baseline comparison, environmental context, AI output, confidence and
+         *     uncertainty, data quality and the recommended medical review workflow for one alert.
+         */
+        get: operations["decision_packet_api_decision_support_alerts__alert_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Scenarios
+         * @description The scenario catalogue with severity levels and default durations.
+         */
+        get: operations["scenarios_api_emergency_scenarios_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runs */
+        get: operations["list_runs_api_emergency_runs_get"];
+        put?: never;
+        /**
+         * Start Run
+         * @description Start a simulated emergency scenario (one running scenario per target).
+         */
+        post: operations["start_run_api_emergency_runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run */
+        get: operations["get_run_api_emergency_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/runs/{run_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Run */
+        post: operations["cancel_run_api_emergency_runs__run_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/runs/{run_id}/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze Run
+         * @description Run the anomaly ensemble, risk rules, multisystem engine and alert escalation over the run window
+         *     and store the result as a snapshot on the run.
+         */
+        post: operations["analyze_run_api_emergency_runs__run_id__analyze_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/emergency/runs/{run_id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Run Timeline
+         * @description Vitals, events (scenario, alerts, analyses) and simulated environment for the run window.
+         */
+        get: operations["run_timeline_api_emergency_runs__run_id__timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Reports */
+        get: operations["list_reports_api_reports_get"];
+        put?: never;
+        /**
+         * Create Report
+         * @description Freeze the current decision-support data for an alert, a run or a time into a draft report.
+         */
+        post: operations["create_report_api_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Report */
+        get: operations["get_report_api_reports__report_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/{report_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Review Report
+         * @description Move the review status. Sign-off states (under review, reviewed, closed) need reports:review.
+         */
+        post: operations["review_report_api_reports__report_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/{report_id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Report Pdf
+         * @description The report as a PDF (inline by default; ``download=true`` for an attachment).
+         */
+        get: operations["report_pdf_api_reports__report_id__pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/assistant/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Assistant Status
+         * @description Answer mode, indexed sources and the approved reference library.
+         */
+        get: operations["assistant_status_api_assistant_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/assistant/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask
+         * @description Answer a question with a citation for every statement. Declines diagnosis and treatment, lists
+         *     missing information and escalates potentially serious situations. Nothing is stored except an
+         *     audit entry with a hash of the question (not its text).
+         */
+        post: operations["ask_api_assistant_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["overview_api_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -826,6 +1415,13 @@ export interface components {
             /** Torch Available */
             torch_available: boolean;
         };
+        /** AccessMatrix */
+        AccessMatrix: {
+            /** Roles */
+            roles: components["schemas"]["RoleInfo"][];
+            /** Permissions */
+            permissions: components["schemas"]["PermissionInfo"][];
+        };
         /** ActivitySummary */
         ActivitySummary: {
             /** Current State */
@@ -836,6 +1432,38 @@ export interface components {
             exercise_minutes_today: number;
             /** Exercise Target Minutes */
             exercise_target_minutes: number;
+        };
+        /** AdminUser */
+        AdminUser: {
+            /** Id */
+            id: string;
+            /** Username */
+            username: string;
+            /** Display Name */
+            display_name: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+            /**
+             * Active
+             * @default true
+             */
+            active: boolean;
+            /** Last Login At */
+            last_login_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Locked Until */
+            locked_until?: string | null;
+            /**
+             * Failed Logins
+             * @default 0
+             */
+            failed_logins: number;
         };
         /** Alert */
         Alert: {
@@ -919,6 +1547,20 @@ export interface components {
         AlertAction: {
             /** Note */
             note?: string | null;
+        };
+        /** AlertDay */
+        AlertDay: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Critical */
+            critical: number;
+            /** Caution */
+            caution: number;
+            /** Advisory */
+            advisory: number;
         };
         /** AlertExplanationResponse */
         AlertExplanationResponse: {
@@ -1073,6 +1715,139 @@ export interface components {
             /** Kind */
             kind: string | null;
         };
+        /** AnswerSource */
+        AnswerSource: {
+            /**
+             * Id
+             * @description D# = data record, S# = retrieved passage
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "data" | "derived" | "model" | "nasa" | "documentation" | "reference" | "safety" | "configured" | "mixed" | "uncited";
+            /** Kind Label */
+            kind_label: string;
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string | null;
+            /** Excerpt */
+            excerpt: string | null;
+            /** Url */
+            url: string | null;
+            /** Path */
+            path: string | null;
+            /** Link */
+            link: string | null;
+            /** Score */
+            score: number | null;
+            /** Source Type */
+            source_type: string | null;
+        };
+        /** AskRequest */
+        AskRequest: {
+            /** Question */
+            question: string;
+            /**
+             * Astronaut Id
+             * @description Crew member in focus when the question names none
+             */
+            astronaut_id?: string | null;
+        };
+        /** AssistantAction */
+        AssistantAction: {
+            /**
+             * Type
+             * @constant
+             */
+            type: "create_report";
+            /** Alert Id */
+            alert_id: string;
+            /** Label */
+            label: string;
+        };
+        /** AssistantAnswer */
+        AssistantAnswer: {
+            /** Question */
+            question: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "extractive" | "claude";
+            /** Model Note */
+            model_note: string | null;
+            /** Answer */
+            answer: string;
+            /** Statements */
+            statements: components["schemas"]["Statement"][];
+            /** Sources */
+            sources: components["schemas"]["AnswerSource"][];
+            /** Missing Information */
+            missing_information: string[];
+            /** Declined */
+            declined: string[];
+            escalation: components["schemas"]["AssistantEscalation"];
+            /** Actions */
+            actions: components["schemas"]["AssistantAction"][];
+            understood: components["schemas"]["Understood"];
+            /** Knowledge Types */
+            knowledge_types: components["schemas"]["KnowledgeType"][];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** AssistantEscalation */
+        AssistantEscalation: {
+            /** Required */
+            required: boolean;
+            /** Reasons */
+            reasons: string[];
+            /** Message */
+            message: string | null;
+            /** Who */
+            who: string | null;
+        };
+        /** AssistantStatus */
+        AssistantStatus: {
+            /** Mode */
+            mode: {
+                [key: string]: unknown;
+            };
+            /** Passages */
+            passages: number;
+            /** By Source */
+            by_source: {
+                [key: string]: number;
+            };
+            /** Source Types */
+            source_types: {
+                [key: string]: unknown;
+            }[];
+            /** References */
+            references: {
+                [key: string]: unknown;
+            }[];
+            /** Built At */
+            built_at: number;
+            /** Reference Note */
+            reference_note: string | null;
+            /** Disclaimer */
+            disclaimer: string;
+        };
         /** Astronaut */
         Astronaut: {
             /** Id */
@@ -1169,6 +1944,43 @@ export interface components {
             /** Active Scenario */
             active_scenario: string | null;
         };
+        /** AuditEntry */
+        AuditEntry: {
+            /** Id */
+            id: number;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** User Id */
+            user_id: string | null;
+            /** Username */
+            username: string | null;
+            /** Role */
+            role: string | null;
+            /** Action */
+            action: string;
+            /** Resource Type */
+            resource_type: string | null;
+            /** Resource Id */
+            resource_id: string | null;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "success" | "denied" | "failure";
+            /** Status Code */
+            status_code: number | null;
+            /** Ip */
+            ip: string | null;
+            /** Request Id */
+            request_id: string | null;
+            /** Detail */
+            detail: {
+                [key: string]: unknown;
+            };
+        };
         /** BaselineResponse */
         BaselineResponse: {
             /** Astronaut Id */
@@ -1246,6 +2058,20 @@ export interface components {
             /** Hrv Sdnn Ms */
             hrv_sdnn_ms: number;
         };
+        /** CategoryInfo */
+        CategoryInfo: {
+            /** Key */
+            key: string;
+            /** Description */
+            description: string;
+        };
+        /** Change */
+        Change: {
+            /** Abs */
+            abs: number | null;
+            /** Pct */
+            pct: number | null;
+        };
         /** ComparisonSeries */
         ComparisonSeries: {
             /**
@@ -1279,6 +2105,13 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** ComponentInfo */
+        ComponentInfo: {
+            /** Scenario */
+            scenario: string;
+            /** Factor */
+            factor: number;
         };
         /** Confidence */
         Confidence: {
@@ -1541,6 +2374,49 @@ export interface components {
             /** Critical */
             critical: number;
         };
+        /** CrewSystemsOverview */
+        CrewSystemsOverview: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Systems */
+            systems: {
+                [key: string]: string;
+            }[];
+            /** Crew */
+            crew: components["schemas"]["CrewSystemsRow"][];
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** CrewSystemsRow */
+        CrewSystemsRow: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Statuses */
+            statuses: {
+                [key: string]: "within_baseline" | "deviation" | "marked_deviation" | "insufficient_data";
+            };
+            /** Patterns */
+            patterns: string[];
+            /** Summary */
+            summary: string;
+        };
+        /** CrewTrend */
+        CrewTrend: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Points */
+            points: components["schemas"]["TrendPointLite"][];
+        };
         /** CrossRow */
         CrossRow: {
             /** Lag Days */
@@ -1549,6 +2425,31 @@ export interface components {
             r: number | null;
             /** N */
             n: number;
+        };
+        /** CrossSystemPattern */
+        CrossSystemPattern: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Systems */
+            systems: string[];
+            /** Evidence */
+            evidence: string[];
+            /** Review */
+            review: string;
+            /** Note */
+            note: string;
+        };
+        /** CumulativePoint */
+        CumulativePoint: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Value */
+            value: number;
         };
         /** CurrentComparison */
         CurrentComparison: {
@@ -1673,6 +2574,68 @@ export interface components {
             /** End */
             end: string;
         };
+        /** DecisionPacket */
+        DecisionPacket: {
+            /** Alert Id */
+            alert_id: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Observation */
+            observation: {
+                [key: string]: unknown;
+            };
+            /** Measurements */
+            measurements: {
+                [key: string]: unknown;
+            };
+            /** Baseline Comparison */
+            baseline_comparison: {
+                [key: string]: unknown;
+            };
+            /** Environmental Context */
+            environmental_context: {
+                [key: string]: unknown;
+            };
+            /** Ai Output */
+            ai_output: {
+                [key: string]: unknown;
+            };
+            /** Confidence Uncertainty */
+            confidence_uncertainty: {
+                [key: string]: unknown;
+            };
+            /** Data Quality */
+            data_quality: {
+                [key: string]: unknown;
+            };
+            review_workflow: components["schemas"]["ReviewWorkflow"];
+            /** Concurrent Patterns */
+            concurrent_patterns: components["schemas"]["CrossSystemPattern"][];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** DecisionQueue */
+        DecisionQueue: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Items */
+            items: components["schemas"]["QueueItem"][];
+            /** Disclaimer */
+            disclaimer: string;
+        };
         /** Detection */
         Detection: {
             /**
@@ -1721,6 +2684,192 @@ export interface components {
             name: string;
             /** Share */
             share: number;
+        };
+        /** EmergencyAnalysis */
+        EmergencyAnalysis: {
+            /** Id */
+            id: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Requested By */
+            requested_by: string;
+            /**
+             * Run Status
+             * @enum {string}
+             */
+            run_status: "running" | "completed" | "cancelled";
+            /** Window */
+            window: {
+                [key: string]: string;
+            };
+            /** Crew */
+            crew: {
+                [key: string]: unknown;
+            }[];
+            /** Label */
+            label: string;
+            /** Note */
+            note: string;
+        };
+        /** EmergencyRun */
+        EmergencyRun: {
+            /** Id */
+            id: string;
+            /**
+             * Scenario
+             * @enum {string}
+             */
+            scenario: "hr_elevation" | "desaturation" | "abnormal_respiration" | "sleep_disruption" | "multiple_deviations" | "radiation_event" | "environmental_anomaly";
+            /** Label */
+            label: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "mild" | "moderate" | "severe";
+            /** Intensity */
+            intensity: number;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Ends At
+             * Format: date-time
+             */
+            ends_at: string;
+            /** Cancelled At */
+            cancelled_at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "running" | "completed" | "cancelled";
+            /** Created By */
+            created_by: string | null;
+            /** Components */
+            components: components["schemas"]["RunComponent"][];
+            /** Overlay */
+            overlay: {
+                [key: string]: unknown;
+            } | null;
+            /** Analyses */
+            analyses: {
+                [key: string]: unknown;
+            }[];
+            /** Label Simulated */
+            label_simulated: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** EmergencyRunCreate */
+        EmergencyRunCreate: {
+            /**
+             * Scenario
+             * @enum {string}
+             */
+            scenario: "hr_elevation" | "desaturation" | "abnormal_respiration" | "sleep_disruption" | "multiple_deviations" | "radiation_event" | "environmental_anomaly";
+            /**
+             * Astronaut Id
+             * @description Required unless the scenario is crew-wide
+             */
+            astronaut_id?: string | null;
+            /**
+             * Severity
+             * @default moderate
+             * @enum {string}
+             */
+            severity: "mild" | "moderate" | "severe";
+            /** Duration Seconds */
+            duration_seconds?: number | null;
+            /**
+             * Nights
+             * @description Sleep disruption: recent nights in the what-if overlay
+             * @default 3
+             */
+            nights: number;
+        };
+        /** EmergencyScenarioInfo */
+        EmergencyScenarioInfo: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "hr_elevation" | "desaturation" | "abnormal_respiration" | "sleep_disruption" | "multiple_deviations" | "radiation_event" | "environmental_anomaly";
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Crew Wide */
+            crew_wide: boolean;
+            /** Default Duration S */
+            default_duration_s: number;
+            /** Overlay */
+            overlay: ("sleep" | "habitat") | null;
+            /** Observe */
+            observe: string[];
+            /** Components */
+            components: components["schemas"]["ComponentInfo"][];
+            /** Severities */
+            severities: components["schemas"]["SeverityOption"][];
+        };
+        /** EmergencyTimeline */
+        EmergencyTimeline: {
+            /** Run Id */
+            run_id: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "running" | "completed" | "cancelled";
+            /** Vitals */
+            vitals: {
+                [key: string]: unknown;
+            }[];
+            /** Events */
+            events: components["schemas"]["TimelineEvent"][];
+            /** Environment */
+            environment: {
+                [key: string]: unknown;
+            }[];
+            /** Overlay */
+            overlay: {
+                [key: string]: unknown;
+            } | null;
+            /** Label */
+            label: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
         };
         /** EndpointStatus */
         EndpointStatus: {
@@ -2130,6 +3279,72 @@ export interface components {
             /** Validation Coverage */
             validation_coverage: number | null;
         };
+        /** IncidentReport */
+        IncidentReport: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Astronaut Name */
+            astronaut_name: string | null;
+            /** Alert Id */
+            alert_id: string | null;
+            /** Run Id */
+            run_id: string | null;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Created By */
+            created_by: string;
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "draft" | "pending_review" | "under_review" | "reviewed" | "closed";
+            /** Review Status Label */
+            review_status_label: string;
+            /** Review History */
+            review_history: {
+                [key: string]: unknown;
+            }[];
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Integrity
+             * @enum {string}
+             */
+            integrity: "intact" | "modified";
+            /** Severity */
+            severity: string | null;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+            /**
+             * Content
+             * @description Frozen snapshot of every report section
+             */
+            content: {
+                [key: string]: unknown;
+            };
+        };
         /** IndicatorBlock */
         IndicatorBlock: {
             /** Label */
@@ -2201,6 +3416,13 @@ export interface components {
              */
             data_source: "simulated";
         };
+        /** KnowledgeType */
+        KnowledgeType: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
         /** LagRow */
         LagRow: {
             /** Lag Days */
@@ -2215,6 +3437,13 @@ export interface components {
             p: number | null;
             /** Q */
             q: number | null;
+        };
+        /** LoginRequest */
+        LoginRequest: {
+            /** Username */
+            username: string;
+            /** Password */
+            password: string;
         };
         /** MatrixCell */
         MatrixCell: {
@@ -2329,6 +3558,61 @@ export interface components {
             /** Label */
             label: string;
         };
+        /** MissionOverview */
+        MissionOverview: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Period
+             * @enum {string}
+             */
+            period: "24h" | "7d" | "30d";
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /** Crew */
+            crew: components["schemas"]["OverviewCrew"][];
+            /** Active Alerts */
+            active_alerts: components["schemas"]["OverviewAlert"][];
+            /** Alert History */
+            alert_history: components["schemas"]["AlertDay"][];
+            /** Incidents */
+            incidents: components["schemas"]["OverviewIncident"][];
+            /** Incidents Visible */
+            incidents_visible: boolean;
+            /** Runs */
+            runs: components["schemas"]["OverviewRun"][];
+            /** Trends */
+            trends: {
+                [key: string]: components["schemas"]["CrewTrend"][];
+            };
+            /** Environment */
+            environment: {
+                [key: string]: unknown;
+            };
+            summary: components["schemas"]["MissionSummary"];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
         /** MissionStatus */
         MissionStatus: {
             /** Mission Name */
@@ -2377,6 +3661,13 @@ export interface components {
              */
             data_source: "simulated";
         };
+        /** MissionSummary */
+        MissionSummary: {
+            /** Statements */
+            statements: components["schemas"]["SummaryStatement"][];
+            /** Method */
+            method: string;
+        };
         /** ModelPerformanceResponse */
         ModelPerformanceResponse: {
             /** Version */
@@ -2419,6 +3710,83 @@ export interface components {
             created_at: string | null;
             /** Config Hash */
             config_hash: string | null;
+        };
+        /** MultisystemAI */
+        MultisystemAI: {
+            /** Risk Score */
+            risk_score: number;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /** Model Version */
+            model_version: string | null;
+            /** Anomaly */
+            anomaly: {
+                [key: string]: unknown;
+            } | null;
+            /** Confidence */
+            confidence: {
+                [key: string]: unknown;
+            };
+        };
+        /** MultisystemAssessment */
+        MultisystemAssessment: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Reading Ts */
+            reading_ts: string | null;
+            /** Summary */
+            summary: string;
+            /** Systems */
+            systems: components["schemas"]["SystemAssessment"][];
+            /** Patterns */
+            patterns: components["schemas"]["CrossSystemPattern"][];
+            ai: components["schemas"]["MultisystemAI"] | null;
+            /** Habitat */
+            habitat: {
+                [key: string]: unknown;
+            } | null;
+            /** Overlay */
+            overlay: {
+                [key: string]: unknown;
+            } | null;
+            config: components["schemas"]["MultisystemConfigInfo"];
+            data_quality: components["schemas"]["MultisystemQuality"];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** MultisystemConfigInfo */
+        MultisystemConfigInfo: {
+            /** Z Deviation */
+            z_deviation: number;
+            /** Z Marked */
+            z_marked: number;
+            /** Source */
+            source: string;
+            /** Note */
+            note: string;
+        };
+        /** MultisystemQuality */
+        MultisystemQuality: {
+            /** Notes */
+            notes: string[];
+            /** Reading Age S */
+            reading_age_s: number | null;
         };
         /** NearbyEvent */
         NearbyEvent: {
@@ -2520,6 +3888,117 @@ export interface components {
              */
             category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
         };
+        /** OverviewAlert */
+        OverviewAlert: {
+            /** Id */
+            id: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Title */
+            title: string;
+            /** Severity */
+            severity: string;
+            /** Status */
+            status: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Scenario */
+            scenario: string | null;
+        };
+        /** OverviewCrew */
+        OverviewCrew: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Status */
+            status: string;
+            /** Open Alerts */
+            open_alerts: number;
+            risk: components["schemas"]["OverviewRisk"] | null;
+            /** Systems */
+            systems: {
+                [key: string]: string;
+            };
+            /** Patterns */
+            patterns: string[];
+            /** Summary */
+            summary: string;
+            /** Last Reading At */
+            last_reading_at: string | null;
+            /** Resting Hr Mean */
+            resting_hr_mean: number | null;
+            /** Sleep Mean Hours */
+            sleep_mean_hours: number | null;
+            /** Dose Period Msv */
+            dose_period_msv: number;
+            /** Alerts In Period */
+            alerts_in_period: {
+                [key: string]: number;
+            };
+            /** Reports In Period */
+            reports_in_period: number;
+        };
+        /** OverviewIncident */
+        OverviewIncident: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Review Status */
+            review_status: string;
+        };
+        /** OverviewRisk */
+        OverviewRisk: {
+            /** Score */
+            score: number;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+        };
+        /** OverviewRun */
+        OverviewRun: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Severity */
+            severity: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+        };
+        /** PasswordChange */
+        PasswordChange: {
+            /** Current Password */
+            current_password: string;
+            /** New Password */
+            new_password: string;
+        };
+        /** PermissionInfo */
+        PermissionInfo: {
+            /** Key */
+            key: string;
+            /** Description */
+            description: string;
+        };
         /** QualityIndicators */
         QualityIndicators: {
             /** Records Received */
@@ -2536,6 +4015,29 @@ export interface components {
             failed_runs: number;
             /** Last Sync Status */
             last_sync_status: string | null;
+        };
+        /** QueueItem */
+        QueueItem: {
+            /** Alert Id */
+            alert_id: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Severity */
+            severity: string;
+            /** Status */
+            status: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Simulated Test Scenario */
+            simulated_test_scenario: string | null;
+            escalation: components["schemas"]["ReviewEscalation"];
         };
         /** RadiationBrief */
         RadiationBrief: {
@@ -2602,6 +4104,155 @@ export interface components {
             activity_state?: ("sleep" | "rest" | "work" | "exercise") | null;
             /** Activity Met */
             activity_met?: number | null;
+        };
+        /** ReportCreate */
+        ReportCreate: {
+            /** Alert Id */
+            alert_id?: string | null;
+            /**
+             * Run Id
+             * @description Emergency-simulator run
+             */
+            run_id?: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /** Occurred At */
+            occurred_at?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Summary */
+            summary?: string | null;
+        };
+        /** ReportSummary */
+        ReportSummary: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Astronaut Name */
+            astronaut_name: string | null;
+            /** Alert Id */
+            alert_id: string | null;
+            /** Run Id */
+            run_id: string | null;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Created By */
+            created_by: string;
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "draft" | "pending_review" | "under_review" | "reviewed" | "closed";
+            /** Review Status Label */
+            review_status_label: string;
+            /** Review History */
+            review_history: {
+                [key: string]: unknown;
+            }[];
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Integrity
+             * @enum {string}
+             */
+            integrity: "intact" | "modified";
+            /** Severity */
+            severity: string | null;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** RestingComparison */
+        RestingComparison: {
+            /** Metric */
+            metric: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            configured: components["schemas"]["ValueRef"];
+            early_mission: components["schemas"]["ValueRef"];
+            last_7d: components["schemas"]["ValueRef"];
+            last_24h: components["schemas"]["ValueRef"];
+            personal_baseline: components["schemas"]["ValueRef"];
+            change_7d_vs_early: components["schemas"]["Change"] | null;
+        };
+        /** ReviewEscalation */
+        ReviewEscalation: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "immediate" | "prompt" | "routine";
+            /** Label */
+            label: string;
+            /** Who */
+            who: string;
+            /** Why */
+            why: string;
+            /** Severity Basis */
+            severity_basis: string;
+            /** Reasons */
+            reasons: string[];
+            /** Requires Medical Review */
+            requires_medical_review: boolean;
+        };
+        /** ReviewStep */
+        ReviewStep: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+        };
+        /** ReviewUpdate */
+        ReviewUpdate: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "pending_review" | "under_review" | "reviewed" | "closed";
+            /** Note */
+            note?: string | null;
+        };
+        /** ReviewWorkflow */
+        ReviewWorkflow: {
+            escalation: components["schemas"]["ReviewEscalation"];
+            /** Steps */
+            steps: components["schemas"]["ReviewStep"][];
+            /** Alert Status */
+            alert_status: string;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+            /** Source */
+            source: string;
+            /** Note */
+            note: string;
         };
         /** RiskAssessmentResponse */
         RiskAssessmentResponse: {
@@ -2674,6 +4325,20 @@ export interface components {
             /** Alert Id */
             alert_id?: string | null;
         };
+        /** RoleInfo */
+        RoleInfo: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "flight_surgeon" | "mission_operator" | "analyst" | "admin";
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Permissions */
+            permissions: string[];
+        };
         /** RollingPoint */
         RollingPoint: {
             /**
@@ -2683,6 +4348,19 @@ export interface components {
             ts: string;
             /** R */
             r: number;
+        };
+        /** RunComponent */
+        RunComponent: {
+            /** Event Id */
+            event_id: string;
+            /** Scenario */
+            scenario: string;
+            /** Label */
+            label: string;
+            /** Intensity */
+            intensity: number;
+            /** Astronaut Id */
+            astronaut_id: string | null;
         };
         /** ScatterPoint */
         ScatterPoint: {
@@ -2702,7 +4380,7 @@ export interface components {
              * Key
              * @enum {string}
              */
-            key: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event";
+            key: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event" | "sleep_disruption" | "habitat_atmosphere";
             /** Label */
             label: string;
             /** Description */
@@ -2748,16 +4426,40 @@ export interface components {
             platform: string;
             /** Unit */
             unit: string;
-            /** Raw Points */
+            /**
+             * Raw Rows
+             * @description Rows in the NASA response carrying this field
+             * @default 0
+             */
+            raw_rows: number;
+            /**
+             * Raw Points
+             * @description Distinct timestamps
+             */
             raw_points: number;
             /** Valid */
             valid: number;
-            /** Missing */
+            /**
+             * Missing
+             * @description Timestamps with no usable value in any row
+             */
             missing: number;
-            /** Out Of Range */
+            /**
+             * Out Of Range
+             * @description Timestamps with a physically implausible value (excluded)
+             */
             out_of_range: number;
-            /** Duplicates */
+            /**
+             * Duplicates
+             * @description Extra rows at an already-seen timestamp, merged
+             */
             duplicates: number;
+            /**
+             * Conflicts
+             * @description Merged timestamps whose values disagreed (median kept)
+             * @default 0
+             */
+            conflicts: number;
             /** Completeness */
             completeness: number;
             /** First */
@@ -2774,6 +4476,36 @@ export interface components {
             approximate_points: number;
             /** Consistency Failures */
             consistency_failures: number;
+        };
+        /** SessionInfo */
+        SessionInfo: {
+            user: components["schemas"]["UserInfo"];
+            /** Permissions */
+            permissions: string[];
+            /**
+             * Method
+             * @enum {string}
+             */
+            method: "session" | "bearer" | "disabled";
+            /**
+             * Csrf Token
+             * @description Send as X-CSRF-Token on every state-changing cookie-authenticated request
+             */
+            csrf_token?: string | null;
+            /** Expires At */
+            expires_at?: string | null;
+            /** Auth Enabled */
+            auth_enabled: boolean;
+        };
+        /** SeverityOption */
+        SeverityOption: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "mild" | "moderate" | "severe";
+            /** Intensity */
+            intensity: number;
         };
         /** SignalBaseline */
         SignalBaseline: {
@@ -2854,7 +4586,7 @@ export interface components {
              * Scenario
              * @enum {string}
              */
-            scenario: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event";
+            scenario: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event" | "sleep_disruption" | "habitat_atmosphere";
             /** Label */
             label: string;
             /**
@@ -2890,7 +4622,7 @@ export interface components {
              * Scenario
              * @enum {string}
              */
-            scenario: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event";
+            scenario: "tachycardia" | "bradycardia" | "desaturation" | "elevated_temperature" | "abnormal_respiratory_rate" | "irregular_rhythm" | "solar_particle_event" | "sleep_disruption" | "habitat_atmosphere";
             /**
              * Astronaut Id
              * @description Required unless the scenario is crew-wide
@@ -3233,6 +4965,47 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** StageInfo */
+        StageInfo: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** First Day */
+            first_day: number;
+            /** Last Day */
+            last_day: number | null;
+        };
+        /** StageRef */
+        StageRef: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
+        /** StageSummary */
+        StageSummary: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** First Day */
+            first_day: number;
+            /** Last Day */
+            last_day: number | null;
+            /** N Days */
+            n_days: number;
+            /** Basis */
+            basis: {
+                [key: string]: number;
+            };
+            /** Metrics */
+            metrics: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+        };
         /** StateBaseline */
         StateBaseline: {
             /** N */
@@ -3258,6 +5031,18 @@ export interface components {
             /** By Time Of Day */
             by_time_of_day: components["schemas"]["TimeOfDayStats"][];
         };
+        /** Statement */
+        Statement: {
+            /** Text */
+            text: string;
+            /** Citations */
+            citations: string[];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "data" | "derived" | "model" | "nasa" | "documentation" | "reference" | "safety" | "configured" | "mixed" | "uncited";
+        };
         /** StudyList */
         StudyList: {
             /** Items */
@@ -3276,6 +5061,16 @@ export interface components {
             label: string;
             /** Term */
             term: string;
+        };
+        /** SummaryStatement */
+        SummaryStatement: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "data" | "derived" | "model" | "nasa";
+            /** Text */
+            text: string;
         };
         /** SyncRequest */
         SyncRequest: {
@@ -3349,6 +5144,86 @@ export interface components {
             /** Error */
             error: string | null;
         };
+        /** SystemAIOutput */
+        SystemAIOutput: {
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string;
+            /** Concern */
+            concern: string | null;
+            /** Category */
+            category: string;
+        };
+        /** SystemAlert */
+        SystemAlert: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Severity */
+            severity: string;
+            /** Metric */
+            metric: string;
+        };
+        /** SystemAssessment */
+        SystemAssessment: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "within_baseline" | "deviation" | "marked_deviation" | "insufficient_data";
+            /** Features */
+            features: components["schemas"]["SystemFeature"][];
+            /** Open Alerts */
+            open_alerts: components["schemas"]["SystemAlert"][];
+            /** Ai Outputs */
+            ai_outputs: components["schemas"]["SystemAIOutput"][];
+            /** Explanation */
+            explanation: string;
+            data_quality: components["schemas"]["SystemQuality"];
+        };
+        /** SystemFeature */
+        SystemFeature: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number | string | null;
+            /** Unit */
+            unit: string;
+            /** Reference */
+            reference: number | null;
+            /** Reference Label */
+            reference_label: string | null;
+            /**
+             * Z
+             * @description SD from the reference (statistical, not clinical)
+             */
+            z: number | null;
+            /** Direction */
+            direction: ("above" | "below") | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "within_baseline" | "deviation" | "marked_deviation" | "insufficient_data" | "info";
+            /** Category */
+            category: string;
+            /** Source */
+            source: string;
+            /** Note */
+            note: string | null;
+        };
         /** SystemHealth */
         SystemHealth: {
             /**
@@ -3377,6 +5252,15 @@ export interface components {
              * Format: date-time
              */
             server_time: string;
+        };
+        /** SystemQuality */
+        SystemQuality: {
+            /** Inputs */
+            inputs: number;
+            /** Assessed */
+            assessed: number;
+            /** Missing */
+            missing: string[];
         };
         /** ThresholdInfo */
         ThresholdInfo: {
@@ -3456,6 +5340,24 @@ export interface components {
             series: components["schemas"]["TimelineSeries"][];
             /** Notes */
             notes: string[];
+        };
+        /** TimelineEvent */
+        TimelineEvent: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string;
+            /** Severity */
+            severity?: string | null;
+            /** Alert Id */
+            alert_id?: string | null;
+            /** Analysis Id */
+            analysis_id?: string | null;
         };
         /** TimelineItem */
         TimelineItem: {
@@ -3540,6 +5442,26 @@ export interface components {
             /** Points */
             points: components["schemas"]["TimelinePoint"][];
         };
+        /** TokenResponse */
+        TokenResponse: {
+            /**
+             * Access Token
+             * @description Bearer token for non-browser API clients. Treat it like a password.
+             */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             * @constant
+             */
+            token_type: "bearer";
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            user: components["schemas"]["UserInfo"];
+        };
         /** TrendAdjusted */
         TrendAdjusted: {
             /** R */
@@ -3548,6 +5470,371 @@ export interface components {
             p: number | null;
             /** N Eff */
             n_eff: number;
+        };
+        /** TrendFit */
+        TrendFit: {
+            /** Slope Per 30D */
+            slope_per_30d: number;
+            /** Ci95 */
+            ci95: number[];
+            /** N Days */
+            n_days: number;
+            /** N Eff */
+            n_eff: number;
+            /** Direction */
+            direction: string;
+        };
+        /** TrendPoint */
+        TrendPoint: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Mission Day */
+            mission_day: number;
+            /** Stage */
+            stage: string;
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "stored" | "regenerated";
+            /** Complete */
+            complete: boolean;
+            /** Value */
+            value: number | null;
+            /** Rolling 7D */
+            rolling_7d: number | null;
+        };
+        /** TrendPointLite */
+        TrendPointLite: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Value */
+            value: number | null;
+            /** Basis */
+            basis: string;
+        };
+        /** TwinCoverage */
+        TwinCoverage: {
+            /** First Day */
+            first_day: string | null;
+            /** Last Day */
+            last_day: string | null;
+            /** Days Total */
+            days_total: number;
+            /** Days Stored */
+            days_stored: number;
+            /** Days Regenerated */
+            days_regenerated: number;
+            /** Retention Days */
+            retention_days: number;
+        };
+        /** TwinCurrent */
+        TwinCurrent: {
+            reading: components["schemas"]["VitalReading"] | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "nominal" | "advisory" | "caution" | "critical";
+            /** Open Alerts */
+            open_alerts: number;
+            /** Active Scenarios */
+            active_scenarios: string[];
+            /** Category */
+            category: string;
+        };
+        /** TwinDay */
+        TwinDay: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Mission Day */
+            mission_day: number;
+            /** Stage */
+            stage: string;
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "stored" | "regenerated";
+            /** Complete */
+            complete: boolean;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "simulated" | "regenerated";
+            /**
+             * Metrics
+             * @description Per-signal daily statistics (derived)
+             */
+            metrics: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /** Activity */
+            activity: {
+                [key: string]: unknown;
+            };
+            /** Sleep */
+            sleep: {
+                [key: string]: unknown;
+            } | null;
+            /** Radiation */
+            radiation: {
+                [key: string]: unknown;
+            } | null;
+            /** Events */
+            events: {
+                [key: string]: unknown;
+            };
+            /** Coverage */
+            coverage: {
+                [key: string]: unknown;
+            };
+            /**
+             * Computed At
+             * Format: date-time
+             */
+            computed_at: string;
+            /**
+             * Space Weather
+             * @description Real NASA DONKI events that day (indicator category)
+             */
+            space_weather: {
+                [key: string]: unknown;
+            };
+        };
+        /** TwinExposure */
+        TwinExposure: {
+            /** Mission Dose Msv */
+            mission_dose_msv: number;
+            /** Last 30D Dose Msv */
+            last_30d_dose_msv: number;
+            /** Spe Days */
+            spe_days: number;
+            /** Career Total Msv */
+            career_total_msv: number;
+            /** Career Limit Msv */
+            career_limit_msv: number;
+            /** Category */
+            category: string;
+            /** Note */
+            note: string;
+        };
+        /** TwinMission */
+        TwinMission: {
+            /** Day */
+            day: number;
+            stage: components["schemas"]["StageRef"];
+            /** Stages */
+            stages: components["schemas"]["StageInfo"][];
+        };
+        /** TwinProfile */
+        TwinProfile: {
+            astronaut: components["schemas"]["Astronaut"];
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Twin Updated At */
+            twin_updated_at: string | null;
+            /** Last Measurement At */
+            last_measurement_at: string | null;
+            mission: components["schemas"]["TwinMission"];
+            current: components["schemas"]["TwinCurrent"];
+            /** Resting Comparison */
+            resting_comparison: components["schemas"]["RestingComparison"][];
+            exposure: components["schemas"]["TwinExposure"];
+            sleep_7d: components["schemas"]["TwinSleep"];
+            coverage: components["schemas"]["TwinCoverage"];
+            /** Categories */
+            categories: components["schemas"]["CategoryInfo"][];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** TwinSleep */
+        TwinSleep: {
+            /** Nights */
+            nights: number;
+            /** Mean Duration Hours */
+            mean_duration_hours: number | null;
+            /** Mean Efficiency Pct */
+            mean_efficiency_pct: number | null;
+            /** Category */
+            category: string;
+        };
+        /** TwinStages */
+        TwinStages: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Stages */
+            stages: components["schemas"]["StageSummary"][];
+            /** Statistic */
+            statistic: string;
+            /** Comparison */
+            comparison: string;
+            /** Notes */
+            notes: string[];
+            /** Category */
+            category: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** TwinTimeline */
+        TwinTimeline: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Days */
+            days: components["schemas"]["TwinDay"][];
+            /** Categories */
+            categories: components["schemas"]["CategoryInfo"][];
+            /** Disclaimer */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** TwinTrend */
+        TwinTrend: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Metric */
+            metric: string;
+            /** Statistic */
+            statistic: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /** Points */
+            points: components["schemas"]["TrendPoint"][];
+            trend: components["schemas"]["TrendFit"] | null;
+            /** Cumulative */
+            cumulative: components["schemas"]["CumulativePoint"][] | null;
+            /** Category */
+            category: string;
+            /** Method */
+            method: string;
+            /** Notes */
+            notes: string[];
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** Understood */
+        Understood: {
+            /** Tasks */
+            tasks: string[];
+            /** Astronaut Ids */
+            astronaut_ids: string[];
+            /** Metrics */
+            metrics: string[];
+            /** Hours */
+            hours: number | null;
+        };
+        /** UserCreate */
+        UserCreate: {
+            /** Username */
+            username: string;
+            /** Display Name */
+            display_name: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "flight_surgeon" | "mission_operator" | "analyst" | "admin";
+            /** Password */
+            password: string;
+        };
+        /** UserInfo */
+        UserInfo: {
+            /** Id */
+            id: string;
+            /** Username */
+            username: string;
+            /** Display Name */
+            display_name: string;
+            /** Role */
+            role: string;
+            /** Role Label */
+            role_label: string;
+            /**
+             * Active
+             * @default true
+             */
+            active: boolean;
+            /** Last Login At */
+            last_login_at?: string | null;
+        };
+        /** UserUpdate */
+        UserUpdate: {
+            /** Display Name */
+            display_name?: string | null;
+            /** Role */
+            role?: ("flight_surgeon" | "mission_operator" | "analyst" | "admin") | null;
+            /** Active */
+            active?: boolean | null;
+            /**
+             * Unlock
+             * @default false
+             */
+            unlock: boolean;
+        };
+        /** ValueRef */
+        ValueRef: {
+            /** Value */
+            value: number | null;
+            /** Category */
+            category: string;
+            /** Note */
+            note?: string | null;
+            /** N Days */
+            n_days?: number | null;
+            /** N */
+            n?: number | null;
+            /** Basis */
+            basis?: string[] | null;
         };
         /** VitalReading */
         VitalReading: {
@@ -3798,6 +6085,465 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SystemHealth"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    login_api_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionInfo"];
+                };
+            };
+            /** @description Invalid credentials or locked account */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many attempts */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    issue_token_api_auth_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Invalid credentials or locked account */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too many attempts */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    me_api_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionInfo"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    logout_api_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    change_password_api_auth_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    roles_api_auth_roles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessMatrix"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_users_api_admin_users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUser"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_user_api_admin_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUser"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    update_user_api_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUser"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    audit_log_api_admin_audit_get: {
+        parameters: {
+            query?: {
+                username?: string | null;
+                action?: string | null;
+                outcome?: string | null;
+                resource_type?: string | null;
+                hours?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntry"][];
                 };
             };
             /** @description Resource not found */
@@ -5658,6 +8404,950 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MatrixResult"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    twin_profile_api_twin__astronaut_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwinProfile"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    twin_timeline_api_twin__astronaut_id__timeline_get: {
+        parameters: {
+            query?: {
+                /** @description Most recent days (ignored when start is given) */
+                days?: number;
+                start?: string | null;
+                end?: string | null;
+            };
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwinTimeline"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    twin_trend_api_twin__astronaut_id__trends_get: {
+        parameters: {
+            query?: {
+                metric?: "heart_rate" | "spo2" | "systolic" | "diastolic" | "temperature_c" | "respiratory_rate" | "hrv_rmssd_ms" | "sleep_duration_hours" | "sleep_efficiency_pct" | "dose_msv" | "exercise_minutes";
+                statistic?: "awake_rest_mean" | "mean" | "sleep_mean" | "p05" | "p95";
+                /** @description Limit to the most recent days */
+                days?: number | null;
+            };
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwinTrend"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    twin_stages_api_twin__astronaut_id__stages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwinStages"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    crew_systems_api_multisystem_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrewSystemsOverview"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    astronaut_systems_api_multisystem__astronaut_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MultisystemAssessment"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    decision_queue_api_decision_support_queue_get: {
+        parameters: {
+            query?: {
+                hours?: number;
+                include_advisory?: boolean;
+                include_closed?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionQueue"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    decision_packet_api_decision_support_alerts__alert_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionPacket"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    scenarios_api_emergency_scenarios_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyScenarioInfo"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_runs_api_emergency_runs_get: {
+        parameters: {
+            query?: {
+                hours?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyRun"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    start_run_api_emergency_runs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmergencyRunCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyRun"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_run_api_emergency_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyRun"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    cancel_run_api_emergency_runs__run_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyRun"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    analyze_run_api_emergency_runs__run_id__analyze_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyAnalysis"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    run_timeline_api_emergency_runs__run_id__timeline_get: {
+        parameters: {
+            query?: {
+                astronaut_id?: string | null;
+            };
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmergencyTimeline"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_reports_api_reports_get: {
+        parameters: {
+            query?: {
+                astronaut_id?: string | null;
+                status?: ("draft" | "pending_review" | "under_review" | "reviewed" | "closed") | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportSummary"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_report_api_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentReport"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_report_api_reports__report_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentReport"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    review_report_api_reports__report_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentReport"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    report_pdf_api_reports__report_id__pdf_get: {
+        parameters: {
+            query?: {
+                download?: boolean;
+            };
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PDF export */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    assistant_status_api_assistant_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStatus"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ask_api_assistant_ask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AskRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantAnswer"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    overview_api_overview_get: {
+        parameters: {
+            query?: {
+                period?: "24h" | "7d" | "30d";
+                /** @description Limit to one crew member */
+                astronaut_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOverview"];
                 };
             };
             /** @description Resource not found */

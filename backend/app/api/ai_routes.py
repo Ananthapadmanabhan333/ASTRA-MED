@@ -23,6 +23,7 @@ from app.schemas.ai import (
     RiskAssessmentResponse,
 )
 from app.schemas.common import ERROR_RESPONSES, ErrorResponse
+from app.security.deps import require
 
 UNAVAILABLE = {503: {"model": ErrorResponse, "description": "No trained model version is available"}}
 NOT_ENOUGH = {409: {"model": ErrorResponse, "description": "Not enough stored data"}}
@@ -95,7 +96,8 @@ async def explain_alert(alert_id: str, ai: AI) -> AlertExplanationResponse:
     return AlertExplanationResponse.model_validate(await ai.explain_alert(alert_id))
 
 
-@router.post("/models/reload", response_model=AIStatus, responses={403: {"model": ErrorResponse}})
+@router.post("/models/reload", response_model=AIStatus, responses={403: {"model": ErrorResponse}},
+             dependencies=[require("models:manage")])
 async def reload_models(ai: AI) -> AIStatus:
     """Load the newest registered model version (after running the training script)."""
     if not ai.settings.simulation_control_enabled:

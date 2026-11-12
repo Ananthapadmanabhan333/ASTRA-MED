@@ -36,8 +36,14 @@ services:
       ASTRA_SIMULATION_CONTROL_ENABLED: ${ASTRA_SIMULATION_CONTROL_ENABLED:-true}
       ASTRA_NASA_API_KEY: ${ASTRA_NASA_API_KEY:-}  # optional; server side only
       ASTRA_SPACE_SYNC_ENABLED: ${ASTRA_SPACE_SYNC_ENABLED:-true}
+      ASTRA_AUTH_ENABLED: ${ASTRA_AUTH_ENABLED:-true}
+      ASTRA_AUTH_COOKIE_SECURE: ${ASTRA_AUTH_COOKIE_SECURE:-false}  # true behind HTTPS
+      ASTRA_ASSISTANT_MODE: ${ASTRA_ASSISTANT_MODE:-extractive}
+      ASTRA_ASSISTANT_DOCS_DIR: /app/docs
+      ASTRA_ASSISTANT_KNOWLEDGE_DIR: /app/knowledge
     volumes:
       - ai-artifacts:/app/artifacts  # trained model versions persist across restarts
+      - ./docs:/app/docs:ro  # documentation the medical data assistant cites
     ports:
       - "127.0.0.1:8000:8000"
 

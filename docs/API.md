@@ -7,6 +7,23 @@ generates the frontend's TypeScript types (`npm run gen:api`).
 > Every measurement returned is **simulated** and carries `"data_source": "simulated"`. Crew members
 > are fictional. Thresholds and insights are software test values, not clinical criteria.
 
+## Authentication (phase 5)
+
+Every endpoint except `GET /api/system/health`, `POST /api/auth/login` and `POST /api/auth/token`
+needs a signed-in user whose role grants the endpoint's permission ([SECURITY.md](SECURITY.md)).
+
+- **Browsers:** `POST /api/auth/login` sets an HttpOnly session cookie and returns `csrf_token`.
+  Send it as `X-CSRF-Token` on every POST, PATCH and DELETE, and send requests with credentials.
+- **Scripts:** `POST /api/auth/token` returns `access_token`. Send `Authorization: Bearer <token>`;
+  no CSRF token is needed.
+- **WebSocket:** the session cookie (or bearer header) is checked before the connection is accepted.
+
+```bash
+TOKEN=$(curl -s -X POST localhost:8000/api/auth/token -H 'Content-Type: application/json' \
+  -d '{"username":"operator","password":"<password>"}' | python -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+curl -s localhost:8000/api/twin/AST-01 -H "Authorization: Bearer $TOKEN"
+```
+
 ## Conventions
 
 - JSON field names are `snake_case`; timestamps are ISO 8601 UTC (mission time is UTC).
@@ -19,7 +36,9 @@ generates the frontend's TypeScript types (`npm run gen:api`).
 
 | Status | `code` | When |
 | --- | --- | --- |
-| 403 | `forbidden` | Simulation control disabled (`ASTRA_SIMULATION_CONTROL_ENABLED=false`) |
+| 401 | `unauthenticated` | Not signed in, or the session expired, went idle or was revoked |
+| 403 | `forbidden` | Role lacks the permission (`details.reason = "permission"`, `details.required`), missing CSRF token (`"csrf"`), or simulation control disabled |
+| 429 | `rate_limited` | Too many sign-in attempts from one client (`Retry-After` header) |
 | 404 | `not_found` | Unknown astronaut, alert or scenario |
 | 409 | `conflict` | Scenario already running for that target; alert already acknowledged/resolved |
 | 409 | `insufficient_data` | AI endpoint: not enough stored history to build a baseline, features or a forecast |
@@ -201,6 +220,65 @@ licences and limitations are in [NASA_DATA_SOURCES.md](NASA_DATA_SOURCES.md); me
 | 400 | `bad_request` | Invalid type, period or mode |
 | 404 | `not_found` | Unknown event, mission or series |
 | 503 | `space_disabled` | `ASTRA_SPACE_ENABLED=false` |
+
+## Auth and administration (phase 5)
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| POST | `/api/auth/login` | none | `SessionInfo` (user, permissions, `csrf_token`, `expires_at`); sets the session cookie |
+| POST | `/api/auth/token` | none | `TokenResponse` (bearer `access_token`, `expires_at`) |
+| GET | `/api/auth/me` | signed in | `SessionInfo` |
+| POST | `/api/auth/logout` | signed in | 204; revokes the session and clears the cookie |
+| POST | `/api/auth/password` | signed in | 204; changes your password, signs out your other sessions |
+| GET | `/api/auth/roles` | signed in | `AccessMatrix`: roles, their permissions, permission descriptions |
+| GET / POST | `/api/admin/users` | `users:manage` | `AdminUser[]` / create (`UserCreate`, password policy enforced) |
+| PATCH | `/api/admin/users/{user_id}` | `users:manage` | role, active, display name, unlock; role change and deactivation revoke sessions |
+| GET | `/api/admin/audit` | `audit:read` | `AuditEntry[]`, newest first; filters `username`, `action`, `outcome`, `resource_type`, `hours`, `limit` |
+
+## Digital twin and medical decision support (phase 5)
+
+All need `health:read` unless noted. All crew data is simulated; see
+[MEDICAL_DECISION_SUPPORT.md](MEDICAL_DECISION_SUPPORT.md).
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/twin/{astronaut_id}` | `TwinProfile`: astronaut, mission day and stage, current reading and status, resting comparison (configured, early mission, last 7 d, last 24 h, learned baseline), exposure, 7-night sleep, coverage (stored vs regenerated days), category legend |
+| GET | `/api/twin/{astronaut_id}/timeline?days=30` (or `start`, `end`) | `TwinTimeline`: one `TwinDay` per mission day (statistics, activity, sleep, simulated dose, alerts and scenarios, coverage, basis) plus NASA DONKI events that day |
+| GET | `/api/twin/{astronaut_id}/trends?metric=&statistic=&days=` | `TwinTrend`: daily values, 7-day rolling mean, autocorrelation-aware slope per 30 days with 95 % CI; cumulative series for `dose_msv` |
+| GET | `/api/twin/{astronaut_id}/stages` | `TwinStages`: per mission stage mean ± SD and difference from the first stage (Welch CI) |
+| GET | `/api/multisystem` | `CrewSystemsOverview`: six system statuses and patterns per crew member |
+| GET | `/api/multisystem/{astronaut_id}` | `MultisystemAssessment`: per system the inputs (value, reference, z, status, category, source), open alerts, Phase 3 model outputs, explanation and data quality; cross-system patterns; habitat and sleep overlays when a run is active |
+| GET | `/api/decision-support/queue?hours=24&include_advisory=false&include_closed=false` | `DecisionQueue`: significant alerts with escalation level, critical first |
+| GET | `/api/decision-support/alerts/{alert_id}` | `DecisionPacket`: observation, measurements, baseline comparison, environmental context, AI output, confidence and uncertainty, data quality, review workflow |
+| GET | `/api/overview?period=7d&astronaut_id=` | `MissionOverview`: crew cards, active alerts, alert history per day, incidents (if `reports:read`), runs, resting HR and sleep trends, environment, rule-generated summary |
+
+### Emergency simulator
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/emergency/scenarios` | `health:read` | `EmergencyScenarioInfo[]` (7 scenarios, severities, components) |
+| POST | `/api/emergency/runs` | `simulation:control` | `EmergencyRun` (201). Body: `scenario`, `astronaut_id` (unless crew-wide), `severity` (`mild`/`moderate`/`severe`), `duration_seconds` (30–3600), `nights` (sleep, 1–7). 409 if something already runs on the target |
+| GET | `/api/emergency/runs?hours=72` · `/api/emergency/runs/{run_id}` | `health:read` | `EmergencyRun` with status, components, overlay, stored analyses |
+| POST | `/api/emergency/runs/{run_id}/cancel` | `simulation:control` | `EmergencyRun` |
+| POST | `/api/emergency/runs/{run_id}/analyze` | `simulation:control` or `reports:write` | `EmergencyAnalysis` snapshot (also stored on the run) |
+| GET | `/api/emergency/runs/{run_id}/timeline?astronaut_id=` | `health:read` | `EmergencyTimeline`: vitals, events, simulated environment, overlay |
+
+### Incident reports
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| POST | `/api/reports` | `reports:write` | `IncidentReport` (201). Body: `alert_id`, `run_id` or `astronaut_id` (+ optional `occurred_at`, `title`, `summary`) |
+| GET | `/api/reports?astronaut_id=&status=&limit=` | `reports:read` | `ReportSummary[]` |
+| GET | `/api/reports/{report_id}` | `reports:read` | `IncidentReport` with `content` (all ten sections), `content_sha256`, `integrity` |
+| POST | `/api/reports/{report_id}/review` | `reports:write` for draft ⇄ pending review; `reports:review` for under review, reviewed, closed | `IncidentReport`. Body: `status`, `note` (required for `reviewed`). 409 for a transition that is not allowed |
+| GET | `/api/reports/{report_id}/pdf?download=false` | `reports:read` | `application/pdf` (inline, or attachment with `download=true`); audited |
+
+### Assistant
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/assistant/status` | `health:read` | `AssistantStatus`: mode, indexed passages per source, reference library entries |
+| POST | `/api/assistant/ask` | `assistant:use` | `AssistantAnswer`: `statements[]` (text, `citations`, `kind`), `sources[]` (`D#` records, `S#` passages with verbatim excerpts and links), `missing_information`, `declined`, `escalation`, `actions` (e.g. create a report), `understood`. Body: `question`, optional `astronaut_id` in focus |
 
 ## WebSocket: `/ws/health-monitoring`
 

@@ -78,3 +78,51 @@ export type NearbyEvents = Schemas["NearbyEvents"];
 export type CorrelationSeriesInfo = Schemas["CorrelationSeriesInfo"];
 export type CorrelationResult = Schemas["CorrelationResult"];
 export type MatrixResult = Schemas["MatrixResult"];
+
+// Phase 5: security, digital twin, medical decision support, emergency simulator, reports, assistant
+export type SessionInfo = Schemas["SessionInfo"];
+export type UserInfo = Schemas["UserInfo"];
+export type AdminUser = Schemas["AdminUser"];
+export type AuditEntry = Schemas["AuditEntry"];
+export type AccessMatrix = Schemas["AccessMatrix"];
+export type RoleKey = Schemas["UserCreate"]["role"];
+
+export type TwinProfile = Schemas["TwinProfile"];
+export type TwinTimeline = Schemas["TwinTimeline"];
+export type TwinDay = Schemas["TwinDay"];
+export type TwinTrend = Schemas["TwinTrend"];
+export type TwinStages = Schemas["TwinStages"];
+export type RestingComparison = Schemas["RestingComparison"];
+export type CategoryInfo = Schemas["CategoryInfo"];
+
+export type MultisystemAssessment = Schemas["MultisystemAssessment"];
+export type SystemAssessment = Schemas["SystemAssessment"];
+export type SystemFeature = Schemas["SystemFeature"];
+export type SystemStatus = SystemAssessment["status"];
+export type CrossSystemPattern = Schemas["CrossSystemPattern"];
+export type CrewSystemsOverview = Schemas["CrewSystemsOverview"];
+export type DecisionPacket = Schemas["DecisionPacket"];
+export type DecisionQueue = Schemas["DecisionQueue"];
+export type QueueItem = Schemas["QueueItem"];
+
+export type EmergencyScenarioInfo = Schemas["EmergencyScenarioInfo"];
+export type EmergencyRun = Schemas["EmergencyRun"];
+export type EmergencyRunCreate = Schemas["EmergencyRunCreate"];
+export type EmergencyAnalysis = Schemas["EmergencyAnalysis"];
+export type EmergencyTimeline = Schemas["EmergencyTimeline"];
+export type EmergencyKey = EmergencyScenarioInfo["key"];
+export type SeverityLevel = EmergencyRunCreate["severity"];
+
+export type IncidentReport = Schemas["IncidentReport"];
+export type ReportSummary = Schemas["ReportSummary"];
+export type ReviewStatus = ReportSummary["review_status"];
+export type ReportCreate = Schemas["ReportCreate"];
+
+export type AssistantAnswer = Schemas["AssistantAnswer"];
+export type AssistantStatus = Schemas["AssistantStatus"];
+export type AnswerStatement = Schemas["Statement"];
+export type AnswerSource = Schemas["AnswerSource"];
+export type StatementKind = AnswerStatement["kind"];
+
+export type MissionOverview = Schemas["MissionOverview"];
+export type OverviewCrew = Schemas["OverviewCrew"];

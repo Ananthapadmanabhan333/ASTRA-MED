@@ -39,8 +39,33 @@ class Settings(BaseSettings):
     mission_name: str = "Helios-7"
     mission_phase: str = "Mars transit"
 
-    # Operator controls. Disable in any shared deployment until authentication exists.
+    # Operator controls (simulation, sync, model reload). With authentication on, each also needs
+    # the matching permission; this switch turns them off for everyone.
     simulation_control_enabled: bool = True
+
+    # Authentication and access control (phase 5). Turning auth off grants every permission to
+    # every caller and is refused when environment is "production".
+    auth_enabled: bool = True
+    auth_session_hours: float = Field(default=8.0, gt=0, le=24)  # absolute session lifetime
+    auth_idle_minutes: int = Field(default=60, ge=5, le=720)  # sign out after inactivity
+    auth_cookie_name: str = "astra_session"
+    auth_cookie_secure: bool = False  # set true whenever the API is served over HTTPS
+    auth_max_failed_logins: int = Field(default=5, ge=3, le=20)  # then the account locks
+    auth_lockout_minutes: int = Field(default=15, ge=1, le=1440)
+    auth_login_attempts_per_minute: int = Field(default=10, ge=1, le=120)  # per client address
+    audit_read_dedupe_seconds: int = Field(default=300, ge=0, le=3600)
+
+    # Digital health twin (phase 5): background build of daily summaries, refreshed every 5 minutes.
+    twin_background: bool = True
+
+    # Medical data assistant (phase 5). "extractive" answers offline from retrieved passages.
+    # "claude" also sends the question and retrieved passages to the Anthropic API; it needs
+    # ANTHROPIC_API_KEY in the backend environment and the optional `anthropic` package.
+    assistant_mode: str = "extractive"
+    assistant_model: str = "claude-opus-5-5"
+    assistant_max_passages: int = Field(default=6, ge=1, le=20)
+    assistant_docs_dir: str = ""  # empty: the repository's docs/ folder
+    assistant_knowledge_dir: str = ""  # empty: backend/knowledge
 
     # AI intelligence engine (phase 3).
     ai_enabled: bool = True
@@ -61,6 +86,10 @@ class Settings(BaseSettings):
     osdr_sync_hours: int = Field(default=24, ge=1)
     space_http_timeout_s: float = Field(default=45.0, gt=1, le=300)
     space_request_spacing_s: float = Field(default=1.0, ge=0, le=30)  # politeness gap per host
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment.strip().lower() in {"production", "prod"}
 
     @property
     def nasa_api_key_value(self) -> str:

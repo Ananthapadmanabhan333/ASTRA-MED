@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Semi_Condensed, IBM_Plex_Sans } from "next/font/google";
 
+import { AuthGate } from "@/components/auth/auth-gate";
 import { Providers } from "@/components/providers";
 import { AppShell } from "@/components/shell/app-shell";
 
@@ -17,6 +18,10 @@ const barlow = Barlow_Semi_Condensed({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
+
+// Every page sits behind AuthGate, which shows nothing from a page until the session check finishes,
+// so no health record is ever in prerendered HTML. Navigations therefore wait for that check by design.
+export const instant = false;
 
 export const metadata: Metadata = {
   title: { default: "ASTRA-MED mission control", template: "%s | ASTRA-MED" },
@@ -40,7 +45,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <Providers>
-          <AppShell>{children}</AppShell>
+          <AuthGate>
+            <AppShell>{children}</AppShell>
+          </AuthGate>
         </Providers>
       </body>
     </html>

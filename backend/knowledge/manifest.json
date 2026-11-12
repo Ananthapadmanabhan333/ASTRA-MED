@@ -1,0 +1,4 @@
+{
+  "_comment": "Approved reference documents for the medical data assistant. Add a plain-text or Markdown file to this folder, list it below with its publisher, source URL and licence, and set approved to true only after it has been reviewed. Nothing here is loaded unless approved is true and the file exists. The repository ships with no third-party documents.",
+  "documents": []
+}
