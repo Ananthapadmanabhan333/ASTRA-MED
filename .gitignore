@@ -35,3 +35,6 @@ Thumbs.db
 
 # Embedded PostgreSQL data (scripts/local_postgres.py)
 .pgdata/
+
+# Trained model artifacts (regenerate with: python -m app.ai.train)
+backend/artifacts/

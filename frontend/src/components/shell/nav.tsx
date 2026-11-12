@@ -3,6 +3,7 @@
 import {
   Activity,
   BellRing,
+  BrainCircuit,
   FlaskConical,
   LayoutDashboard,
   Lightbulb,
@@ -26,6 +27,7 @@ interface NavItem {
 
 export const NAV: NavItem[] = [
   { href: "/", label: "Mission control", icon: LayoutDashboard },
+  { href: "/intelligence", label: "AI intelligence", icon: BrainCircuit },
   { href: "/crew", label: "Crew health", icon: Users },
   { href: "/vitals", label: "Vitals compare", icon: Activity },
   { href: "/alerts", label: "Alerts", icon: BellRing },

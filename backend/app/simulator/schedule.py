@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from functools import lru_cache
 
 from app.simulator.profiles import AstronautProfile
 from app.simulator.seeding import rng_for
@@ -48,6 +49,7 @@ def _day_start(d: date) -> datetime:
     return datetime.combine(d, time(0), tzinfo=UTC)
 
 
+@lru_cache(maxsize=8192)  # pure and deterministic; results are immutable
 def night_plan(profile: AstronautProfile, night: date, seed: int) -> NightPlan:
     rng = rng_for(seed, "sleep", profile.id, night.isoformat())
     scheduled_start = _day_start(night) + timedelta(hours=profile.sleep_start_hour)
@@ -68,6 +70,7 @@ def night_plan(profile: AstronautProfile, night: date, seed: int) -> NightPlan:
     )
 
 
+@lru_cache(maxsize=8192)
 def exercise_plan(profile: AstronautProfile, day: date, seed: int) -> ExercisePlan:
     rng = rng_for(seed, "exercise", profile.id, day.isoformat())
     minutes = profile.exercise_minutes * rng.uniform(0.85, 1.1)

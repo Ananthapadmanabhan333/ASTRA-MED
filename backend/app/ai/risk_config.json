@@ -1,0 +1,17 @@
+{
+  "_comment": "Transparent early-warning rules. Points add up to a 0-100 risk score. Edit and restart to change behaviour; values are prototype settings, not clinical criteria.",
+  "deviation_z_start": 2.0,
+  "deviation_points_per_z": 5.0,
+  "deviation_cap_per_signal": 22.0,
+  "duration_full_minutes": 60,
+  "duration_min_factor": 0.4,
+  "anomaly_points_at_threshold": 18.0,
+  "anomaly_points_cap": 30.0,
+  "anomaly_agreement_bonus": 2.0,
+  "trend_points_likely": 14.0,
+  "trend_points_possible": 6.0,
+  "trend_horizons_hours": [6, 12, 24],
+  "alert_points": {"critical": 40.0, "caution": 20.0, "advisory": 7.0},
+  "categories": {"low_concern": 12.0, "moderate_concern": 30.0, "high_concern": 55.0},
+  "confidence_min_windows": 12
+}

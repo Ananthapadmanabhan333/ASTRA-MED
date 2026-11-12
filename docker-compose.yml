@@ -34,6 +34,8 @@ services:
       ASTRA_CORS_ORIGINS: ${ASTRA_CORS_ORIGINS:-http://localhost:3000}
       ASTRA_RANDOM_EVENTS_PER_HOUR: ${ASTRA_RANDOM_EVENTS_PER_HOUR:-6}
       ASTRA_SIMULATION_CONTROL_ENABLED: ${ASTRA_SIMULATION_CONTROL_ENABLED:-true}
+    volumes:
+      - ai-artifacts:/app/artifacts  # trained model versions persist across restarts
     ports:
       - "127.0.0.1:8000:8000"
 
@@ -51,3 +53,4 @@ services:
 
 volumes:
   pgdata:
+  ai-artifacts:

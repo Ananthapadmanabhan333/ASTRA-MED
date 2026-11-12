@@ -332,10 +332,213 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ai/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ai Status
+         * @description Which model version is loaded, and which detectors and forecasters it provides.
+         */
+        get: operations["ai_status_api_ai_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/anomaly-detection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Anomaly Detection
+         * @description Score stored windows (default: last 6 h) or supplied readings with the anomaly ensemble.
+         *
+         *     Returns a per-window timeline (each detector's calibrated score, ensemble score, votes), the
+         *     flagged segments that persist for at least 10 minutes, and an explanation for each.
+         */
+        post: operations["anomaly_detection_api_ai_anomaly_detection_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/astronaut/{astronaut_id}/baseline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Baseline
+         * @description Personal baseline per signal (by activity and time of day), rolling statistics, and how the
+         *     latest reading compares.
+         */
+        get: operations["baseline_api_ai_astronaut__astronaut_id__baseline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/astronaut/{astronaut_id}/forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Forecast
+         * @description 24 h forecast in 30-minute steps with 90% split-conformal intervals and 1/6/12/24 h summaries.
+         */
+        get: operations["forecast_api_ai_astronaut__astronaut_id__forecast_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/astronaut/{astronaut_id}/risk-assessment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Risk Assessment
+         * @description Rule-based concern level with prioritised warnings and the measurements behind each.
+         */
+        get: operations["risk_assessment_api_ai_astronaut__astronaut_id__risk_assessment_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/crew-overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Crew Overview
+         * @description Risk summary and health score for every crew member, highest concern first.
+         */
+        get: operations["crew_overview_api_ai_crew_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/model-performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Model Performance
+         * @description Evaluation results of the loaded model version (simulated test split), ablations and limitations.
+         */
+        get: operations["model_performance_api_ai_model_performance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/explanations/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Explain Alert
+         * @description Why an alert fired: the rule, the contributing signals and how far each was from baseline.
+         */
+        get: operations["explain_alert_api_ai_explanations__alert_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ai/models/reload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reload Models
+         * @description Load the newest registered model version (after running the training script).
+         */
+        post: operations["reload_models_api_ai_models_reload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AIStatus */
+        AIStatus: {
+            /** Enabled */
+            enabled: boolean;
+            /** Model Version */
+            model_version: string | null;
+            /** Loaded */
+            loaded: boolean;
+            /** Error */
+            error: string | null;
+            /** Detectors */
+            detectors: string[];
+            /** Forecasters */
+            forecasters: string[];
+            /** Serving Forecaster */
+            serving_forecaster: string | null;
+            /** Torch Available */
+            torch_available: boolean;
+        };
         /** ActivitySummary */
         ActivitySummary: {
             /** Current State */
@@ -429,6 +632,159 @@ export interface components {
         AlertAction: {
             /** Note */
             note?: string | null;
+        };
+        /** AlertExplanationResponse */
+        AlertExplanationResponse: {
+            /** Alert Id */
+            alert_id: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Alert Title */
+            alert_title: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Rule */
+            rule: string;
+            explanation: components["schemas"]["Explanation"];
+            /** Anomaly Context */
+            anomaly_context: components["schemas"]["AnomalyPoint"][];
+            /** Model Version */
+            model_version: string | null;
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** AnomalyDetectionRequest */
+        AnomalyDetectionRequest: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Start
+             * @description Analyse stored data from here (default: 6 h ago)
+             */
+            start?: string | null;
+            /**
+             * End
+             * @description Analyse stored data until here (default: now)
+             */
+            end?: string | null;
+            /**
+             * Readings
+             * @description Optional measurements to analyse instead of stored data; missing values may be null
+             */
+            readings?: components["schemas"]["ReadingIn"][] | null;
+            /**
+             * Models
+             * @description Detector subset (default: all)
+             */
+            models?: string[] | null;
+            /**
+             * Include Explanations
+             * @default true
+             */
+            include_explanations: boolean;
+        };
+        /** AnomalyDetectionResponse */
+        AnomalyDetectionResponse: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Model Version */
+            model_version: string;
+            /** Window Minutes */
+            window_minutes: number;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "stored" | "supplied";
+            /** Detectors */
+            detectors: components["schemas"]["DetectorInfo"][];
+            /** Timeline */
+            timeline: components["schemas"]["AnomalyPoint"][];
+            /** Detections */
+            detections: components["schemas"]["Detection"][];
+            data_quality: components["schemas"]["DataQuality"];
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** AnomalyPoint */
+        AnomalyPoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /**
+             * Ensemble Score
+             * @description Ensemble score / its threshold; >= 1 is flagged
+             */
+            ensemble_score: number;
+            /** Flagged */
+            flagged: boolean;
+            /** Votes */
+            votes: number;
+            /**
+             * Scores
+             * @description Each detector's score / its threshold
+             */
+            scores: {
+                [key: string]: number;
+            };
+            /** Kind */
+            kind: string | null;
+            /** Top Signals */
+            top_signals: string[];
+            /** Missing Frac */
+            missing_frac: number;
+        };
+        /** AnomalySummary */
+        AnomalySummary: {
+            /** Available */
+            available: boolean;
+            /** Score */
+            score: number;
+            /** Votes */
+            votes: number;
+            /** N Detectors */
+            n_detectors: number;
+            /** Flagged Minutes */
+            flagged_minutes: number;
+            /** Kind */
+            kind: string | null;
         };
         /** Astronaut */
         Astronaut: {
@@ -526,6 +882,66 @@ export interface components {
             /** Active Scenario */
             active_scenario: string | null;
         };
+        /** BaselineResponse */
+        BaselineResponse: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Fitted At
+             * Format: date-time
+             */
+            fitted_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** History Hours */
+            history_hours: number;
+            /** Windows Used */
+            windows_used: number;
+            /** First Ts */
+            first_ts: string | null;
+            /** Last Ts */
+            last_ts: string | null;
+            /** Method */
+            method: string;
+            /** Signals */
+            signals: components["schemas"]["SignalBaseline"][];
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** BaselineStats */
+        BaselineStats: {
+            /** N */
+            n: number;
+            /** Mean */
+            mean?: number | null;
+            /** Std */
+            std?: number | null;
+            /** P5 */
+            p5?: number | null;
+            /** P25 */
+            p25?: number | null;
+            /** P50 */
+            p50?: number | null;
+            /** P75 */
+            p75?: number | null;
+            /** P95 */
+            p95?: number | null;
+        };
         /** BaselineVitals */
         BaselineVitals: {
             /** Heart Rate */
@@ -577,6 +993,57 @@ export interface components {
              */
             data_source: "simulated";
         };
+        /** Confidence */
+        Confidence: {
+            /**
+             * Score
+             * @description 0-1 heuristic: detector agreement, data completeness, baseline support
+             */
+            score: number;
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "low" | "medium" | "high";
+            /** Basis */
+            basis: string[];
+        };
+        /** Contributor */
+        Contributor: {
+            /** Signal */
+            signal: string;
+            /** Label */
+            label: string;
+            /**
+             * Share
+             * @description Share of the total attribution, 0-1
+             */
+            share: number;
+            /** Value */
+            value?: number | null;
+            /**
+             * Unit
+             * @default
+             */
+            unit: string;
+            /**
+             * Baseline
+             * @description Personal baseline centre for the context
+             */
+            baseline?: number | null;
+            /**
+             * Z
+             * @description Robust personal z-score
+             */
+            z?: number | null;
+            /**
+             * Percentile
+             * @description Percentile within the personal baseline
+             */
+            percentile?: number | null;
+            /** Direction */
+            direction?: ("above" | "below") | null;
+        };
         /** CrewRadiation */
         CrewRadiation: {
             /** Astronaut Id */
@@ -595,6 +1062,61 @@ export interface components {
             dose_rate_msv_day: number;
             /** Daily */
             daily: components["schemas"]["DailyDose"][];
+        };
+        /** CrewRiskOverview */
+        CrewRiskOverview: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Model Version */
+            model_version: string | null;
+            /** Crew */
+            crew: components["schemas"]["CrewRiskSummary"][];
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** CrewRiskSummary */
+        CrewRiskSummary: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Risk Score */
+            risk_score: number;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "normal" | "low_concern" | "moderate_concern" | "high_concern";
+            /** Category Label */
+            category_label: string;
+            /** Health Score */
+            health_score: number;
+            /** Top Warning */
+            top_warning: string | null;
+            /** Top Signals */
+            top_signals: string[];
+            /**
+             * Confidence Level
+             * @enum {string}
+             */
+            confidence_level: "low" | "medium" | "high";
+            /** Warnings */
+            warnings: components["schemas"]["RiskWarning"][];
         };
         /** CrewSeries */
         CrewSeries: {
@@ -616,6 +1138,40 @@ export interface components {
             /** Critical */
             critical: number;
         };
+        /** CurrentComparison */
+        CurrentComparison: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Value */
+            value: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "sleep" | "rest" | "work" | "exercise";
+            /**
+             * Expected
+             * @description Null when there is no baseline for the current activity yet
+             */
+            expected: number | null;
+            /** Z */
+            z: number | null;
+            /** Percentile */
+            percentile: number | null;
+            /**
+             * Reference Level
+             * @enum {string}
+             */
+            reference_level: "cell" | "state" | "overall" | "none";
+            /**
+             * Assessment
+             * @enum {string}
+             */
+            assessment: "within" | "high" | "low" | "no_baseline";
+        };
         /** DailyDose */
         DailyDose: {
             /**
@@ -629,6 +1185,66 @@ export interface components {
             dose_msv: number;
             /** Solar Particle Event */
             solar_particle_event: boolean;
+        };
+        /** DataQuality */
+        DataQuality: {
+            /** Windows */
+            windows: number;
+            /** Windows Without Data */
+            windows_without_data: number;
+            /** Missing Fraction */
+            missing_fraction: number;
+            /** Implausible Values Removed */
+            implausible_values_removed: number;
+        };
+        /** Detection */
+        Detection: {
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /**
+             * Peak Ts
+             * Format: date-time
+             */
+            peak_ts: string;
+            /** Peak Score */
+            peak_score: number;
+            /** Duration Minutes */
+            duration_minutes: number;
+            /** Kind */
+            kind: string;
+            /** Signals */
+            signals: string[];
+            /** Votes */
+            votes: number;
+            explanation: components["schemas"]["Explanation"] | null;
+        };
+        /** DetectorInfo */
+        DetectorInfo: {
+            /** Name */
+            name: string;
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Threshold */
+            threshold: number | null;
+            /** Weight */
+            weight: number;
+        };
+        /** Driver */
+        Driver: {
+            /** Name */
+            name: string;
+            /** Share */
+            share: number;
         };
         /** ErrorBody */
         ErrorBody: {
@@ -649,6 +1265,80 @@ export interface components {
             label: string;
             /** Value */
             value: string;
+        };
+        /** Explanation */
+        Explanation: {
+            /** What Changed */
+            what_changed: string;
+            /** Kind */
+            kind: string;
+            /** Contributors */
+            contributors: components["schemas"]["Contributor"][];
+            significance: components["schemas"]["Significance"];
+            confidence: components["schemas"]["Confidence"];
+            /** Limitations */
+            limitations: string[];
+            /** Method */
+            method: string;
+        };
+        /** ForecastPoint */
+        ForecastPoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Horizon H */
+            horizon_h: number;
+            /** Value */
+            value: number;
+            /** Lower */
+            lower: number;
+            /** Upper */
+            upper: number;
+        };
+        /** ForecastResponse */
+        ForecastResponse: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Model */
+            model: string;
+            /** Model Label */
+            model_label: string;
+            /** Model Version */
+            model_version: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Origin Ts
+             * Format: date-time
+             */
+            origin_ts: string;
+            /** Step Minutes */
+            step_minutes: number;
+            /** Interval Coverage Nominal */
+            interval_coverage_nominal: number;
+            /** Available Models */
+            available_models: string[];
+            /** Series */
+            series: components["schemas"]["SignalForecast"][];
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
         };
         /** HealthSnapshot */
         HealthSnapshot: {
@@ -737,6 +1427,45 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** HistoryValue */
+        HistoryValue: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Value */
+            value: number | null;
+        };
+        /** HorizonSummary */
+        HorizonSummary: {
+            /** Horizon H */
+            horizon_h: number;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Value */
+            value: number;
+            /** Lower */
+            lower: number;
+            /** Upper */
+            upper: number;
+            /** Caution Limit */
+            caution_limit: number | null;
+            /** Limit Direction */
+            limit_direction: ("high" | "low") | null;
+            /** Crossing */
+            crossing: ("likely" | "possible") | null;
+            /**
+             * Validation Mae
+             * @description Test-split MAE for this model, signal and horizon (simulated data)
+             */
+            validation_mae: number | null;
+            /** Validation Coverage */
+            validation_coverage: number | null;
         };
         /** Insight */
         Insight: {
@@ -830,6 +1559,49 @@ export interface components {
              */
             data_source: "simulated";
         };
+        /** ModelPerformanceResponse */
+        ModelPerformanceResponse: {
+            /** Version */
+            version: string;
+            /** Created At */
+            created_at: string;
+            /** Git Commit */
+            git_commit: string | null;
+            /** Runtime Seconds */
+            runtime_seconds: number;
+            /** Dataset */
+            dataset: {
+                [key: string]: unknown;
+            };
+            /** Anomaly */
+            anomaly: {
+                [key: string]: unknown;
+            };
+            /** Forecast */
+            forecast: {
+                [key: string]: unknown;
+            };
+            /** Limitations */
+            limitations: string[];
+            /** Versions */
+            versions: components["schemas"]["ModelVersionInfo"][];
+            /** Report Markdown */
+            report_markdown: string | null;
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+        };
+        /** ModelVersionInfo */
+        ModelVersionInfo: {
+            /** Version */
+            version: string;
+            /** Created At */
+            created_at: string | null;
+            /** Config Hash */
+            config_hash: string | null;
+        };
         /** RadiationBrief */
         RadiationBrief: {
             /** Mission Dose Msv */
@@ -856,6 +1628,101 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** ReadingIn */
+        ReadingIn: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Heart Rate */
+            heart_rate?: number | null;
+            /** Spo2 */
+            spo2?: number | null;
+            /** Systolic */
+            systolic?: number | null;
+            /** Diastolic */
+            diastolic?: number | null;
+            /** Temperature C */
+            temperature_c?: number | null;
+            /** Respiratory Rate */
+            respiratory_rate?: number | null;
+            /** Activity State */
+            activity_state?: ("sleep" | "rest" | "work" | "exercise") | null;
+            /** Activity Met */
+            activity_met?: number | null;
+        };
+        /** RiskAssessmentResponse */
+        RiskAssessmentResponse: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Model Version */
+            model_version: string | null;
+            /** Risk Score */
+            risk_score: number;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "normal" | "low_concern" | "moderate_concern" | "high_concern";
+            /** Category Label */
+            category_label: string;
+            /**
+             * Health Score
+             * @description 100 minus the risk score; a display convenience, not a clinical score
+             */
+            health_score: number;
+            /** Warnings */
+            warnings: components["schemas"]["RiskWarning"][];
+            explanation: components["schemas"]["Explanation"];
+            anomaly: components["schemas"]["AnomalySummary"];
+            /** Limitations */
+            limitations: string[];
+            /**
+             * Disclaimer
+             * @default Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis.
+             */
+            disclaimer: string;
+            /**
+             * Data Source
+             * @description Always 'simulated' in this prototype. No real astronaut data is used.
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** RiskWarning */
+        RiskWarning: {
+            /** Priority */
+            priority: number;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "deviation" | "anomaly" | "trend" | "alert";
+            /**
+             * Concern
+             * @enum {string}
+             */
+            concern: "normal" | "low_concern" | "moderate_concern" | "high_concern";
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string;
+            /** Signals */
+            signals: string[];
+            /** Points */
+            points: number;
+            /** Alert Id */
+            alert_id?: string | null;
         };
         /** ScenarioInfo */
         ScenarioInfo: {
@@ -884,6 +1751,58 @@ export interface components {
             ts: string;
             /** Value */
             value: number;
+        };
+        /** SignalBaseline */
+        SignalBaseline: {
+            /** Signal */
+            signal: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            overall: components["schemas"]["BaselineStats"];
+            /** By State */
+            by_state: {
+                [key: string]: components["schemas"]["StateBaseline"];
+            };
+            rolling_24h: components["schemas"]["BaselineStats"];
+            rolling_7d: components["schemas"]["BaselineStats"];
+            current: components["schemas"]["CurrentComparison"] | null;
+        };
+        /** SignalForecast */
+        SignalForecast: {
+            /** Signal */
+            signal: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /** History */
+            history: components["schemas"]["HistoryValue"][];
+            /** Forecast */
+            forecast: components["schemas"]["ForecastPoint"][];
+            /** Horizons */
+            horizons: components["schemas"]["HorizonSummary"][];
+            /**
+             * Drivers
+             * @description What drives the forecast (TreeSHAP share for XGBoost)
+             */
+            drivers: components["schemas"]["Driver"][];
+            explanation: components["schemas"]["Explanation"];
+        };
+        /** Significance */
+        Significance: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "none" | "minor" | "notable" | "major";
+            /** Max Abs Z */
+            max_abs_z: number;
+            /** Description */
+            description: string;
+            /** Percentile */
+            percentile?: number | null;
         };
         /** SimulationEvent */
         SimulationEvent: {
@@ -1005,6 +1924,31 @@ export interface components {
              */
             sleep_debt_7d_hours: number | null;
         };
+        /** StateBaseline */
+        StateBaseline: {
+            /** N */
+            n: number;
+            /** Mean */
+            mean?: number | null;
+            /** Std */
+            std?: number | null;
+            /** P5 */
+            p5?: number | null;
+            /** P25 */
+            p25?: number | null;
+            /** P50 */
+            p50?: number | null;
+            /** P75 */
+            p75?: number | null;
+            /** P95 */
+            p95?: number | null;
+            /** Center */
+            center: number;
+            /** Scale */
+            scale: number;
+            /** By Time Of Day */
+            by_time_of_day: components["schemas"]["TimeOfDayStats"][];
+        };
         /** SystemHealth */
         SystemHealth: {
             /**
@@ -1063,6 +2007,27 @@ export interface components {
                     number
                 ];
             };
+        };
+        /** TimeOfDayStats */
+        TimeOfDayStats: {
+            /** N */
+            n: number;
+            /** Mean */
+            mean?: number | null;
+            /** Std */
+            std?: number | null;
+            /** P5 */
+            p5?: number | null;
+            /** P25 */
+            p25?: number | null;
+            /** P50 */
+            p50?: number | null;
+            /** P75 */
+            p75?: number | null;
+            /** P95 */
+            p95?: number | null;
+            /** Hours */
+            hours: string;
         };
         /** VitalReading */
         VitalReading: {
@@ -2042,6 +3007,446 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SimulationEvent"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    ai_status_api_ai_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AIStatus"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    anomaly_detection_api_ai_anomaly_detection_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnomalyDetectionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnomalyDetectionResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not enough stored data */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No trained model version is available */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    baseline_api_ai_astronaut__astronaut_id__baseline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BaselineResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not enough stored data */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    forecast_api_ai_astronaut__astronaut_id__forecast_get: {
+        parameters: {
+            query?: {
+                /** @description xgboost (default), lstm, gru, tcn or a baseline */
+                model?: string | null;
+                /** @description heart_rate, spo2, respiratory_rate, temperature_c */
+                signals?: string[] | null;
+            };
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not enough stored data */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No trained model version is available */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    risk_assessment_api_ai_astronaut__astronaut_id__risk_assessment_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskAssessmentResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not enough stored data */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    crew_overview_api_ai_crew_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrewRiskOverview"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    model_performance_api_ai_model_performance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelPerformanceResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description No trained model version is available */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    explain_alert_api_ai_explanations__alert_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertExplanationResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not enough stored data */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    reload_models_api_ai_models_reload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AIStatus"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
             /** @description Resource not found */

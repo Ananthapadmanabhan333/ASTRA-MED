@@ -203,3 +203,96 @@ export function useCancelScenario() {
     },
   });
 }
+
+// --------------------------------------------------------------- AI intelligence --
+
+export const aiKeys = {
+  status: ["ai", "status"] as const,
+  crew: ["ai", "crew"] as const,
+  risk: (id: string) => ["ai", "risk", id] as const,
+  forecast: (id: string, model: string) => ["ai", "forecast", id, model] as const,
+  anomalies: (id: string, hours: number) => ["ai", "anomalies", id, hours] as const,
+  baseline: (id: string) => ["ai", "baseline", id] as const,
+  performance: ["ai", "performance"] as const,
+  explanation: (alertId: string) => ["ai", "explanation", alertId] as const,
+};
+
+export function useAiStatus() {
+  return useQuery({ queryKey: aiKeys.status, queryFn: () => unwrap(api.GET("/api/ai/status")), staleTime: 60_000 });
+}
+
+export function useCrewRisk() {
+  return useQuery({
+    queryKey: aiKeys.crew,
+    queryFn: () => unwrap(api.GET("/api/ai/crew-overview")),
+    refetchInterval: 30_000,
+  });
+}
+
+export function useRiskAssessment(id: string) {
+  return useQuery({
+    queryKey: aiKeys.risk(id),
+    queryFn: () =>
+      unwrap(api.GET("/api/ai/astronaut/{astronaut_id}/risk-assessment", { params: { path: { astronaut_id: id } } })),
+    refetchInterval: 30_000,
+    placeholderData: (prev) => (prev?.astronaut_id === id ? prev : undefined),
+  });
+}
+
+export function useForecast(id: string, model: string) {
+  return useQuery({
+    queryKey: aiKeys.forecast(id, model),
+    queryFn: () =>
+      unwrap(
+        api.GET("/api/ai/astronaut/{astronaut_id}/forecast", {
+          params: { path: { astronaut_id: id }, query: { model } },
+        }),
+      ),
+    refetchInterval: 120_000,
+    placeholderData: (prev) => (prev?.astronaut_id === id ? prev : undefined),
+  });
+}
+
+export function useAnomalyTimeline(id: string, hours: number) {
+  return useQuery({
+    queryKey: aiKeys.anomalies(id, hours),
+    queryFn: () => {
+      const end = new Date();
+      const start = new Date(end.getTime() - hours * 3_600_000);
+      return unwrap(
+        api.POST("/api/ai/anomaly-detection", {
+          body: { astronaut_id: id, start: start.toISOString(), end: end.toISOString(), include_explanations: true },
+        }),
+      );
+    },
+    refetchInterval: 60_000,
+    placeholderData: (prev) => (prev?.astronaut_id === id ? prev : undefined),
+  });
+}
+
+export function useAiBaseline(id: string) {
+  return useQuery({
+    queryKey: aiKeys.baseline(id),
+    queryFn: () =>
+      unwrap(api.GET("/api/ai/astronaut/{astronaut_id}/baseline", { params: { path: { astronaut_id: id } } })),
+    refetchInterval: 60_000,
+    placeholderData: (prev) => (prev?.astronaut_id === id ? prev : undefined),
+  });
+}
+
+export function useModelPerformance() {
+  return useQuery({
+    queryKey: aiKeys.performance,
+    queryFn: () => unwrap(api.GET("/api/ai/model-performance")),
+    staleTime: 300_000,
+  });
+}
+
+export function useAlertExplanation(alertId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: aiKeys.explanation(alertId),
+    queryFn: () => unwrap(api.GET("/api/ai/explanations/{alert_id}", { params: { path: { alert_id: alertId } } })),
+    enabled,
+    staleTime: 60_000,
+  });
+}

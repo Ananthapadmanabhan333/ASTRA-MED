@@ -16,12 +16,19 @@ team, during a long-duration mission.
 | Contract-first API | Pydantic schemas → OpenAPI → generated TypeScript types | The frontend cannot drift from the backend without a type error. |
 | Live transport | One WebSocket stream (`/ws/health-monitoring`) + REST for history | REST is cacheable and simple; the socket carries 1 Hz vitals, ECG segments and alert events. |
 | Storage | PostgreSQL (SQLAlchemy 2 async); SQLite allowed for tests/offline dev | Same models in both; Docker Compose provides Postgres. |
-| Anomaly detection, v1 | Threshold rules + personal-baseline deviation (EWMA z-score) | Transparent and testable. ML models (Isolation Forest, LSTM autoencoder) are phase 3. |
+| Anomaly detection, v1 | Threshold rules + personal-baseline deviation (EWMA z-score) | Transparent and testable. Phase 3 adds learned detectors alongside them, not instead. |
+| Risk scoring, v1 | Configurable point rules (`risk_config.json`) | Inspectable and adjustable; a probabilistic risk model only after validation on real data. |
 | Insights, v1 | Deterministic rule engine with cited evidence | Every statement can be traced to data. LLM summarisation is a later, optional layer. |
 
-## Status (2026-11-09)
+## Status (2026-11-12)
 
-Phases 1 and 2 are implemented: 62 backend unit/API tests, 1 PostgreSQL integration test and 18
+Phase 3 is implemented (see [AI_ENGINE.md](AI_ENGINE.md)): personal baselines, five anomaly
+detectors plus an ensemble, XGBoost/LSTM/GRU/TCN forecasters with conformal intervals, rule-based
+risk scoring, explanations, the AI intelligence center and a reproducible evaluation pipeline. The
+backend suite now has 100 tests (including the PostgreSQL integration test and 37 AI tests). All
+results are on synthetic data.
+
+Phases 1 and 2 (2026-11-09) are implemented: 62 backend unit/API tests, 1 PostgreSQL integration test and 18
 frontend unit tests pass, and the production build succeeds. The end-to-end alert path (scenario →
 detection → alert → notification → acknowledge → resolve) was verified in the browser on SQLite and
 on PostgreSQL 16 (embedded via `pgserver`, `scripts/local_postgres.py`). The Docker Compose stack
@@ -47,11 +54,16 @@ has not been run in this environment because Docker Desktop's engine would not s
   alert notifications, connection indicator.
 - Unit and API tests, Docker Compose, environment configuration.
 
-### Phase 3 — Predictive models (next)
-- Train an Isolation Forest per crew member on baseline windows; score live samples.
-- LSTM autoencoder on multivariate vitals for reconstruction-error anomaly scores (PyTorch).
-- Model registry and evaluation report against injected-event ground truth from the simulator.
-- Replace the synthetic radiation model with a NASA dataset adapter (see `NASA_DATA_INTEGRATION.md`).
+### Phase 3 — Predictive health intelligence (this iteration)
+- Personal baselines per signal, activity state and time of day, updated incrementally.
+- Statistical, Isolation Forest, LOF, One-Class SVM and autoencoder detectors with a calibrated ensemble.
+- Forecasts at 1/6/12/24 h (XGBoost, LSTM, GRU, TCN vs three baselines) with split-conformal intervals.
+- Transparent risk rules, explanations (occlusion attribution, TreeSHAP), AI intelligence center UI.
+- Versioned, hash-verified model registry; evaluation report with ablations on a chronological test split.
+
+Still open from the phase 3 brief:
+- Validation on real data. None has been used; see `NASA_DATA_INTEGRATION.md`.
+- A NASA dataset adapter for radiation.
 
 ### Phase 4 — Hardening
 - Alembic migrations, authentication for operator actions, audit log, TimescaleDB hypertables

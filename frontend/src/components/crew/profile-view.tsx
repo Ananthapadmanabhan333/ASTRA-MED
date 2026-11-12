@@ -3,6 +3,7 @@
 import { FlaskConical } from "lucide-react";
 import Link from "next/link";
 
+import { ConcernPill } from "@/components/ai/concern";
 import { AlertList } from "@/components/alerts/alert-list";
 import { Panel } from "@/components/data/panel";
 import { EmptyState, ErrorState, LoadingState } from "@/components/data/states";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { EcgTrace } from "@/components/vitals/ecg-trace";
 import { HistoryPanel } from "@/components/vitals/history-panel";
 import { ApiError } from "@/lib/api/client";
-import { useAstronauts, useInsights, useSleep, useSnapshot } from "@/lib/api/hooks";
+import { useAstronauts, useInsights, useRiskAssessment, useSleep, useSnapshot } from "@/lib/api/hooks";
 import type { AstronautSummary, HealthSnapshot } from "@/lib/api/types";
 import { fmt, hoursMinutes, utcDay } from "@/lib/format";
 import { liveStatus } from "@/lib/live/reducer";
@@ -82,10 +83,54 @@ function SleepNights({ id, target }: { id: string; target: number }) {
   );
 }
 
+function AiRiskCard({ id }: { id: string }) {
+  const q = useRiskAssessment(id);
+  return (
+    <Panel
+      title="AI early warning"
+      actions={
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/intelligence">Open</Link>
+        </Button>
+      }
+    >
+      {q.isPending ? (
+        <LoadingState rows={2} />
+      ) : q.error && !q.data ? (
+        <ErrorState error={q.error} onRetry={() => q.refetch()} />
+      ) : (
+        <div className="space-y-3">
+          <div className="flex items-end gap-3">
+            <span className="readout text-4xl font-semibold">{q.data!.health_score}</span>
+            <div className="pb-0.5">
+              <ConcernPill category={q.data!.category} />
+              <p className="mt-1 text-xs text-ink-3">risk {fmt(q.data!.risk_score, 0)} of 100</p>
+            </div>
+          </div>
+          {q.data!.warnings.length ? (
+            <ol className="space-y-1.5 text-sm">
+              {q.data!.warnings.slice(0, 3).map((w) => (
+                <li key={w.title} className="flex gap-2">
+                  <span className="text-ink-3 tabular-nums">{w.priority}.</span>
+                  <span>{w.title}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="text-sm text-ink-2">No early warnings.</p>
+          )}
+          <p className="text-xs text-ink-3">Experimental, simulated-data models; not a diagnosis.</p>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 function Sidebar({ a, snap }: { a: AstronautSummary; snap: HealthSnapshot | undefined }) {
   const insights = useInsights(a.id);
   return (
     <div className="space-y-5">
+      <AiRiskCard id={a.id} />
       <Panel title="Sleep, last 7 nights">
         <SleepNights id={a.id} target={a.sleep_target_hours} />
       </Panel>

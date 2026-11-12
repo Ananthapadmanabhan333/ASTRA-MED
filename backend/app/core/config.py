@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -41,9 +42,21 @@ class Settings(BaseSettings):
     # Operator controls. Disable in any shared deployment until authentication exists.
     simulation_control_enabled: bool = True
 
+    # AI intelligence engine (phase 3).
+    ai_enabled: bool = True
+    ai_artifacts_dir: str = ""  # empty: backend/artifacts
+    ai_cache_seconds: float = Field(default=30.0, ge=0)
+    ai_history_hours: int = Field(default=168, ge=24, le=720)  # history used to fit live baselines
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def ai_artifacts_path(self) -> Path:
+        if self.ai_artifacts_dir:
+            return Path(self.ai_artifacts_dir)
+        return Path(__file__).resolve().parents[2] / "artifacts"
 
 
 @lru_cache

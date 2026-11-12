@@ -1,0 +1,4 @@
+# PyTorch (CPU build) for the autoencoder and the LSTM / GRU / TCN forecasters.
+# Without it the API still runs; those models are skipped and reported as unavailable.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.5

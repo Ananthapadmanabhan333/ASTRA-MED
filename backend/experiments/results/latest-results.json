@@ -1,0 +1,2601 @@
+{
+  "version": "v20261112-164739-9c1cd54f",
+  "created_at": "2026-11-12T16:47:40.043910+00:00",
+  "git_commit": "79f7060",
+  "runtime_seconds": 349.0,
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "config": {
+    "name": "default",
+    "seed": 7,
+    "dataset": {
+      "seed": 7,
+      "days": 120,
+      "start": "2026-01-05",
+      "interval_minutes": 5,
+      "crew": [
+        "AST-01",
+        "AST-02",
+        "AST-03",
+        "AST-04"
+      ],
+      "sudden_events_per_day": 0.5,
+      "gradual_events_per_week": 0.7,
+      "subtle_fraction": 0.45,
+      "missing_rate": 0.02,
+      "dropouts_per_week": 0.7,
+      "artefact_rate": 0.0008,
+      "slow_variability": true,
+      "label_level": 0.3
+    },
+    "train_frac": 0.6,
+    "val_frac": 0.2,
+    "false_alarm_rate": 0.01,
+    "persistence_windows": 2,
+    "detectors": [
+      "statistical",
+      "isolation_forest",
+      "lof",
+      "one_class_svm",
+      "autoencoder"
+    ],
+    "autoencoder_epochs": 40,
+    "anomaly_ablations": [
+      "all_features",
+      "without_sudden",
+      "without_context",
+      "without_dynamics",
+      "level_only"
+    ],
+    "ensemble_min_relative_auprc": 0.8,
+    "forecasters": [
+      "persistence",
+      "seasonal_naive",
+      "climatology",
+      "xgboost",
+      "lstm",
+      "gru",
+      "tcn"
+    ],
+    "forecast_ablations": [
+      "xgboost_without_planned_schedule",
+      "xgboost_without_baseline_deviation",
+      "xgboost_without_recent_values"
+    ],
+    "nn_epochs": 60,
+    "interval_alpha": 0.1,
+    "serving_forecaster": "xgboost"
+  },
+  "dataset": {
+    "source": "synthetic (ASTRA-MED simulator)",
+    "real_data": "none: no public astronaut vital-sign time series is available without a data-use agreement",
+    "fingerprint": "eabfda075aa4",
+    "config": {
+      "seed": 7,
+      "days": 120,
+      "start": "2026-01-05",
+      "interval_minutes": 5,
+      "crew": [
+        "AST-01",
+        "AST-02",
+        "AST-03",
+        "AST-04"
+      ],
+      "sudden_events_per_day": 0.5,
+      "gradual_events_per_week": 0.7,
+      "subtle_fraction": 0.45,
+      "missing_rate": 0.02,
+      "dropouts_per_week": 0.7,
+      "artefact_rate": 0.0008,
+      "slow_variability": true,
+      "label_level": 0.3
+    },
+    "crew": [
+      "AST-01",
+      "AST-02",
+      "AST-03",
+      "AST-04"
+    ],
+    "samples": 138240,
+    "interval_minutes": 5,
+    "split": {
+      "train_end": "2026-03-18T00:00:00+00:00",
+      "val_end": "2026-04-11T00:00:00+00:00",
+      "end": "2026-05-05T00:00:00+00:00"
+    },
+    "splits": {
+      "train": {
+        "windows": 82944,
+        "label_rate": 0.1045,
+        "start": "2026-01-05 00:00:00+00:00",
+        "end": "2026-03-17 23:55:00+00:00"
+      },
+      "val": {
+        "windows": 27648,
+        "label_rate": 0.1002,
+        "start": "2026-03-18 00:00:00+00:00",
+        "end": "2026-04-10 23:55:00+00:00"
+      },
+      "test": {
+        "windows": 27648,
+        "label_rate": 0.1425,
+        "start": "2026-04-11 00:00:00+00:00",
+        "end": "2026-05-04 23:55:00+00:00"
+      }
+    },
+    "events": {
+      "total": 327,
+      "sudden": 255,
+      "gradual": 72,
+      "subtle": 148,
+      "by_type": {
+        "abnormal_respiratory_rate": 56,
+        "bradycardia": 45,
+        "desaturation": 43,
+        "tachycardia": 38,
+        "elevated_temperature": 38,
+        "irregular_rhythm": 35,
+        "gradual_hr_rise": 20,
+        "gradual_desaturation": 19,
+        "gradual_temperature_rise": 17,
+        "gradual_bp_rise": 16
+      }
+    },
+    "defects": {
+      "missing_rate": 0.027,
+      "artefacts": 112
+    }
+  },
+  "anomaly": {
+    "feature_names": [
+      "z_heart_rate",
+      "z_spo2",
+      "z_systolic",
+      "z_diastolic",
+      "z_temperature_c",
+      "z_respiratory_rate",
+      "d_heart_rate",
+      "d_spo2",
+      "d_systolic",
+      "d_diastolic",
+      "d_temperature_c",
+      "d_respiratory_rate",
+      "sust_heart_rate",
+      "sust_spo2",
+      "sust_systolic",
+      "sust_diastolic",
+      "sust_temperature_c",
+      "sust_respiratory_rate",
+      "trend_heart_rate",
+      "trend_spo2",
+      "trend_systolic",
+      "trend_diastolic",
+      "trend_temperature_c",
+      "trend_respiratory_rate",
+      "met",
+      "sleep_frac",
+      "exercise_frac",
+      "tod_sin",
+      "tod_cos",
+      "sleep_24h",
+      "exercise_24h",
+      "missing_frac"
+    ],
+    "train_windows": 70912,
+    "val_windows": 27648,
+    "test_windows": 27648,
+    "test_label_rate": 0.1502,
+    "ambiguous_test_windows_excluded": 1416,
+    "target_false_alarm_rate": 0.01,
+    "selection": "feature set per detector chosen by validation AUPRC; test used once for reporting",
+    "models": {
+      "statistical": {
+        "label": "Statistical (personal baseline)",
+        "description": "Largest robust z-score against the person's own time-of-day and activity baseline, with sustained deviation weighted up.",
+        "selected_features": "level_sustained",
+        "n_features": 12,
+        "fit_seconds": 0.01,
+        "score_ms_per_1k_windows": 0.12,
+        "val_auprc": 0.7208,
+        "threshold": 11.3475,
+        "test": {
+          "precision": 0.8888,
+          "recall": 0.2881,
+          "f1": 0.4351,
+          "auroc": 0.9569,
+          "auprc": 0.8173,
+          "false_alarm_rate": 0.00637,
+          "false_alarms_per_day": 1.835,
+          "tp": 1135,
+          "fp": 142,
+          "fn": 2805,
+          "tn": 22150
+        },
+        "events": {
+          "events": 70,
+          "event_recall": 0.5143,
+          "median_delay_min": 0.0,
+          "by_kind": {
+            "gradual": {
+              "events": 19,
+              "recall": 0.4737,
+              "median_delay_min": 245.0
+            },
+            "sudden": {
+              "events": 51,
+              "recall": 0.5294,
+              "median_delay_min": 0.0
+            }
+          }
+        },
+        "events_by_type": {
+          "abnormal_respiratory_rate": {
+            "events": 9,
+            "recall": 0.5556,
+            "median_delay_min": 0.0
+          },
+          "bradycardia": {
+            "events": 8,
+            "recall": 0.0,
+            "median_delay_min": null
+          },
+          "desaturation": {
+            "events": 10,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "elevated_temperature": {
+            "events": 11,
+            "recall": 0.5455,
+            "median_delay_min": 0.0
+          },
+          "gradual_bp_rise": {
+            "events": 1,
+            "recall": 0.0,
+            "median_delay_min": null
+          },
+          "gradual_desaturation": {
+            "events": 7,
+            "recall": 0.8571,
+            "median_delay_min": 225.0
+          },
+          "gradual_hr_rise": {
+            "events": 7,
+            "recall": 0.0,
+            "median_delay_min": null
+          },
+          "gradual_temperature_rise": {
+            "events": 4,
+            "recall": 0.75,
+            "median_delay_min": 260.0
+          },
+          "irregular_rhythm": {
+            "events": 6,
+            "recall": 0.0,
+            "median_delay_min": null
+          },
+          "tachycardia": {
+            "events": 7,
+            "recall": 0.8571,
+            "median_delay_min": 2.5
+          }
+        },
+        "events_by_intensity": {
+          "full": {
+            "events": 36,
+            "recall": 0.7222,
+            "median_delay_min": 0.0
+          },
+          "subtle": {
+            "events": 34,
+            "recall": 0.2941,
+            "median_delay_min": 15.0
+          }
+        },
+        "operational": {
+          "persistence_windows": 2,
+          "false_warnings_per_crew_day": 1.835,
+          "event_recall": 0.5
+        }
+      },
+      "isolation_forest": {
+        "label": "Isolation Forest",
+        "description": "Ensemble of random trees; anomalies are isolated in fewer splits.",
+        "selected_features": "level_only",
+        "n_features": 6,
+        "fit_seconds": 0.77,
+        "score_ms_per_1k_windows": 13.06,
+        "val_auprc": 0.7599,
+        "threshold": 0.57153,
+        "test": {
+          "precision": 0.8955,
+          "recall": 0.533,
+          "f1": 0.6683,
+          "auroc": 0.9324,
+          "auprc": 0.7961,
+          "false_alarm_rate": 0.01099,
+          "false_alarms_per_day": 3.165,
+          "tp": 2100,
+          "fp": 245,
+          "fn": 1840,
+          "tn": 22047
+        },
+        "events": {
+          "events": 70,
+          "event_recall": 0.9143,
+          "median_delay_min": 5.0,
+          "by_kind": {
+            "gradual": {
+              "events": 19,
+              "recall": 1.0,
+              "median_delay_min": 45.0
+            },
+            "sudden": {
+              "events": 51,
+              "recall": 0.8824,
+              "median_delay_min": 0.0
+            }
+          }
+        },
+        "events_by_type": {
+          "abnormal_respiratory_rate": {
+            "events": 9,
+            "recall": 0.8889,
+            "median_delay_min": 12.5
+          },
+          "bradycardia": {
+            "events": 8,
+            "recall": 0.75,
+            "median_delay_min": 5.0
+          },
+          "desaturation": {
+            "events": 10,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "elevated_temperature": {
+            "events": 11,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_bp_rise": {
+            "events": 1,
+            "recall": 1.0,
+            "median_delay_min": 125.0
+          },
+          "gradual_desaturation": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_hr_rise": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 75.0
+          },
+          "gradual_temperature_rise": {
+            "events": 4,
+            "recall": 1.0,
+            "median_delay_min": 12.5
+          },
+          "irregular_rhythm": {
+            "events": 6,
+            "recall": 0.5,
+            "median_delay_min": 30.0
+          },
+          "tachycardia": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          }
+        },
+        "events_by_intensity": {
+          "full": {
+            "events": 36,
+            "recall": 0.9444,
+            "median_delay_min": 0.0
+          },
+          "subtle": {
+            "events": 34,
+            "recall": 0.8824,
+            "median_delay_min": 10.0
+          }
+        },
+        "operational": {
+          "persistence_windows": 2,
+          "false_warnings_per_crew_day": 0.323,
+          "event_recall": 0.7857
+        }
+      },
+      "lof": {
+        "label": "Local Outlier Factor",
+        "description": "Density of each window relative to its 40 nearest normal neighbours.",
+        "selected_features": "without_dynamics",
+        "n_features": 14,
+        "fit_seconds": 1.17,
+        "score_ms_per_1k_windows": 101.79,
+        "val_auprc": 0.8686,
+        "threshold": 1.46961,
+        "test": {
+          "precision": 0.9418,
+          "recall": 0.7312,
+          "f1": 0.8233,
+          "auroc": 0.9518,
+          "auprc": 0.8888,
+          "false_alarm_rate": 0.00798,
+          "false_alarms_per_day": 2.3,
+          "tp": 2881,
+          "fp": 178,
+          "fn": 1059,
+          "tn": 22114
+        },
+        "events": {
+          "events": 70,
+          "event_recall": 0.9429,
+          "median_delay_min": 0.0,
+          "by_kind": {
+            "gradual": {
+              "events": 19,
+              "recall": 1.0,
+              "median_delay_min": 25.0
+            },
+            "sudden": {
+              "events": 51,
+              "recall": 0.9216,
+              "median_delay_min": 0.0
+            }
+          }
+        },
+        "events_by_type": {
+          "abnormal_respiratory_rate": {
+            "events": 9,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "bradycardia": {
+            "events": 8,
+            "recall": 0.75,
+            "median_delay_min": 0.0
+          },
+          "desaturation": {
+            "events": 10,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "elevated_temperature": {
+            "events": 11,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_bp_rise": {
+            "events": 1,
+            "recall": 1.0,
+            "median_delay_min": 125.0
+          },
+          "gradual_desaturation": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_hr_rise": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 75.0
+          },
+          "gradual_temperature_rise": {
+            "events": 4,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "irregular_rhythm": {
+            "events": 6,
+            "recall": 0.6667,
+            "median_delay_min": 0.0
+          },
+          "tachycardia": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          }
+        },
+        "events_by_intensity": {
+          "full": {
+            "events": 36,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "subtle": {
+            "events": 34,
+            "recall": 0.8824,
+            "median_delay_min": 0.0
+          }
+        },
+        "operational": {
+          "persistence_windows": 2,
+          "false_warnings_per_crew_day": 0.297,
+          "event_recall": 0.9143
+        }
+      },
+      "one_class_svm": {
+        "label": "One-Class SVM",
+        "description": "RBF-kernel boundary around normal windows (nu = 0.02).",
+        "selected_features": "level_only",
+        "n_features": 6,
+        "fit_seconds": 0.03,
+        "score_ms_per_1k_windows": 7.76,
+        "val_auprc": 0.8683,
+        "threshold": 0.89662,
+        "test": {
+          "precision": 0.9272,
+          "recall": 0.7079,
+          "f1": 0.8028,
+          "auroc": 0.9387,
+          "auprc": 0.8684,
+          "false_alarm_rate": 0.00982,
+          "false_alarms_per_day": 2.829,
+          "tp": 2789,
+          "fp": 219,
+          "fn": 1151,
+          "tn": 22073
+        },
+        "events": {
+          "events": 70,
+          "event_recall": 0.9571,
+          "median_delay_min": 0.0,
+          "by_kind": {
+            "gradual": {
+              "events": 19,
+              "recall": 1.0,
+              "median_delay_min": 35.0
+            },
+            "sudden": {
+              "events": 51,
+              "recall": 0.9412,
+              "median_delay_min": 0.0
+            }
+          }
+        },
+        "events_by_type": {
+          "abnormal_respiratory_rate": {
+            "events": 9,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "bradycardia": {
+            "events": 8,
+            "recall": 0.875,
+            "median_delay_min": 0.0
+          },
+          "desaturation": {
+            "events": 10,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "elevated_temperature": {
+            "events": 11,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_bp_rise": {
+            "events": 1,
+            "recall": 1.0,
+            "median_delay_min": 125.0
+          },
+          "gradual_desaturation": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_hr_rise": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 70.0
+          },
+          "gradual_temperature_rise": {
+            "events": 4,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "irregular_rhythm": {
+            "events": 6,
+            "recall": 0.6667,
+            "median_delay_min": 0.0
+          },
+          "tachycardia": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          }
+        },
+        "events_by_intensity": {
+          "full": {
+            "events": 36,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "subtle": {
+            "events": 34,
+            "recall": 0.9118,
+            "median_delay_min": 0.0
+          }
+        },
+        "operational": {
+          "persistence_windows": 2,
+          "false_warnings_per_crew_day": 0.465,
+          "event_recall": 0.9143
+        }
+      },
+      "autoencoder": {
+        "label": "Autoencoder",
+        "description": "Neural network trained to reconstruct normal windows; large reconstruction error is anomalous.",
+        "selected_features": "all_features",
+        "n_features": 32,
+        "fit_seconds": 17.35,
+        "score_ms_per_1k_windows": 0.64,
+        "val_auprc": 0.7682,
+        "threshold": 0.56147,
+        "test": {
+          "precision": 0.9462,
+          "recall": 0.5845,
+          "f1": 0.7226,
+          "auroc": 0.9154,
+          "auprc": 0.8212,
+          "false_alarm_rate": 0.00588,
+          "false_alarms_per_day": 1.692,
+          "tp": 2303,
+          "fp": 131,
+          "fn": 1637,
+          "tn": 22161
+        },
+        "events": {
+          "events": 70,
+          "event_recall": 0.8571,
+          "median_delay_min": 0.0,
+          "by_kind": {
+            "gradual": {
+              "events": 19,
+              "recall": 0.8947,
+              "median_delay_min": 160.0
+            },
+            "sudden": {
+              "events": 51,
+              "recall": 0.8431,
+              "median_delay_min": 0.0
+            }
+          }
+        },
+        "events_by_type": {
+          "abnormal_respiratory_rate": {
+            "events": 9,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "bradycardia": {
+            "events": 8,
+            "recall": 0.375,
+            "median_delay_min": 0.0
+          },
+          "desaturation": {
+            "events": 10,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "elevated_temperature": {
+            "events": 11,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          },
+          "gradual_bp_rise": {
+            "events": 1,
+            "recall": 1.0,
+            "median_delay_min": 50.0
+          },
+          "gradual_desaturation": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 35.0
+          },
+          "gradual_hr_rise": {
+            "events": 7,
+            "recall": 0.7143,
+            "median_delay_min": 520.0
+          },
+          "gradual_temperature_rise": {
+            "events": 4,
+            "recall": 1.0,
+            "median_delay_min": 135.0
+          },
+          "irregular_rhythm": {
+            "events": 6,
+            "recall": 0.5,
+            "median_delay_min": 15.0
+          },
+          "tachycardia": {
+            "events": 7,
+            "recall": 1.0,
+            "median_delay_min": 0.0
+          }
+        },
+        "events_by_intensity": {
+          "full": {
+            "events": 36,
+            "recall": 0.9167,
+            "median_delay_min": 0.0
+          },
+          "subtle": {
+            "events": 34,
+            "recall": 0.7941,
+            "median_delay_min": 0.0
+          }
+        },
+        "operational": {
+          "persistence_windows": 2,
+          "false_warnings_per_crew_day": 1.202,
+          "event_recall": 0.8
+        }
+      }
+    },
+    "ensemble": {
+      "label": "Ensemble (weighted mean of calibrated scores)",
+      "weights": {
+        "statistical": 0.6174,
+        "isolation_forest": 0.6565,
+        "lof": 0.7652,
+        "one_class_svm": 0.7649,
+        "autoencoder": 0.6648
+      },
+      "member_rule": "validation AUPRC >= 80% of the best; weight = AUPRC above base rate",
+      "threshold": 0.76328,
+      "test": {
+        "precision": 0.9378,
+        "recall": 0.7386,
+        "f1": 0.8264,
+        "auroc": 0.9528,
+        "auprc": 0.8912,
+        "false_alarm_rate": 0.00866,
+        "false_alarms_per_day": 2.493,
+        "tp": 2910,
+        "fp": 193,
+        "fn": 1030,
+        "tn": 22099
+      },
+      "events": {
+        "events": 70,
+        "event_recall": 0.9571,
+        "median_delay_min": 0.0,
+        "by_kind": {
+          "gradual": {
+            "events": 19,
+            "recall": 1.0,
+            "median_delay_min": 35.0
+          },
+          "sudden": {
+            "events": 51,
+            "recall": 0.9412,
+            "median_delay_min": 0.0
+          }
+        }
+      },
+      "events_by_type": {
+        "abnormal_respiratory_rate": {
+          "events": 9,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "bradycardia": {
+          "events": 8,
+          "recall": 0.75,
+          "median_delay_min": 0.0
+        },
+        "desaturation": {
+          "events": 10,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "elevated_temperature": {
+          "events": 11,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "gradual_bp_rise": {
+          "events": 1,
+          "recall": 1.0,
+          "median_delay_min": 125.0
+        },
+        "gradual_desaturation": {
+          "events": 7,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "gradual_hr_rise": {
+          "events": 7,
+          "recall": 1.0,
+          "median_delay_min": 100.0
+        },
+        "gradual_temperature_rise": {
+          "events": 4,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "irregular_rhythm": {
+          "events": 6,
+          "recall": 0.8333,
+          "median_delay_min": 0.0
+        },
+        "tachycardia": {
+          "events": 7,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        }
+      },
+      "events_by_intensity": {
+        "full": {
+          "events": 36,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "subtle": {
+          "events": 34,
+          "recall": 0.9118,
+          "median_delay_min": 0.0
+        }
+      },
+      "operational": {
+        "persistence_windows": 2,
+        "false_warnings_per_crew_day": 0.426,
+        "event_recall": 0.9143
+      }
+    },
+    "fixed_thresholds": {
+      "label": "Fixed thresholds (phase 2 alert rules)",
+      "threshold": 0.0,
+      "test": {
+        "precision": 0.7953,
+        "recall": 0.2041,
+        "f1": 0.3248,
+        "auroc": 0.7656,
+        "auprc": 0.5246,
+        "false_alarm_rate": 0.00929,
+        "false_alarms_per_day": 2.674,
+        "tp": 804,
+        "fp": 207,
+        "fn": 3136,
+        "tn": 22085
+      },
+      "events": {
+        "events": 70,
+        "event_recall": 0.5286,
+        "median_delay_min": 0.0,
+        "by_kind": {
+          "gradual": {
+            "events": 19,
+            "recall": 0.4737,
+            "median_delay_min": 455.0
+          },
+          "sudden": {
+            "events": 51,
+            "recall": 0.549,
+            "median_delay_min": 0.0
+          }
+        }
+      },
+      "events_by_type": {
+        "abnormal_respiratory_rate": {
+          "events": 9,
+          "recall": 0.4444,
+          "median_delay_min": 0.0
+        },
+        "bradycardia": {
+          "events": 8,
+          "recall": 0.5,
+          "median_delay_min": 0.0
+        },
+        "desaturation": {
+          "events": 10,
+          "recall": 1.0,
+          "median_delay_min": 0.0
+        },
+        "elevated_temperature": {
+          "events": 11,
+          "recall": 0.4545,
+          "median_delay_min": 0.0
+        },
+        "gradual_bp_rise": {
+          "events": 1,
+          "recall": 0.0,
+          "median_delay_min": null
+        },
+        "gradual_desaturation": {
+          "events": 7,
+          "recall": 0.8571,
+          "median_delay_min": 367.5
+        },
+        "gradual_hr_rise": {
+          "events": 7,
+          "recall": 0.1429,
+          "median_delay_min": 1005.0
+        },
+        "gradual_temperature_rise": {
+          "events": 4,
+          "recall": 0.5,
+          "median_delay_min": 432.5
+        },
+        "irregular_rhythm": {
+          "events": 6,
+          "recall": 0.1667,
+          "median_delay_min": 90.0
+        },
+        "tachycardia": {
+          "events": 7,
+          "recall": 0.5714,
+          "median_delay_min": 17.5
+        }
+      },
+      "events_by_intensity": {
+        "full": {
+          "events": 36,
+          "recall": 0.8056,
+          "median_delay_min": 0.0
+        },
+        "subtle": {
+          "events": 34,
+          "recall": 0.2353,
+          "median_delay_min": 2.5
+        }
+      },
+      "operational": {
+        "persistence_windows": 2,
+        "false_warnings_per_crew_day": 1.15,
+        "event_recall": 0.4429
+      }
+    },
+    "ablations": {
+      "statistical": {
+        "selected": "level_sustained",
+        "candidates": {
+          "level_sustained": {
+            "n_features": 12,
+            "val_auprc": 0.7208,
+            "test": {
+              "auroc": 0.9569,
+              "f1": 0.4351,
+              "event_recall": 0.5143,
+              "sudden_recall": 0.5294,
+              "gradual_recall": 0.4737
+            }
+          }
+        }
+      },
+      "isolation_forest": {
+        "selected": "level_only",
+        "candidates": {
+          "all_features": {
+            "n_features": 32,
+            "val_auprc": 0.6137,
+            "test": {
+              "auroc": 0.9192,
+              "f1": 0.393,
+              "event_recall": 0.5857,
+              "sudden_recall": 0.451,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_sudden": {
+            "n_features": 26,
+            "val_auprc": 0.6722,
+            "test": {
+              "auroc": 0.9283,
+              "f1": 0.5109,
+              "event_recall": 0.6714,
+              "sudden_recall": 0.5686,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_context": {
+            "n_features": 25,
+            "val_auprc": 0.7244,
+            "test": {
+              "auroc": 0.9302,
+              "f1": 0.5155,
+              "event_recall": 0.7429,
+              "sudden_recall": 0.6667,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_dynamics": {
+            "n_features": 14,
+            "val_auprc": 0.3554,
+            "test": {
+              "auroc": 0.8789,
+              "f1": 0.1219,
+              "event_recall": 0.4571,
+              "sudden_recall": 0.2745,
+              "gradual_recall": 0.9474
+            }
+          },
+          "level_only": {
+            "n_features": 6,
+            "val_auprc": 0.7599,
+            "test": {
+              "auroc": 0.9324,
+              "f1": 0.6683,
+              "event_recall": 0.9143,
+              "sudden_recall": 0.8824,
+              "gradual_recall": 1.0
+            }
+          }
+        }
+      },
+      "lof": {
+        "selected": "without_dynamics",
+        "candidates": {
+          "all_features": {
+            "n_features": 32,
+            "val_auprc": 0.8364,
+            "test": {
+              "auroc": 0.9563,
+              "f1": 0.7786,
+              "event_recall": 0.9143,
+              "sudden_recall": 0.902,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_sudden": {
+            "n_features": 26,
+            "val_auprc": 0.8564,
+            "test": {
+              "auroc": 0.9624,
+              "f1": 0.7978,
+              "event_recall": 0.9,
+              "sudden_recall": 0.902,
+              "gradual_recall": 0.8947
+            }
+          },
+          "without_context": {
+            "n_features": 25,
+            "val_auprc": 0.8501,
+            "test": {
+              "auroc": 0.9531,
+              "f1": 0.78,
+              "event_recall": 0.9143,
+              "sudden_recall": 0.902,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_dynamics": {
+            "n_features": 14,
+            "val_auprc": 0.8686,
+            "test": {
+              "auroc": 0.9518,
+              "f1": 0.8233,
+              "event_recall": 0.9429,
+              "sudden_recall": 0.9216,
+              "gradual_recall": 1.0
+            }
+          },
+          "level_only": {
+            "n_features": 6,
+            "val_auprc": 0.77,
+            "test": {
+              "auroc": 0.9405,
+              "f1": 0.7983,
+              "event_recall": 0.9286,
+              "sudden_recall": 0.902,
+              "gradual_recall": 1.0
+            }
+          }
+        }
+      },
+      "one_class_svm": {
+        "selected": "level_only",
+        "candidates": {
+          "all_features": {
+            "n_features": 32,
+            "val_auprc": 0.8229,
+            "test": {
+              "auroc": 0.9489,
+              "f1": 0.7215,
+              "event_recall": 0.8429,
+              "sudden_recall": 0.8431,
+              "gradual_recall": 0.8421
+            }
+          },
+          "without_sudden": {
+            "n_features": 26,
+            "val_auprc": 0.8518,
+            "test": {
+              "auroc": 0.954,
+              "f1": 0.755,
+              "event_recall": 0.8286,
+              "sudden_recall": 0.8235,
+              "gradual_recall": 0.8421
+            }
+          },
+          "without_context": {
+            "n_features": 25,
+            "val_auprc": 0.8424,
+            "test": {
+              "auroc": 0.9443,
+              "f1": 0.7367,
+              "event_recall": 0.8571,
+              "sudden_recall": 0.8431,
+              "gradual_recall": 0.8947
+            }
+          },
+          "without_dynamics": {
+            "n_features": 14,
+            "val_auprc": 0.859,
+            "test": {
+              "auroc": 0.9553,
+              "f1": 0.814,
+              "event_recall": 0.9571,
+              "sudden_recall": 0.9412,
+              "gradual_recall": 1.0
+            }
+          },
+          "level_only": {
+            "n_features": 6,
+            "val_auprc": 0.8683,
+            "test": {
+              "auroc": 0.9387,
+              "f1": 0.8028,
+              "event_recall": 0.9571,
+              "sudden_recall": 0.9412,
+              "gradual_recall": 1.0
+            }
+          }
+        }
+      },
+      "autoencoder": {
+        "selected": "all_features",
+        "candidates": {
+          "all_features": {
+            "n_features": 32,
+            "val_auprc": 0.7682,
+            "test": {
+              "auroc": 0.9154,
+              "f1": 0.7226,
+              "event_recall": 0.8571,
+              "sudden_recall": 0.8431,
+              "gradual_recall": 0.8947
+            }
+          },
+          "without_sudden": {
+            "n_features": 26,
+            "val_auprc": 0.7221,
+            "test": {
+              "auroc": 0.8734,
+              "f1": 0.6431,
+              "event_recall": 0.9286,
+              "sudden_recall": 0.9216,
+              "gradual_recall": 0.9474
+            }
+          },
+          "without_context": {
+            "n_features": 25,
+            "val_auprc": 0.7407,
+            "test": {
+              "auroc": 0.8652,
+              "f1": 0.6345,
+              "event_recall": 0.8571,
+              "sudden_recall": 0.8431,
+              "gradual_recall": 0.8947
+            }
+          },
+          "without_dynamics": {
+            "n_features": 14,
+            "val_auprc": 0.7672,
+            "test": {
+              "auroc": 0.8744,
+              "f1": 0.732,
+              "event_recall": 0.9429,
+              "sudden_recall": 0.9216,
+              "gradual_recall": 1.0
+            }
+          },
+          "level_only": {
+            "n_features": 6,
+            "val_auprc": 0.6959,
+            "test": {
+              "auroc": 0.8575,
+              "f1": 0.6815,
+              "event_recall": 0.9143,
+              "sudden_recall": 0.902,
+              "gradual_recall": 0.9474
+            }
+          }
+        }
+      }
+    }
+  },
+  "forecast": {
+    "step_minutes": 30,
+    "lookback_hours": 24,
+    "horizons_hours": [
+      1,
+      6,
+      12,
+      24
+    ],
+    "interval_nominal_coverage": 0.9,
+    "samples": {
+      "train": 13444,
+      "early_stopping": 2116,
+      "calibration": 2116,
+      "test": 4420
+    },
+    "models": {
+      "persistence": {
+        "label": "Persistence (last value)",
+        "family": "baseline",
+        "fit_seconds": 0.0,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 7.1481,
+              "rmse": 12.9989,
+              "coverage": 0.9041,
+              "mean_width": 32.9356
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 13.9314,
+              "rmse": 19.3893,
+              "coverage": 0.903,
+              "mean_width": 63.2404
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 16.0695,
+              "rmse": 21.6605,
+              "coverage": 0.9,
+              "mean_width": 71.807
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 5.8797,
+              "rmse": 9.8216,
+              "coverage": 0.9095,
+              "mean_width": 25.6442
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.3483,
+              "rmse": 0.7289,
+              "coverage": 0.8861,
+              "mean_width": 1.2671
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.7303,
+              "rmse": 1.1841,
+              "coverage": 0.885,
+              "mean_width": 2.499
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.8431,
+              "rmse": 1.373,
+              "coverage": 0.8627,
+              "mean_width": 2.5694
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.7254,
+              "rmse": 1.4506,
+              "coverage": 0.8623,
+              "mean_width": 1.9625
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 1.4193,
+              "rmse": 2.4907,
+              "coverage": 0.9139,
+              "mean_width": 7.7617
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 2.697,
+              "rmse": 3.7367,
+              "coverage": 0.923,
+              "mean_width": 14.6342
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 2.9877,
+              "rmse": 4.0957,
+              "coverage": 0.9214,
+              "mean_width": 15.7635
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 1.3087,
+              "rmse": 2.0317,
+              "coverage": 0.8766,
+              "mean_width": 5.3518
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.1003,
+              "rmse": 0.1628,
+              "coverage": 0.892,
+              "mean_width": 0.375
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.3559,
+              "rmse": 0.4221,
+              "coverage": 0.9095,
+              "mean_width": 1.2578
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.4846,
+              "rmse": 0.5648,
+              "coverage": 0.9025,
+              "mean_width": 1.68
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1484,
+              "rmse": 0.2476,
+              "coverage": 0.8677,
+              "mean_width": 0.5039
+            }
+          }
+        },
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": -0.714,
+            "6h": -2.3397,
+            "12h": -2.8512,
+            "24h": -0.4113
+          },
+          "spo2": {
+            "1h": 0.2562,
+            "6h": -0.5605,
+            "12h": -0.8038,
+            "24h": -0.5547
+          },
+          "respiratory_rate": {
+            "1h": -0.6008,
+            "6h": -2.0468,
+            "12h": -2.3502,
+            "24h": -0.47
+          },
+          "temperature_c": {
+            "1h": 0.1278,
+            "6h": -2.1083,
+            "12h": -3.236,
+            "24h": -0.2871
+          }
+        }
+      },
+      "seasonal_naive": {
+        "label": "Seasonal naive (same time yesterday)",
+        "family": "baseline",
+        "fit_seconds": 0.0,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 5.9719,
+              "rmse": 10.0812,
+              "coverage": 0.9084,
+              "mean_width": 25.1923
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 5.9615,
+              "rmse": 10.0774,
+              "coverage": 0.9084,
+              "mean_width": 25.1923
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 5.9871,
+              "rmse": 10.1382,
+              "coverage": 0.9041,
+              "mean_width": 24.7677
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 5.8797,
+              "rmse": 9.8216,
+              "coverage": 0.9095,
+              "mean_width": 25.6442
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.7248,
+              "rmse": 1.4501,
+              "coverage": 0.8645,
+              "mean_width": 1.9752
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.7249,
+              "rmse": 1.4503,
+              "coverage": 0.8645,
+              "mean_width": 1.9942
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.7243,
+              "rmse": 1.4499,
+              "coverage": 0.8648,
+              "mean_width": 1.971
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.7254,
+              "rmse": 1.4506,
+              "coverage": 0.8623,
+              "mean_width": 1.9625
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 1.2979,
+              "rmse": 2.0132,
+              "coverage": 0.8795,
+              "mean_width": 5.4384
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 1.3016,
+              "rmse": 2.0207,
+              "coverage": 0.8855,
+              "mean_width": 5.5988
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 1.315,
+              "rmse": 2.0446,
+              "coverage": 0.8761,
+              "mean_width": 5.391
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 1.3087,
+              "rmse": 2.0317,
+              "coverage": 0.8766,
+              "mean_width": 5.3518
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.1492,
+              "rmse": 0.2477,
+              "coverage": 0.8659,
+              "mean_width": 0.5039
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.1484,
+              "rmse": 0.2464,
+              "coverage": 0.8691,
+              "mean_width": 0.5075
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.1483,
+              "rmse": 0.2465,
+              "coverage": 0.8664,
+              "mean_width": 0.503
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1484,
+              "rmse": 0.2476,
+              "coverage": 0.8677,
+              "mean_width": 0.5039
+            }
+          }
+        },
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": -0.4319,
+            "6h": -0.4291,
+            "12h": -0.4349,
+            "24h": -0.4113
+          },
+          "spo2": {
+            "1h": -0.5477,
+            "6h": -0.5489,
+            "12h": -0.5496,
+            "24h": -0.5547
+          },
+          "respiratory_rate": {
+            "1h": -0.4639,
+            "6h": -0.4704,
+            "12h": -0.4745,
+            "24h": -0.47
+          },
+          "temperature_c": {
+            "1h": -0.2974,
+            "6h": -0.2961,
+            "12h": -0.2963,
+            "24h": -0.2871
+          }
+        }
+      },
+      "climatology": {
+        "label": "Personal climatology (baseline for planned activity)",
+        "family": "baseline",
+        "fit_seconds": 0.0,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 4.1705,
+              "rmse": 6.6819,
+              "coverage": 0.88,
+              "mean_width": 15.4205
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 4.1715,
+              "rmse": 6.6813,
+              "coverage": 0.8809,
+              "mean_width": 15.4494
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 4.1726,
+              "rmse": 6.6928,
+              "coverage": 0.8795,
+              "mean_width": 15.261
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 4.1662,
+              "rmse": 6.6831,
+              "coverage": 0.8914,
+              "mean_width": 16.1522
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.4683,
+              "rmse": 1.0656,
+              "coverage": 0.8755,
+              "mean_width": 1.2319
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.468,
+              "rmse": 1.0656,
+              "coverage": 0.8732,
+              "mean_width": 1.2249
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.4674,
+              "rmse": 1.0654,
+              "coverage": 0.8725,
+              "mean_width": 1.2029
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.4666,
+              "rmse": 1.0652,
+              "coverage": 0.8732,
+              "mean_width": 1.2029
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.8866,
+              "rmse": 1.37,
+              "coverage": 0.8952,
+              "mean_width": 3.6887
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.8852,
+              "rmse": 1.3692,
+              "coverage": 0.8975,
+              "mean_width": 3.7044
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.8918,
+              "rmse": 1.3944,
+              "coverage": 0.8948,
+              "mean_width": 3.6887
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.8903,
+              "rmse": 1.3923,
+              "coverage": 0.8905,
+              "mean_width": 3.6048
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.115,
+              "rmse": 0.192,
+              "coverage": 0.878,
+              "mean_width": 0.4051
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.1145,
+              "rmse": 0.1913,
+              "coverage": 0.8807,
+              "mean_width": 0.4072
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.1144,
+              "rmse": 0.1912,
+              "coverage": 0.8807,
+              "mean_width": 0.4072
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1153,
+              "rmse": 0.1934,
+              "coverage": 0.8784,
+              "mean_width": 0.4038
+            }
+          }
+        },
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": 0.0,
+            "6h": 0.0,
+            "12h": 0.0,
+            "24h": 0.0
+          },
+          "spo2": {
+            "1h": 0.0,
+            "6h": 0.0,
+            "12h": 0.0,
+            "24h": 0.0
+          },
+          "respiratory_rate": {
+            "1h": 0.0,
+            "6h": 0.0,
+            "12h": 0.0,
+            "24h": 0.0
+          },
+          "temperature_c": {
+            "1h": 0.0,
+            "6h": 0.0,
+            "12h": 0.0,
+            "24h": 0.0
+          }
+        }
+      },
+      "xgboost": {
+        "label": "XGBoost (engineered features)",
+        "family": "tree",
+        "fit_seconds": 11.01,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 2.3355,
+              "rmse": 4.6142,
+              "coverage": 0.8998,
+              "mean_width": 8.6253
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 3.1664,
+              "rmse": 5.4083,
+              "coverage": 0.8989,
+              "mean_width": 12.2181
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 3.3385,
+              "rmse": 5.631,
+              "coverage": 0.8848,
+              "mean_width": 12.6452
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 3.4114,
+              "rmse": 5.7225,
+              "coverage": 0.8934,
+              "mean_width": 13.1021
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.3006,
+              "rmse": 0.662,
+              "coverage": 0.8714,
+              "mean_width": 0.9125
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.4107,
+              "rmse": 0.8634,
+              "coverage": 0.8607,
+              "mean_width": 1.1779
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.4449,
+              "rmse": 0.9705,
+              "coverage": 0.8661,
+              "mean_width": 1.2424
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.4737,
+              "rmse": 1.0453,
+              "coverage": 0.8659,
+              "mean_width": 1.2593
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.533,
+              "rmse": 0.8934,
+              "coverage": 0.9134,
+              "mean_width": 2.2199
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.7073,
+              "rmse": 1.1024,
+              "coverage": 0.8895,
+              "mean_width": 2.7464
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.7573,
+              "rmse": 1.1881,
+              "coverage": 0.8782,
+              "mean_width": 2.811
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.771,
+              "rmse": 1.2168,
+              "coverage": 0.888,
+              "mean_width": 2.9371
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.0674,
+              "rmse": 0.1227,
+              "coverage": 0.8825,
+              "mean_width": 0.2374
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.0961,
+              "rmse": 0.1633,
+              "coverage": 0.8627,
+              "mean_width": 0.3192
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.1024,
+              "rmse": 0.1759,
+              "coverage": 0.8589,
+              "mean_width": 0.3409
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1019,
+              "rmse": 0.1796,
+              "coverage": 0.8659,
+              "mean_width": 0.3297
+            }
+          }
+        },
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": 0.44,
+            "6h": 0.2409,
+            "12h": 0.1999,
+            "24h": 0.1812
+          },
+          "spo2": {
+            "1h": 0.3581,
+            "6h": 0.1224,
+            "12h": 0.0481,
+            "24h": -0.0152
+          },
+          "respiratory_rate": {
+            "1h": 0.3988,
+            "6h": 0.201,
+            "12h": 0.1508,
+            "24h": 0.134
+          },
+          "temperature_c": {
+            "1h": 0.4139,
+            "6h": 0.1607,
+            "12h": 0.1049,
+            "24h": 0.1162
+          }
+        }
+      },
+      "lstm": {
+        "label": "LSTM",
+        "family": "neural",
+        "fit_seconds": 36.36,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 3.2395,
+              "rmse": 5.6892,
+              "coverage": 0.905,
+              "mean_width": 12.5111
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 3.8247,
+              "rmse": 6.2666,
+              "coverage": 0.8995,
+              "mean_width": 14.8966
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 3.947,
+              "rmse": 6.3771,
+              "coverage": 0.885,
+              "mean_width": 14.9258
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 3.8754,
+              "rmse": 6.4069,
+              "coverage": 0.9098,
+              "mean_width": 16.2997
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.3249,
+              "rmse": 0.7078,
+              "coverage": 0.8727,
+              "mean_width": 0.9871
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.4768,
+              "rmse": 0.9731,
+              "coverage": 0.8334,
+              "mean_width": 1.2618
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.508,
+              "rmse": 1.038,
+              "coverage": 0.8514,
+              "mean_width": 1.3628
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.5198,
+              "rmse": 1.0861,
+              "coverage": 0.8623,
+              "mean_width": 1.3973
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.6855,
+              "rmse": 1.1126,
+              "coverage": 0.8939,
+              "mean_width": 2.7985
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.8556,
+              "rmse": 1.3126,
+              "coverage": 0.897,
+              "mean_width": 3.6444
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.8886,
+              "rmse": 1.3521,
+              "coverage": 0.8948,
+              "mean_width": 3.7755
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.8775,
+              "rmse": 1.3585,
+              "coverage": 0.905,
+              "mean_width": 3.9173
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.0859,
+              "rmse": 0.1391,
+              "coverage": 0.8886,
+              "mean_width": 0.3263
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.1115,
+              "rmse": 0.1809,
+              "coverage": 0.8682,
+              "mean_width": 0.391
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.117,
+              "rmse": 0.194,
+              "coverage": 0.8707,
+              "mean_width": 0.4179
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1127,
+              "rmse": 0.1882,
+              "coverage": 0.8757,
+              "mean_width": 0.3975
+            }
+          }
+        },
+        "epochs_run": 21,
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": 0.2232,
+            "6h": 0.0831,
+            "12h": 0.0541,
+            "24h": 0.0698
+          },
+          "spo2": {
+            "1h": 0.3062,
+            "6h": -0.0188,
+            "12h": -0.0869,
+            "24h": -0.114
+          },
+          "respiratory_rate": {
+            "1h": 0.2268,
+            "6h": 0.0334,
+            "12h": 0.0036,
+            "24h": 0.0144
+          },
+          "temperature_c": {
+            "1h": 0.253,
+            "6h": 0.0262,
+            "12h": -0.0227,
+            "24h": 0.0225
+          }
+        }
+      },
+      "gru": {
+        "label": "GRU",
+        "family": "neural",
+        "fit_seconds": 75.64,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 3.0485,
+              "rmse": 5.5518,
+              "coverage": 0.9157,
+              "mean_width": 12.1473
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 3.7313,
+              "rmse": 6.2072,
+              "coverage": 0.8945,
+              "mean_width": 14.279
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 3.8997,
+              "rmse": 6.3691,
+              "coverage": 0.8845,
+              "mean_width": 14.7418
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 3.9145,
+              "rmse": 6.4438,
+              "coverage": 0.8959,
+              "mean_width": 15.3671
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.2957,
+              "rmse": 0.6162,
+              "coverage": 0.8893,
+              "mean_width": 1.0128
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.4436,
+              "rmse": 0.9314,
+              "coverage": 0.8627,
+              "mean_width": 1.2808
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.4744,
+              "rmse": 1.0289,
+              "coverage": 0.877,
+              "mean_width": 1.3316
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.4985,
+              "rmse": 1.0703,
+              "coverage": 0.8518,
+              "mean_width": 1.299
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.6457,
+              "rmse": 1.0592,
+              "coverage": 0.9193,
+              "mean_width": 2.815
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.8278,
+              "rmse": 1.2587,
+              "coverage": 0.89,
+              "mean_width": 3.3609
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.8724,
+              "rmse": 1.3486,
+              "coverage": 0.8864,
+              "mean_width": 3.5099
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.8758,
+              "rmse": 1.3534,
+              "coverage": 0.8823,
+              "mean_width": 3.4057
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.0828,
+              "rmse": 0.1339,
+              "coverage": 0.8741,
+              "mean_width": 0.297
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.1128,
+              "rmse": 0.1815,
+              "coverage": 0.8541,
+              "mean_width": 0.3787
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.1196,
+              "rmse": 0.1929,
+              "coverage": 0.8659,
+              "mean_width": 0.4138
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1098,
+              "rmse": 0.1859,
+              "coverage": 0.8777,
+              "mean_width": 0.3814
+            }
+          }
+        },
+        "epochs_run": 20,
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": 0.269,
+            "6h": 0.1055,
+            "12h": 0.0654,
+            "24h": 0.0604
+          },
+          "spo2": {
+            "1h": 0.3686,
+            "6h": 0.0521,
+            "12h": -0.015,
+            "24h": -0.0684
+          },
+          "respiratory_rate": {
+            "1h": 0.2717,
+            "6h": 0.0648,
+            "12h": 0.0218,
+            "24h": 0.0163
+          },
+          "temperature_c": {
+            "1h": 0.28,
+            "6h": 0.0148,
+            "12h": -0.0455,
+            "24h": 0.0477
+          }
+        }
+      },
+      "tcn": {
+        "label": "Temporal Convolutional Network",
+        "family": "neural",
+        "fit_seconds": 36.07,
+        "by_signal": {
+          "heart_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 3.2157,
+              "rmse": 5.6526,
+              "coverage": 0.9073,
+              "mean_width": 12.7286
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 3.8074,
+              "rmse": 6.2631,
+              "coverage": 0.8877,
+              "mean_width": 14.2022
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 3.9502,
+              "rmse": 6.3932,
+              "coverage": 0.8859,
+              "mean_width": 14.6702
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 3.9402,
+              "rmse": 6.4536,
+              "coverage": 0.89,
+              "mean_width": 15.0804
+            }
+          },
+          "spo2": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.296,
+              "rmse": 0.6289,
+              "coverage": 0.8752,
+              "mean_width": 0.9642
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.4246,
+              "rmse": 0.8774,
+              "coverage": 0.8661,
+              "mean_width": 1.2627
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.456,
+              "rmse": 1.0076,
+              "coverage": 0.8761,
+              "mean_width": 1.2866
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.4692,
+              "rmse": 1.0457,
+              "coverage": 0.877,
+              "mean_width": 1.2526
+            }
+          },
+          "respiratory_rate": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.68,
+              "rmse": 1.0788,
+              "coverage": 0.9066,
+              "mean_width": 2.7974
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.8214,
+              "rmse": 1.2418,
+              "coverage": 0.8982,
+              "mean_width": 3.3642
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.8474,
+              "rmse": 1.3194,
+              "coverage": 0.8916,
+              "mean_width": 3.4342
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.8664,
+              "rmse": 1.3396,
+              "coverage": 0.877,
+              "mean_width": 3.217
+            }
+          },
+          "temperature_c": {
+            "1h": {
+              "n": 4400,
+              "mae": 0.0833,
+              "rmse": 0.1321,
+              "coverage": 0.8795,
+              "mean_width": 0.3073
+            },
+            "6h": {
+              "n": 4400,
+              "mae": 0.1115,
+              "rmse": 0.1781,
+              "coverage": 0.8664,
+              "mean_width": 0.386
+            },
+            "12h": {
+              "n": 4400,
+              "mae": 0.115,
+              "rmse": 0.1874,
+              "coverage": 0.875,
+              "mean_width": 0.4096
+            },
+            "24h": {
+              "n": 4400,
+              "mae": 0.1093,
+              "rmse": 0.1865,
+              "coverage": 0.8695,
+              "mean_width": 0.3705
+            }
+          }
+        },
+        "epochs_run": 13,
+        "skill_vs_climatology": {
+          "heart_rate": {
+            "1h": 0.2289,
+            "6h": 0.0873,
+            "12h": 0.0533,
+            "24h": 0.0542
+          },
+          "spo2": {
+            "1h": 0.3679,
+            "6h": 0.0927,
+            "12h": 0.0244,
+            "24h": -0.0056
+          },
+          "respiratory_rate": {
+            "1h": 0.233,
+            "6h": 0.0721,
+            "12h": 0.0498,
+            "24h": 0.0268
+          },
+          "temperature_c": {
+            "1h": 0.2757,
+            "6h": 0.0262,
+            "12h": -0.0052,
+            "24h": 0.052
+          }
+        }
+      }
+    },
+    "xgboost_shap_importance": {
+      "heart_rate": {
+        "1h": {
+          "Planned activity and time of day at the target time": 0.5735999941825867,
+          "Personal baseline for the planned activity": 0.12160000205039978,
+          "Current deviation from personal baseline": 0.11789999902248383,
+          "Current values": 0.05220000073313713,
+          "Current activity": 0.037700001150369644,
+          "How far ahead": 0.03269999846816063,
+          "Recent trend": 0.027799999341368675,
+          "Same time yesterday": 0.019300000742077827,
+          "Recent values": 0.01720000058412552
+        },
+        "6h": {
+          "Planned activity and time of day at the target time": 0.6266999840736389,
+          "Personal baseline for the planned activity": 0.1324000060558319,
+          "Current deviation from personal baseline": 0.09719999879598618,
+          "Current values": 0.04390000179409981,
+          "Recent trend": 0.029899999499320984,
+          "Current activity": 0.026499999687075615,
+          "Same time yesterday": 0.0210999995470047,
+          "Recent values": 0.017100000753998756,
+          "How far ahead": 0.005100000184029341
+        },
+        "12h": {
+          "Planned activity and time of day at the target time": 0.6341000199317932,
+          "Personal baseline for the planned activity": 0.1324000060558319,
+          "Current deviation from personal baseline": 0.08049999922513962,
+          "Current values": 0.04309999942779541,
+          "Recent trend": 0.027899999171495438,
+          "Current activity": 0.025299999862909317,
+          "Same time yesterday": 0.0210999995470047,
+          "How far ahead": 0.018300000578165054,
+          "Recent values": 0.01720000058412552
+        },
+        "24h": {
+          "Planned activity and time of day at the target time": 0.6337000131607056,
+          "Personal baseline for the planned activity": 0.13289999961853027,
+          "Current deviation from personal baseline": 0.07270000129938126,
+          "Current values": 0.040300000458955765,
+          "How far ahead": 0.029400000348687172,
+          "Recent trend": 0.027899999171495438,
+          "Current activity": 0.024800000712275505,
+          "Same time yesterday": 0.020999999716877937,
+          "Recent values": 0.017400000244379044
+        }
+      },
+      "spo2": {
+        "1h": {
+          "Personal baseline for the planned activity": 0.2694999873638153,
+          "Current deviation from personal baseline": 0.26510000228881836,
+          "Planned activity and time of day at the target time": 0.20720000565052032,
+          "How far ahead": 0.062300000339746475,
+          "Current values": 0.06019999831914902,
+          "Recent trend": 0.0560000017285347,
+          "Same time yesterday": 0.045499999076128006,
+          "Recent values": 0.03310000151395798,
+          "Current activity": 0.0010999999940395355
+        },
+        "6h": {
+          "Personal baseline for the planned activity": 0.31369999051094055,
+          "Planned activity and time of day at the target time": 0.2386000007390976,
+          "Current deviation from personal baseline": 0.2287999987602234,
+          "Recent trend": 0.06129999831318855,
+          "Same time yesterday": 0.05469999834895134,
+          "Current values": 0.05079999938607216,
+          "Recent values": 0.035100001841783524,
+          "How far ahead": 0.015699999406933784,
+          "Current activity": 0.0012000000569969416
+        },
+        "12h": {
+          "Personal baseline for the planned activity": 0.323199987411499,
+          "Planned activity and time of day at the target time": 0.24199999868869781,
+          "Current deviation from personal baseline": 0.2012999951839447,
+          "Recent trend": 0.06300000101327896,
+          "Same time yesterday": 0.055799998342990875,
+          "Current values": 0.04490000009536743,
+          "How far ahead": 0.03929999843239784,
+          "Recent values": 0.028999999165534973,
+          "Current activity": 0.001500000013038516
+        },
+        "24h": {
+          "Personal baseline for the planned activity": 0.32850000262260437,
+          "Planned activity and time of day at the target time": 0.2492000013589859,
+          "Current deviation from personal baseline": 0.18310000002384186,
+          "Recent trend": 0.060100000351667404,
+          "How far ahead": 0.05900000035762787,
+          "Same time yesterday": 0.05640000104904175,
+          "Current values": 0.037700001150369644,
+          "Recent values": 0.024700000882148743,
+          "Current activity": 0.00139999995008111
+        }
+      },
+      "respiratory_rate": {
+        "1h": {
+          "Planned activity and time of day at the target time": 0.573199987411499,
+          "Current deviation from personal baseline": 0.1363999992609024,
+          "Personal baseline for the planned activity": 0.10869999974966049,
+          "Current values": 0.06310000270605087,
+          "How far ahead": 0.038600001484155655,
+          "Current activity": 0.031599998474121094,
+          "Recent values": 0.02250000089406967,
+          "Recent trend": 0.014000000432133675,
+          "Same time yesterday": 0.01209999993443489
+        },
+        "6h": {
+          "Planned activity and time of day at the target time": 0.6319000124931335,
+          "Personal baseline for the planned activity": 0.11800000071525574,
+          "Current deviation from personal baseline": 0.11100000143051147,
+          "Current values": 0.0568000003695488,
+          "Current activity": 0.026599999517202377,
+          "Recent values": 0.02019999921321869,
+          "Recent trend": 0.014999999664723873,
+          "Same time yesterday": 0.01360000018030405,
+          "How far ahead": 0.006899999920278788
+        },
+        "12h": {
+          "Planned activity and time of day at the target time": 0.6392999887466431,
+          "Personal baseline for the planned activity": 0.11969999969005585,
+          "Current deviation from personal baseline": 0.09960000216960907,
+          "Current values": 0.05130000039935112,
+          "Current activity": 0.02319999970495701,
+          "How far ahead": 0.020600000396370888,
+          "Recent values": 0.018400000408291817,
+          "Same time yesterday": 0.014000000432133675,
+          "Recent trend": 0.013799999840557575
+        },
+        "24h": {
+          "Planned activity and time of day at the target time": 0.6417999863624573,
+          "Personal baseline for the planned activity": 0.12020000070333481,
+          "Current deviation from personal baseline": 0.09210000187158585,
+          "Current values": 0.046300001442432404,
+          "How far ahead": 0.03180000185966492,
+          "Current activity": 0.023000000044703484,
+          "Recent values": 0.01850000023841858,
+          "Same time yesterday": 0.013700000010430813,
+          "Recent trend": 0.012600000016391277
+        }
+      },
+      "temperature_c": {
+        "1h": {
+          "Personal baseline for the planned activity": 0.3880999982357025,
+          "Planned activity and time of day at the target time": 0.2524999976158142,
+          "Current deviation from personal baseline": 0.14480000734329224,
+          "Same time yesterday": 0.11150000244379044,
+          "Recent trend": 0.033900000154972076,
+          "How far ahead": 0.029100000858306885,
+          "Current values": 0.025499999523162842,
+          "Recent values": 0.012900000438094139,
+          "Current activity": 0.0015999999595806003
+        },
+        "6h": {
+          "Personal baseline for the planned activity": 0.41179999709129333,
+          "Planned activity and time of day at the target time": 0.2669000029563904,
+          "Current deviation from personal baseline": 0.12639999389648438,
+          "Same time yesterday": 0.11670000106096268,
+          "Recent trend": 0.03519999980926514,
+          "Current values": 0.019999999552965164,
+          "Recent values": 0.013100000098347664,
+          "How far ahead": 0.008299999870359898,
+          "Current activity": 0.0015999999595806003
+        },
+        "12h": {
+          "Personal baseline for the planned activity": 0.4189000129699707,
+          "Planned activity and time of day at the target time": 0.27070000767707825,
+          "Same time yesterday": 0.11649999767541885,
+          "Current deviation from personal baseline": 0.10790000110864639,
+          "Recent trend": 0.03189999982714653,
+          "Current values": 0.021700000390410423,
+          "How far ahead": 0.01759999990463257,
+          "Recent values": 0.013199999928474426,
+          "Current activity": 0.0015999999595806003
+        },
+        "24h": {
+          "Personal baseline for the planned activity": 0.42640000581741333,
+          "Planned activity and time of day at the target time": 0.27320000529289246,
+          "Same time yesterday": 0.11890000104904175,
+          "Current deviation from personal baseline": 0.08879999816417694,
+          "How far ahead": 0.030700000002980232,
+          "Recent trend": 0.029899999499320984,
+          "Current values": 0.017999999225139618,
+          "Recent values": 0.012600000016391277,
+          "Current activity": 0.001500000013038516
+        }
+      }
+    },
+    "ablations": {
+      "xgboost_without_planned_schedule": {
+        "excluded_feature_patterns": [
+          "target_",
+          "_baseline_at_target"
+        ],
+        "mae": {
+          "heart_rate": {
+            "1h": 4.1858,
+            "6h": 5.1922,
+            "12h": 5.3429,
+            "24h": 4.828
+          },
+          "spo2": {
+            "1h": 0.3245,
+            "6h": 0.462,
+            "12h": 0.4955,
+            "24h": 0.5021
+          },
+          "respiratory_rate": {
+            "1h": 0.8978,
+            "6h": 1.1021,
+            "12h": 1.1596,
+            "24h": 1.0663
+          },
+          "temperature_c": {
+            "1h": 0.0809,
+            "6h": 0.1208,
+            "12h": 0.124,
+            "24h": 0.1167
+          }
+        }
+      },
+      "xgboost_without_baseline_deviation": {
+        "excluded_feature_patterns": [
+          "_deviation_"
+        ],
+        "mae": {
+          "heart_rate": {
+            "1h": 2.3533,
+            "6h": 3.18,
+            "12h": 3.3444,
+            "24h": 3.4247
+          },
+          "spo2": {
+            "1h": 0.3039,
+            "6h": 0.4104,
+            "12h": 0.4448,
+            "24h": 0.4729
+          },
+          "respiratory_rate": {
+            "1h": 0.5273,
+            "6h": 0.7028,
+            "12h": 0.7632,
+            "24h": 0.7742
+          },
+          "temperature_c": {
+            "1h": 0.0676,
+            "6h": 0.0961,
+            "12h": 0.1025,
+            "24h": 0.103
+          }
+        }
+      },
+      "xgboost_without_recent_values": {
+        "excluded_feature_patterns": [
+          "_now",
+          "_lag",
+          "_mean_",
+          "_std_",
+          "_slope_",
+          "_deviation_"
+        ],
+        "mae": {
+          "heart_rate": {
+            "1h": 3.3833,
+            "6h": 3.372,
+            "12h": 3.3691,
+            "24h": 3.3547
+          },
+          "spo2": {
+            "1h": 0.4684,
+            "6h": 0.4685,
+            "12h": 0.4681,
+            "24h": 0.4671
+          },
+          "respiratory_rate": {
+            "1h": 0.7604,
+            "6h": 0.7607,
+            "12h": 0.7681,
+            "24h": 0.7679
+          },
+          "temperature_c": {
+            "1h": 0.0998,
+            "6h": 0.0992,
+            "12h": 0.0991,
+            "24h": 0.0998
+          }
+        }
+      }
+    }
+  },
+  "limitations": [
+    "All data is simulated by the ASTRA-MED simulator. Results show how well each method recovers the simulator's injected events and dynamics; they say nothing about accuracy on real astronauts.",
+    "The simulator's physiology, the injected events and the evaluation labels share one design, which makes the task easier than real monitoring, where events are unlabelled, heterogeneous and rare.",
+    "Planned activity equals actual activity in the simulator; real crew timelines deviate from plan.",
+    "Detection thresholds are calibrated on labelled validation data to a 1% window false-alarm rate. A real deployment would have no labels and would need clinician-reviewed calibration.",
+    "Prediction intervals are split-conformal; their coverage guarantee assumes exchangeability, which time series only approximate. Test coverage is measured and reported, not assumed.",
+    "No model here has been validated on astronaut or patient populations. Outputs are experimental decision support and must never be used as a diagnosis."
+  ]
+}

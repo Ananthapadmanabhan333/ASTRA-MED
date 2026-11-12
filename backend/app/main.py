@@ -16,7 +16,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app import __version__
-from app.api import routes, ws
+from app.ai.service import AIService
+from app.api import ai_routes, routes, ws
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
@@ -67,10 +68,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.db_engine = db_engine
         app.state.session_factory = factory
         app.state.monitor = monitor
+        app.state.ai = AIService(settings, factory, monitor)
+        if settings.ai_enabled:
+            preload = asyncio.create_task(app.state.ai.bundle(), name="astra-ai-preload")
         logger.info("ASTRA-MED API ready (%s, db=%s)", settings.environment, db_engine.dialect.name)
         try:
             yield
         finally:
+            if settings.ai_enabled and not preload.done():
+                preload.cancel()
             await monitor.stop()
             await db_engine.dispose()
 
@@ -106,6 +112,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     register_exception_handlers(app)
     app.include_router(routes.router)
+    app.include_router(ai_routes.router)
     app.include_router(ws.router)
 
     def custom_openapi():

@@ -1228,10 +1228,646 @@
           }
         }
       }
+    },
+    "/api/ai/status": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Ai Status",
+        "description": "Which model version is loaded, and which detectors and forecasters it provides.",
+        "operationId": "ai_status_api_ai_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/anomaly-detection": {
+      "post": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Anomaly Detection",
+        "description": "Score stored windows (default: last 6 h) or supplied readings with the anomaly ensemble.\n\nReturns a per-window timeline (each detector's calibrated score, ensemble score, votes), the\nflagged segments that persist for at least 10 minutes, and an explanation for each.",
+        "operationId": "anomaly_detection_api_ai_anomaly_detection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnomalyDetectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyDetectionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No trained model version is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not enough stored data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/astronaut/{astronaut_id}/baseline": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Baseline",
+        "description": "Personal baseline per signal (by activity and time of day), rolling statistics, and how the\nlatest reading compares.",
+        "operationId": "baseline_api_ai_astronaut__astronaut_id__baseline_get",
+        "parameters": [
+          {
+            "name": "astronaut_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaselineResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not enough stored data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/astronaut/{astronaut_id}/forecast": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Forecast",
+        "description": "24 h forecast in 30-minute steps with 90% split-conformal intervals and 1/6/12/24 h summaries.",
+        "operationId": "forecast_api_ai_astronaut__astronaut_id__forecast_get",
+        "parameters": [
+          {
+            "name": "astronaut_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "xgboost (default), lstm, gru, tcn or a baseline",
+              "title": "Model"
+            },
+            "description": "xgboost (default), lstm, gru, tcn or a baseline"
+          },
+          {
+            "name": "signals",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "heart_rate, spo2, respiratory_rate, temperature_c",
+              "title": "Signals"
+            },
+            "description": "heart_rate, spo2, respiratory_rate, temperature_c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No trained model version is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not enough stored data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/astronaut/{astronaut_id}/risk-assessment": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Risk Assessment",
+        "description": "Rule-based concern level with prioritised warnings and the measurements behind each.",
+        "operationId": "risk_assessment_api_ai_astronaut__astronaut_id__risk_assessment_get",
+        "parameters": [
+          {
+            "name": "astronaut_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskAssessmentResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not enough stored data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/crew-overview": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Crew Overview",
+        "description": "Risk summary and health score for every crew member, highest concern first.",
+        "operationId": "crew_overview_api_ai_crew_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewRiskOverview"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/model-performance": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Model Performance",
+        "description": "Evaluation results of the loaded model version (simulated test split), ablations and limitations.",
+        "operationId": "model_performance_api_ai_model_performance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelPerformanceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No trained model version is available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/explanations/{alert_id}": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Explain Alert",
+        "description": "Why an alert fired: the rule, the contributing signals and how far each was from baseline.",
+        "operationId": "explain_alert_api_ai_explanations__alert_id__get",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertExplanationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not enough stored data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/models/reload": {
+      "post": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Reload Models",
+        "description": "Load the newest registered model version (after running the training script).",
+        "operationId": "reload_models_api_ai_models_reload_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AIStatus": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "loaded": {
+            "type": "boolean",
+            "title": "Loaded"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "detectors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Detectors"
+          },
+          "forecasters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Forecasters"
+          },
+          "serving_forecaster": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serving Forecaster"
+          },
+          "torch_available": {
+            "type": "boolean",
+            "title": "Torch Available"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "model_version",
+          "loaded",
+          "error",
+          "detectors",
+          "forecasters",
+          "serving_forecaster",
+          "torch_available"
+        ],
+        "title": "AIStatus"
+      },
       "ActivitySummary": {
         "properties": {
           "current_state": {
@@ -1504,6 +2140,352 @@
         "type": "object",
         "title": "AlertAction"
       },
+      "AlertExplanationResponse": {
+        "properties": {
+          "alert_id": {
+            "type": "string",
+            "title": "Alert Id"
+          },
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "alert_title": {
+            "type": "string",
+            "title": "Alert Title"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/Explanation"
+          },
+          "anomaly_context": {
+            "items": {
+              "$ref": "#/components/schemas/AnomalyPoint"
+            },
+            "type": "array",
+            "title": "Anomaly Context"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alert_id",
+          "astronaut_id",
+          "alert_title",
+          "opened_at",
+          "rule",
+          "explanation",
+          "anomaly_context",
+          "model_version"
+        ],
+        "title": "AlertExplanationResponse"
+      },
+      "AnomalyDetectionRequest": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start",
+            "description": "Analyse stored data from here (default: 6 h ago)"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End",
+            "description": "Analyse stored data until here (default: now)"
+          },
+          "readings": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReadingIn"
+                },
+                "type": "array",
+                "maxItems": 20000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Readings",
+            "description": "Optional measurements to analyse instead of stored data; missing values may be null"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models",
+            "description": "Detector subset (default: all)"
+          },
+          "include_explanations": {
+            "type": "boolean",
+            "title": "Include Explanations",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id"
+        ],
+        "title": "AnomalyDetectionRequest"
+      },
+      "AnomalyDetectionResponse": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "window_minutes": {
+            "type": "integer",
+            "title": "Window Minutes"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "stored",
+              "supplied"
+            ],
+            "title": "Source"
+          },
+          "detectors": {
+            "items": {
+              "$ref": "#/components/schemas/DetectorInfo"
+            },
+            "type": "array",
+            "title": "Detectors"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/AnomalyPoint"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/Detection"
+            },
+            "type": "array",
+            "title": "Detections"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQuality"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "model_version",
+          "window_minutes",
+          "start",
+          "end",
+          "source",
+          "detectors",
+          "timeline",
+          "detections",
+          "data_quality",
+          "limitations"
+        ],
+        "title": "AnomalyDetectionResponse"
+      },
+      "AnomalyPoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "ensemble_score": {
+            "type": "number",
+            "title": "Ensemble Score",
+            "description": "Ensemble score / its threshold; >= 1 is flagged"
+          },
+          "flagged": {
+            "type": "boolean",
+            "title": "Flagged"
+          },
+          "votes": {
+            "type": "integer",
+            "title": "Votes"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Scores",
+            "description": "Each detector's score / its threshold"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "top_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Top Signals"
+          },
+          "missing_frac": {
+            "type": "number",
+            "title": "Missing Frac"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "ensemble_score",
+          "flagged",
+          "votes",
+          "scores",
+          "kind",
+          "top_signals",
+          "missing_frac"
+        ],
+        "title": "AnomalyPoint"
+      },
+      "AnomalySummary": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "votes": {
+            "type": "integer",
+            "title": "Votes"
+          },
+          "n_detectors": {
+            "type": "integer",
+            "title": "N Detectors"
+          },
+          "flagged_minutes": {
+            "type": "number",
+            "title": "Flagged Minutes"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "score",
+          "votes",
+          "n_detectors",
+          "flagged_minutes",
+          "kind"
+        ],
+        "title": "AnomalySummary"
+      },
       "Astronaut": {
         "properties": {
           "id": {
@@ -1715,6 +2697,190 @@
         ],
         "title": "AstronautSummary"
       },
+      "BaselineResponse": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "fitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fitted At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "history_hours": {
+            "type": "integer",
+            "title": "History Hours"
+          },
+          "windows_used": {
+            "type": "integer",
+            "title": "Windows Used"
+          },
+          "first_ts": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Ts"
+          },
+          "last_ts": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ts"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalBaseline"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "fitted_at",
+          "updated_at",
+          "history_hours",
+          "windows_used",
+          "first_ts",
+          "last_ts",
+          "method",
+          "signals",
+          "limitations"
+        ],
+        "title": "BaselineResponse"
+      },
+      "BaselineStats": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          },
+          "p5": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P5"
+          },
+          "p25": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P25"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p75": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P75"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n"
+        ],
+        "title": "BaselineStats"
+      },
       "BaselineVitals": {
         "properties": {
           "heart_rate": {
@@ -1823,6 +2989,129 @@
         ],
         "title": "ComparisonSeries"
       },
+      "Confidence": {
+        "properties": {
+          "score": {
+            "type": "number",
+            "title": "Score",
+            "description": "0-1 heuristic: detector agreement, data completeness, baseline support"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Level"
+          },
+          "basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Basis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "level",
+          "basis"
+        ],
+        "title": "Confidence"
+      },
+      "Contributor": {
+        "properties": {
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "share": {
+            "type": "number",
+            "title": "Share",
+            "description": "Share of the total attribution, 0-1"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "default": ""
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline",
+            "description": "Personal baseline centre for the context"
+          },
+          "z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z",
+            "description": "Robust personal z-score"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile",
+            "description": "Percentile within the personal baseline"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "above",
+                  "below"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal",
+          "label",
+          "share"
+        ],
+        "title": "Contributor"
+      },
       "CrewRadiation": {
         "properties": {
           "astronaut_id": {
@@ -1873,6 +3162,139 @@
           "daily"
         ],
         "title": "CrewRadiation"
+      },
+      "CrewRiskOverview": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "crew": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRiskSummary"
+            },
+            "type": "array",
+            "title": "Crew"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "model_version",
+          "crew"
+        ],
+        "title": "CrewRiskOverview"
+      },
+      "CrewRiskSummary": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "low_concern",
+              "moderate_concern",
+              "high_concern"
+            ],
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "health_score": {
+            "type": "integer",
+            "title": "Health Score"
+          },
+          "top_warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Warning"
+          },
+          "top_signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Top Signals"
+          },
+          "confidence_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidence Level"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/RiskWarning"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "role",
+          "risk_score",
+          "category",
+          "category_label",
+          "health_score",
+          "top_warning",
+          "top_signals",
+          "confidence_level",
+          "warnings"
+        ],
+        "title": "CrewRiskSummary"
       },
       "CrewSeries": {
         "properties": {
@@ -1928,6 +3350,95 @@
         ],
         "title": "CrewStatusCounts"
       },
+      "CurrentComparison": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "sleep",
+              "rest",
+              "work",
+              "exercise"
+            ],
+            "title": "State"
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected",
+            "description": "Null when there is no baseline for the current activity yet"
+          },
+          "z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile"
+          },
+          "reference_level": {
+            "type": "string",
+            "enum": [
+              "cell",
+              "state",
+              "overall",
+              "none"
+            ],
+            "title": "Reference Level"
+          },
+          "assessment": {
+            "type": "string",
+            "enum": [
+              "within",
+              "high",
+              "low",
+              "no_baseline"
+            ],
+            "title": "Assessment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "value",
+          "state",
+          "expected",
+          "z",
+          "percentile",
+          "reference_level",
+          "assessment"
+        ],
+        "title": "CurrentComparison"
+      },
       "DailyDose": {
         "properties": {
           "day": {
@@ -1956,6 +3467,157 @@
           "solar_particle_event"
         ],
         "title": "DailyDose"
+      },
+      "DataQuality": {
+        "properties": {
+          "windows": {
+            "type": "integer",
+            "title": "Windows"
+          },
+          "windows_without_data": {
+            "type": "integer",
+            "title": "Windows Without Data"
+          },
+          "missing_fraction": {
+            "type": "number",
+            "title": "Missing Fraction"
+          },
+          "implausible_values_removed": {
+            "type": "integer",
+            "title": "Implausible Values Removed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "windows",
+          "windows_without_data",
+          "missing_fraction",
+          "implausible_values_removed"
+        ],
+        "title": "DataQuality"
+      },
+      "Detection": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "peak_ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Peak Ts"
+          },
+          "peak_score": {
+            "type": "number",
+            "title": "Peak Score"
+          },
+          "duration_minutes": {
+            "type": "number",
+            "title": "Duration Minutes"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "votes": {
+            "type": "integer",
+            "title": "Votes"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Explanation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "peak_ts",
+          "peak_score",
+          "duration_minutes",
+          "kind",
+          "signals",
+          "votes",
+          "explanation"
+        ],
+        "title": "Detection"
+      },
+      "DetectorInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "description",
+          "threshold",
+          "weight"
+        ],
+        "title": "DetectorInfo"
+      },
+      "Driver": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "share": {
+            "type": "number",
+            "title": "Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "share"
+        ],
+        "title": "Driver"
       },
       "ErrorBody": {
         "properties": {
@@ -2013,6 +3675,173 @@
           "value"
         ],
         "title": "Evidence"
+      },
+      "Explanation": {
+        "properties": {
+          "what_changed": {
+            "type": "string",
+            "title": "What Changed"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "contributors": {
+            "items": {
+              "$ref": "#/components/schemas/Contributor"
+            },
+            "type": "array",
+            "title": "Contributors"
+          },
+          "significance": {
+            "$ref": "#/components/schemas/Significance"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          }
+        },
+        "type": "object",
+        "required": [
+          "what_changed",
+          "kind",
+          "contributors",
+          "significance",
+          "confidence",
+          "limitations",
+          "method"
+        ],
+        "title": "Explanation"
+      },
+      "ForecastPoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "horizon_h": {
+            "type": "number",
+            "title": "Horizon H"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "lower": {
+            "type": "number",
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "title": "Upper"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "horizon_h",
+          "value",
+          "lower",
+          "upper"
+        ],
+        "title": "ForecastPoint"
+      },
+      "ForecastResponse": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "model_label": {
+            "type": "string",
+            "title": "Model Label"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "origin_ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Origin Ts"
+          },
+          "step_minutes": {
+            "type": "integer",
+            "title": "Step Minutes"
+          },
+          "interval_coverage_nominal": {
+            "type": "number",
+            "title": "Interval Coverage Nominal"
+          },
+          "available_models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Models"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SignalForecast"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "model",
+          "model_label",
+          "model_version",
+          "generated_at",
+          "origin_ts",
+          "step_minutes",
+          "interval_coverage_nominal",
+          "available_models",
+          "series",
+          "limitations"
+        ],
+        "title": "ForecastResponse"
       },
       "HealthSnapshot": {
         "properties": {
@@ -2201,6 +4030,135 @@
         ],
         "title": "HistorySeries"
       },
+      "HistoryValue": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "value"
+        ],
+        "title": "HistoryValue"
+      },
+      "HorizonSummary": {
+        "properties": {
+          "horizon_h": {
+            "type": "integer",
+            "title": "Horizon H"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "lower": {
+            "type": "number",
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "title": "Upper"
+          },
+          "caution_limit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caution Limit"
+          },
+          "limit_direction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "low"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Direction"
+          },
+          "crossing": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "likely",
+                  "possible"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crossing"
+          },
+          "validation_mae": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Mae",
+            "description": "Test-split MAE for this model, signal and horizon (simulated data)"
+          },
+          "validation_coverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Coverage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "horizon_h",
+          "ts",
+          "value",
+          "lower",
+          "upper",
+          "caution_limit",
+          "limit_direction",
+          "crossing",
+          "validation_mae",
+          "validation_coverage"
+        ],
+        "title": "HorizonSummary"
+      },
       "Insight": {
         "properties": {
           "id": {
@@ -2378,6 +4336,129 @@
         ],
         "title": "MissionStatus"
       },
+      "ModelPerformanceResponse": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "git_commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Git Commit"
+          },
+          "runtime_seconds": {
+            "type": "number",
+            "title": "Runtime Seconds"
+          },
+          "dataset": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dataset"
+          },
+          "anomaly": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Anomaly"
+          },
+          "forecast": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Forecast"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ModelVersionInfo"
+            },
+            "type": "array",
+            "title": "Versions"
+          },
+          "report_markdown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Markdown"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "created_at",
+          "git_commit",
+          "runtime_seconds",
+          "dataset",
+          "anomaly",
+          "forecast",
+          "limitations",
+          "versions",
+          "report_markdown"
+        ],
+        "title": "ModelPerformanceResponse"
+      },
+      "ModelVersionInfo": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "config_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Config Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "created_at",
+          "config_hash"
+        ],
+        "title": "ModelVersionInfo"
+      },
       "RadiationBrief": {
         "properties": {
           "mission_dose_msv": {
@@ -2438,6 +4519,296 @@
           "crew"
         ],
         "title": "RadiationOverview"
+      },
+      "ReadingIn": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "heart_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 300.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heart Rate"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "systolic": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 300.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Systolic"
+          },
+          "diastolic": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 200.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diastolic"
+          },
+          "temperature_c": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 45.0,
+                "minimum": 25.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature C"
+          },
+          "respiratory_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 80.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Respiratory Rate"
+          },
+          "activity_state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sleep",
+                  "rest",
+                  "work",
+                  "exercise"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity State"
+          },
+          "activity_met": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 20.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Met"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts"
+        ],
+        "title": "ReadingIn"
+      },
+      "RiskAssessmentResponse": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "low_concern",
+              "moderate_concern",
+              "high_concern"
+            ],
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "health_score": {
+            "type": "integer",
+            "title": "Health Score",
+            "description": "100 minus the risk score; a display convenience, not a clinical score"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/RiskWarning"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/Explanation"
+          },
+          "anomaly": {
+            "$ref": "#/components/schemas/AnomalySummary"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Experimental decision support trained and evaluated on simulated data only. Not a medical device, not clinically validated, and never a diagnosis."
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "description": "Always 'simulated' in this prototype. No real astronaut data is used.",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "generated_at",
+          "model_version",
+          "risk_score",
+          "category",
+          "category_label",
+          "health_score",
+          "warnings",
+          "explanation",
+          "anomaly",
+          "limitations"
+        ],
+        "title": "RiskAssessmentResponse"
+      },
+      "RiskWarning": {
+        "properties": {
+          "priority": {
+            "type": "integer",
+            "title": "Priority"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "deviation",
+              "anomaly",
+              "trend",
+              "alert"
+            ],
+            "title": "Source"
+          },
+          "concern": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "low_concern",
+              "moderate_concern",
+              "high_concern"
+            ],
+            "title": "Concern"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "signals": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "points": {
+            "type": "number",
+            "title": "Points"
+          },
+          "alert_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "priority",
+          "source",
+          "concern",
+          "title",
+          "detail",
+          "signals",
+          "points"
+        ],
+        "title": "RiskWarning"
       },
       "ScenarioInfo": {
         "properties": {
@@ -2507,6 +4878,160 @@
           "value"
         ],
         "title": "SeriesPoint"
+      },
+      "SignalBaseline": {
+        "properties": {
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "overall": {
+            "$ref": "#/components/schemas/BaselineStats"
+          },
+          "by_state": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StateBaseline"
+            },
+            "type": "object",
+            "title": "By State"
+          },
+          "rolling_24h": {
+            "$ref": "#/components/schemas/BaselineStats"
+          },
+          "rolling_7d": {
+            "$ref": "#/components/schemas/BaselineStats"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CurrentComparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal",
+          "label",
+          "unit",
+          "overall",
+          "by_state",
+          "rolling_24h",
+          "rolling_7d",
+          "current"
+        ],
+        "title": "SignalBaseline"
+      },
+      "SignalForecast": {
+        "properties": {
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryValue"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "forecast": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastPoint"
+            },
+            "type": "array",
+            "title": "Forecast"
+          },
+          "horizons": {
+            "items": {
+              "$ref": "#/components/schemas/HorizonSummary"
+            },
+            "type": "array",
+            "title": "Horizons"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/Driver"
+            },
+            "type": "array",
+            "title": "Drivers",
+            "description": "What drives the forecast (TreeSHAP share for XGBoost)"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal",
+          "label",
+          "unit",
+          "history",
+          "forecast",
+          "horizons",
+          "drivers",
+          "explanation"
+        ],
+        "title": "SignalForecast"
+      },
+      "Significance": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "none",
+              "minor",
+              "notable",
+              "major"
+            ],
+            "title": "Level"
+          },
+          "max_abs_z": {
+            "type": "number",
+            "title": "Max Abs Z"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "max_abs_z",
+          "description"
+        ],
+        "title": "Significance"
       },
       "SimulationEvent": {
         "properties": {
@@ -2779,6 +5304,114 @@
         ],
         "title": "SleepSummary"
       },
+      "StateBaseline": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          },
+          "p5": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P5"
+          },
+          "p25": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P25"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p75": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P75"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          },
+          "center": {
+            "type": "number",
+            "title": "Center"
+          },
+          "scale": {
+            "type": "number",
+            "title": "Scale"
+          },
+          "by_time_of_day": {
+            "items": {
+              "$ref": "#/components/schemas/TimeOfDayStats"
+            },
+            "type": "array",
+            "title": "By Time Of Day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n",
+          "center",
+          "scale",
+          "by_time_of_day"
+        ],
+        "title": "StateBaseline"
+      },
       "SystemHealth": {
         "properties": {
           "status": {
@@ -2900,6 +5533,101 @@
           "overrides"
         ],
         "title": "ThresholdInfo"
+      },
+      "TimeOfDayStats": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "std": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Std"
+          },
+          "p5": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P5"
+          },
+          "p25": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P25"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p75": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P75"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          },
+          "hours": {
+            "type": "string",
+            "title": "Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n",
+          "hours"
+        ],
+        "title": "TimeOfDayStats"
       },
       "VitalReading": {
         "properties": {

@@ -38,6 +38,16 @@ class ForbiddenError(ApiError):
     code = "forbidden"
 
 
+class InsufficientDataError(ApiError):
+    status_code = 409
+    code = "insufficient_data"
+
+
+class ServiceUnavailableError(ApiError):
+    status_code = 503
+    code = "models_unavailable"
+
+
 def _envelope(status: int, code: str, message: str, details: Any = None) -> JSONResponse:
     return JSONResponse(
         status_code=status,

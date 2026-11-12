@@ -11,6 +11,7 @@ import { useNow } from "@/lib/use-now";
 import { cn } from "@/lib/utils";
 
 import { AlertActions } from "./alert-actions";
+import { ExplainAlertButton } from "./explain-alert";
 
 const CATEGORY_LABEL: Record<Alert["category"], string> = {
   threshold: "Threshold rule",
@@ -87,7 +88,8 @@ export function AlertRow({
         )}
       </div>
       {!compact && (
-        <div className="col-span-2 md:col-span-1 md:self-center">
+        <div className="col-span-2 flex flex-wrap gap-1.5 md:col-span-1 md:self-center">
+          <ExplainAlertButton alert={alert} />
           <AlertActions alert={alert} />
         </div>
       )}

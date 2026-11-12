@@ -38,7 +38,8 @@
 | `repositories/` | Thin query functions per aggregate; routes never touch SQL |
 | `services/` | `monitoring` (runtime core), `seeding` (incremental backfill), `history` (bucketing), `health`, `mission`, `insights`, `hub` (WebSocket fan-out with per-socket send locks), `mappers` |
 | `schemas/` | Pydantic models: the API contract. WebSocket message models are injected into OpenAPI |
-| `api/` | Thin REST handlers and the WebSocket endpoint |
+| `api/` | Thin REST handlers and the WebSocket endpoint; `ai_routes.py` serves `/api/ai/*` |
+| `ai/` | Phase 3 intelligence engine: windows, personal baselines, causal features, five anomaly detectors + ensemble, forecasters with conformal intervals, rule-based risk, explanations, experiment runner and hash-verified model registry. See [AI_ENGINE.md](AI_ENGINE.md) |
 
 ### Runtime loop
 
@@ -62,6 +63,23 @@ restores open alerts into the evaluator so a restart doesn't duplicate them.
 - **Determinism.** A fixed `ASTRA_SIMULATOR_SEED` reproduces the same crew history, which keeps tests and demos repeatable.
 - **Activity-aware rules.** A heart rate of 150 bpm is expected on the treadmill and alarming at a desk; limits change with activity.
 - **Operators close alerts.** The evaluator marks recovery but never auto-resolves, so a human decision is always recorded.
+
+### AI engine at runtime
+
+`AIService` (`app/ai/service.py`) sits beside `MonitoringService` and only reads.
+
+- **Model bundle:** at startup, a background task verifies the newest version under
+  `backend/artifacts/` against its SHA-256 manifest, then loads it.
+- **Requests:** the service reads stored samples through the existing repositories and windows
+  them to 5 minutes. It keeps one personal baseline per crew member, updated with new windows every
+  60 s and refitted from 7 days of history every 6 h.
+- **Concurrency:** scoring and forecasting run in `asyncio.to_thread`, so the 1 Hz tick loop is
+  never blocked. Results are cached for 30 s.
+- **No models:** if no model version exists, or `ASTRA_AI_ENABLED=false`, the AI endpoints return
+  503. Phases 1 and 2 keep working unchanged.
+
+Training is offline (`python -m app.ai.train`). It uses a separately generated, labelled synthetic
+dataset, never the live database, so evaluation labels cannot leak into serving.
 
 ## Frontend modules (`frontend/src`)
 

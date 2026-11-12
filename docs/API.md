@@ -22,8 +22,10 @@ generates the frontend's TypeScript types (`npm run gen:api`).
 | 403 | `forbidden` | Simulation control disabled (`ASTRA_SIMULATION_CONTROL_ENABLED=false`) |
 | 404 | `not_found` | Unknown astronaut, alert or scenario |
 | 409 | `conflict` | Scenario already running for that target; alert already acknowledged/resolved |
+| 409 | `insufficient_data` | AI endpoint: not enough stored history to build a baseline, features or a forecast |
 | 422 | `validation_error` | Bad query/body; `details` lists each failing field |
 | 500 | `internal_error` | Unexpected server error (logged with the request ID) |
+| 503 | `models_unavailable` | AI endpoint: no trained model version (run `python -m app.ai.train`) or `ASTRA_AI_ENABLED=false` |
 
 ## REST endpoints
 
@@ -109,6 +111,53 @@ curl -X POST http://localhost:8000/api/simulation/events \
 Scenario keys: `tachycardia`, `bradycardia`, `desaturation`, `elevated_temperature`,
 `abnormal_respiratory_rate`, `irregular_rhythm`, `solar_particle_event` (crew-wide, so
 `astronaut_id` is ignored). `intensity` 0.3–1.5, `duration_seconds` 30–3600.
+
+## AI intelligence (phase 3)
+
+Experimental models trained and evaluated on simulated data only. Every response carries
+`"data_source": "simulated"`, a `disclaimer`, the `model_version`, `limitations`, and, where
+relevant, an `explanation`: what changed, kind, contributing signals, significance, confidence and
+data limitations. None of it is a diagnosis. Methods and results are in [AI_ENGINE.md](AI_ENGINE.md).
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/ai/status` | `AIStatus`: enabled, loaded model version, available detectors and forecasters, last error |
+| POST | `/api/ai/anomaly-detection` | `AnomalyDetectionResponse`: per-window ensemble and per-detector scores (score ÷ threshold, flagged at ≥ 1), detector votes, detections of 10 min or more with explanations, data quality |
+| GET | `/api/ai/astronaut/{id}/baseline` | `BaselineResponse`: per signal, the reference for the current state and time of day (center, scale, percentiles, depth), current z and percentile, rolling 24 h / 7 d statistics, the profile by state |
+| GET | `/api/ai/astronaut/{id}/forecast` | `ForecastResponse`: per signal, observed history and 30-min forecast steps to 24 h with 90 % intervals, summaries at 1/6/12/24 h with the test MAE and coverage, explanation (TreeSHAP drivers for XGBoost) |
+| GET | `/api/ai/astronaut/{id}/risk-assessment` | `RiskAssessmentResponse`: risk score 0–100, category (`normal`, `low_concern`, `moderate_concern`, `high_concern`), health score, prioritised warnings with points and evidence, components, explanation |
+| GET | `/api/ai/crew-overview` | `CrewRiskOverview`: one risk summary per crew member plus the crew-wide warning queue |
+| GET | `/api/ai/model-performance` | `ModelPerformanceResponse`: dataset summary, anomaly and forecast metrics, ablations, SHAP summary, limitations, registered versions, the markdown report |
+| GET | `/api/ai/explanations/{alert_id}` | `AlertExplanationResponse`: why a phase 2 alert fired (its rule) plus the anomaly ensemble's attribution in the surrounding 5-minute window |
+| POST | `/api/ai/models/reload` | `AIStatus` after reloading the latest verified model version. Returns 403 unless `ASTRA_SIMULATION_CONTROL_ENABLED=true` |
+
+`POST /api/ai/anomaly-detection` body:
+
+```json
+{
+  "astronaut_id": "AST-02",
+  "start": "2026-11-12T08:00:00Z",
+  "end": "2026-11-12T14:00:00Z",
+  "models": ["lof", "one_class_svm"],
+  "include_explanations": true
+}
+```
+
+- `start` and `end` default to the last 6 h. Omit `models` to use the full calibrated ensemble.
+  With a subset, a window is flagged when a majority of the chosen detectors flag it.
+- Instead of stored data you can send up to 20,000 `readings`. Each has `ts`, an optional value for
+  each signal (`heart_rate`, `spo2`, `systolic`, `diastolic`, `temperature_c`, `respiratory_rate`;
+  `null` when missing), `activity_state` and `activity_met`. They are scored against the crew
+  member's stored personal baseline.
+
+`GET /api/ai/astronaut/{id}/forecast` query parameters:
+
+- `model`: `xgboost` (default), `lstm`, `gru`, `tcn`, `persistence`, `seasonal_naive` or
+  `climatology`.
+- `signals`: any of `heart_rate`, `spo2`, `respiratory_rate`, `temperature_c`. Repeat the parameter
+  for several signals.
+
+Responses are cached for `ASTRA_AI_CACHE_SECONDS` (30 s).
 
 ## WebSocket: `/ws/health-monitoring`
 
