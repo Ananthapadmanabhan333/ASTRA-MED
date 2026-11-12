@@ -1,0 +1,14 @@
+# Store text with LF line endings so edits on Windows do not rewrite whole files.
+* text=auto eol=lf
+
+# Binary assets: never convert.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.pt binary
+*.joblib binary
