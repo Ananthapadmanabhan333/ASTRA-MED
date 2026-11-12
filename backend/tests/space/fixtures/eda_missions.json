@@ -1,0 +1,14 @@
+[
+ {
+  "name": "RR-1",
+  "title": "Rodent Research 1 (SpaceX-4)",
+  "description": "NASA's Rodent Research Hardware System provides a research platform aboard the International Space Station (ISS) for long-duration rodent experiments in space. Scientists and engineers at Ames Research Center (ARC) developed the new system for the space station based on the Animal Enclosure Module (AEM) that flew aboard 27 space shuttle missions between 1983 and 2011 and supported studies ranging from four to 18 days. Rodent spaceflight experiments have contributed significantly to our understanding of the effects of microgravity on biological processes that are directly relevant to humans in space. The maiden voyage of the system, Rodent Research-1 (RR1), launched on SpaceX-4 CRS-4 on September 21, 2014 and returned October 25, 2014 , during ISS expeditions 41/42. Lasting 37 days, RR1 was the longest duration spaceflight rodent study to date conducted in a NASA facility. RR1 was the first mission to transport rodents aboard an unmanned commercial vehicle. The primary goal is for NASA to validate hardware and demonstrate critical research operations, while supporting the Center for the Advancement of Science in Space (CASIS) in sponsoring the first commercial research study.",
+  "link": "https://osdr.nasa.gov/bio/repo/data/payloads/RR-1"
+ },
+ {
+  "name": "RR-3",
+  "title": "Rodent Research 3 (SpaceX-8)",
+  "description": "RR3 launched 20 mice (~12 weeks old, female, BALB/c) on SpX8 to evaluate muscle atrophy and identify molecular targets that could be used to develop novel therapeutics for muscle disease. Spaceflight causes a rapid loss of bone and muscle mass especially in the legs and spine, with symptoms similar to those experienced by people with muscle wasting diseases or with limited mobility on Earth. Rodent Research-3 is a commercial ISS U.S. National Lab investigation sponsored by Eli Lilly and Company that will evaluate muscle atrophy under microgravity conditions and seeks to identify molecular targets that could be used to develop novel therapeutics for muscle disease.",
+  "link": "https://osdr.nasa.gov/bio/repo/data/payloads/RR-3"
+ }
+]

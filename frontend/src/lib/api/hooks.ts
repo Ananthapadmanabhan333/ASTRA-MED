@@ -296,3 +296,165 @@ export function useAlertExplanation(alertId: string, enabled: boolean) {
     staleTime: 60_000,
   });
 }
+
+// ------------------------------------------------------- space environment (phase 4) --
+
+export const spaceKeys = {
+  sources: ["space", "sources"] as const,
+  summary: (days: number) => ["space", "summary", days] as const,
+  events: (days: number, types: string[]) => ["space", "events", days, types.join(",")] as const,
+  event: (id: number) => ["space", "event", id] as const,
+  radiation: (days: number) => ["space", "radiation", days] as const,
+  missions: ["space", "iss", "missions"] as const,
+  mission: (name: string, resolution: string) => ["space", "iss", name, resolution] as const,
+  studies: (params: StudyFilters) => ["space", "osdr", params] as const,
+  timeline: (params: TimelineParams) => ["space", "timeline", params] as const,
+  nearby: (ts: string, hours: number) => ["space", "nearby", ts, hours] as const,
+  corrSeries: ["space", "correlation", "series"] as const,
+  all: ["space"] as const,
+};
+
+export interface StudyFilters {
+  topic?: string;
+  q?: string;
+  organism?: string;
+  project_type?: string;
+  mission?: string;
+  live?: boolean;
+  limit?: number;
+}
+
+export interface TimelineParams {
+  mode: "mission" | "iss";
+  days?: number;
+  astronaut_id?: string;
+  mission?: string;
+}
+
+export function useSpaceSources() {
+  return useQuery({ queryKey: spaceKeys.sources, queryFn: () => unwrap(api.GET("/api/space/sources")), refetchInterval: 30_000 });
+}
+
+export function useWeatherSummary(days: number) {
+  return useQuery({
+    queryKey: spaceKeys.summary(days),
+    queryFn: () => unwrap(api.GET("/api/space/weather/summary", { params: { query: { days } } })),
+    refetchInterval: 120_000,
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useWeatherEvents(days: number, types: string[]) {
+  return useQuery({
+    queryKey: spaceKeys.events(days, types),
+    queryFn: () => {
+      const end = new Date();
+      const start = new Date(end.getTime() - days * 86_400_000);
+      return unwrap(
+        api.GET("/api/space/weather/events", {
+          params: { query: { start: start.toISOString(), end: end.toISOString(), types: types.length ? types : undefined, limit: 2000 } },
+        }),
+      );
+    },
+    refetchInterval: 120_000,
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useWeatherEvent(id: number | null) {
+  return useQuery({
+    queryKey: spaceKeys.event(id ?? -1),
+    queryFn: () => unwrap(api.GET("/api/space/weather/events/{event_id}", { params: { path: { event_id: id! } } })),
+    enabled: id != null,
+    staleTime: 300_000,
+  });
+}
+
+export function useSpaceRadiation(days: number) {
+  return useQuery({
+    queryKey: spaceKeys.radiation(days),
+    queryFn: () => unwrap(api.GET("/api/space/radiation", { params: { query: { days } } })),
+    refetchInterval: 120_000,
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useIssMissions() {
+  return useQuery({ queryKey: spaceKeys.missions, queryFn: () => unwrap(api.GET("/api/space/iss/missions")), refetchInterval: 60_000 });
+}
+
+export function useIssMission(name: string | null, resolution: "1h" | "6h" | "1d") {
+  return useQuery({
+    queryKey: spaceKeys.mission(name ?? "", resolution),
+    queryFn: () =>
+      unwrap(api.GET("/api/space/iss/missions/{name}", { params: { path: { name: name! }, query: { resolution } } })),
+    enabled: !!name,
+    staleTime: 300_000,
+    placeholderData: (prev) => (prev?.mission.name === name ? prev : undefined),
+  });
+}
+
+export function useOsdrStudies(filters: StudyFilters) {
+  return useQuery({
+    queryKey: spaceKeys.studies(filters),
+    queryFn: () => unwrap(api.GET("/api/space/osdr/studies", { params: { query: { ...filters, limit: filters.limit ?? 50 } } })),
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useSpaceTimeline(p: TimelineParams) {
+  return useQuery({
+    queryKey: spaceKeys.timeline(p),
+    queryFn: () => {
+      if (p.mode === "iss") {
+        return unwrap(api.GET("/api/space/timeline", { params: { query: { mode: "iss", mission: p.mission } } }));
+      }
+      const end = new Date();
+      const start = new Date(end.getTime() - (p.days ?? 7) * 86_400_000);
+      return unwrap(
+        api.GET("/api/space/timeline", {
+          params: { query: { mode: "mission", start: start.toISOString(), end: end.toISOString(), astronaut_id: p.astronaut_id } },
+        }),
+      );
+    },
+    enabled: p.mode === "mission" || !!p.mission,
+    refetchInterval: p.mode === "mission" ? 60_000 : false,
+    placeholderData: (prev) => (prev?.mode === p.mode ? prev : undefined),
+  });
+}
+
+export function useNearbyEvents(ts: string | null, hours: number) {
+  return useQuery({
+    queryKey: spaceKeys.nearby(ts ?? "", hours),
+    queryFn: () => unwrap(api.GET("/api/space/timeline/nearby", { params: { query: { ts: ts!, window_hours: hours } } })),
+    enabled: !!ts,
+    staleTime: 120_000,
+  });
+}
+
+export function useCorrelationSeries() {
+  return useQuery({ queryKey: spaceKeys.corrSeries, queryFn: () => unwrap(api.GET("/api/space/correlation/series")), staleTime: 60_000 });
+}
+
+export function useCorrelation() {
+  return useMutation({
+    mutationFn: (body: { x: string; y: string; start: string; end: string; max_lag: number; rolling_window: number }) =>
+      unwrap(api.POST("/api/space/correlation/analyze", { body })),
+  });
+}
+
+export function useCorrelationMatrix() {
+  return useMutation({
+    mutationFn: (body: { series: string[]; start: string; end: string; method: "spearman" | "pearson" }) =>
+      unwrap(api.POST("/api/space/correlation/matrix", { body })),
+  });
+}
+
+export function useSpaceSync() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { source: "donki" | "eda" | "osdr"; days?: number; missions?: string[]; force?: boolean }) =>
+      unwrap(api.POST("/api/space/sync", { body: { force: false, ...body } })),
+    onSettled: () => qc.invalidateQueries({ queryKey: spaceKeys.all }),
+  });
+}

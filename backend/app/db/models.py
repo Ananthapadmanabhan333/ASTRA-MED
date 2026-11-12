@@ -165,3 +165,147 @@ class RadiationDoseRow(Base):
     dose_msv: Mapped[float] = mapped_column(Float)
     solar_particle_event: Mapped[bool] = mapped_column(Boolean, default=False)
     data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)
+
+
+# --------------------------------------------------------------------------------------------
+# Phase 4: NASA open data. These tables hold real, externally sourced data. Every row records
+# its source, the endpoint it came from, when it was retrieved and its data category, and keeps
+# the original record so normalisation can always be audited.
+# --------------------------------------------------------------------------------------------
+
+
+class SpaceWeatherEventRow(Base):
+    __tablename__ = "space_weather_events"
+    __table_args__ = (
+        UniqueConstraint("source_id", "external_id", name="uq_swx_event"),
+        Index("ix_swx_type_start", "event_type", "start_time"),
+        Index("ix_swx_start", "start_time"),
+    )
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    source_id: Mapped[str] = mapped_column(String(32))
+    event_type: Mapped[str] = mapped_column(String(16))  # FLR, CME, SEP, GST, RBE, IPS, HSS, MPC, WSA
+    external_id: Mapped[str] = mapped_column(String(128))
+    category: Mapped[str] = mapped_column(String(16))  # indicator | model
+    start_time: Mapped[datetime] = mapped_column(UTCDateTime)
+    peak_time: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    end_time: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    classification: Mapped[str | None] = mapped_column(Text, nullable=True)
+    scale: Mapped[str | None] = mapped_column(String(8), nullable=True)  # R3, G2 ...
+    severity: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 0-5, None = unclassified
+    magnitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    magnitude_unit: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    instruments: Mapped[list] = mapped_column(JSON, default=list)
+    linked_ids: Mapped[list] = mapped_column(JSON, default=list)
+    notification_ids: Mapped[list] = mapped_column(JSON, default=list)
+    model_derived: Mapped[bool] = mapped_column(Boolean, default=False)
+    link: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    submitted_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    retrieved_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    endpoint: Mapped[str] = mapped_column(String(64))
+    raw: Mapped[dict] = mapped_column(JSON)
+
+
+class SpaceNotificationRow(Base):
+    __tablename__ = "space_notifications"
+    __table_args__ = (
+        UniqueConstraint("source_id", "message_id", name="uq_swx_notification"),
+        Index("ix_swx_notification_time", "issue_time"),
+    )
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    source_id: Mapped[str] = mapped_column(String(32))
+    message_id: Mapped[str] = mapped_column(String(64))
+    message_type: Mapped[str] = mapped_column(String(32))
+    issue_time: Mapped[datetime] = mapped_column(UTCDateTime)
+    url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    body: Mapped[str] = mapped_column(Text)
+    retrieved_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    endpoint: Mapped[str] = mapped_column(String(64))
+
+
+class EnvMissionRow(Base):
+    __tablename__ = "env_missions"
+
+    name: Mapped[str] = mapped_column(String(32), primary_key=True)
+    source_id: Mapped[str] = mapped_column(String(32), default="eda")
+    title: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    link: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    start_time: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    end_time: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    milestones: Mapped[list] = mapped_column(JSON, default=list)
+    quality: Mapped[dict] = mapped_column(JSON, default=dict)
+    retrieved_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    telemetry_synced_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    radiation_synced_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    space_weather_synced_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+
+
+class EnvMeasurementRow(Base):
+    __tablename__ = "env_measurements"
+    __table_args__ = (
+        UniqueConstraint("mission", "quantity", "platform", "ts", name="uq_env_measurement"),
+        Index("ix_env_mission_quantity", "mission", "quantity", "platform", "ts"),
+    )
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    mission: Mapped[str] = mapped_column(ForeignKey("env_missions.name", ondelete="CASCADE"))
+    quantity: Mapped[str] = mapped_column(String(32))
+    platform: Mapped[str] = mapped_column(String(16))  # iss | ground
+    ts: Mapped[datetime] = mapped_column(UTCDateTime)  # start of the aggregation interval
+    resolution: Mapped[str] = mapped_column(String(8))  # 1h for telemetry, 1d for dosimetry
+    value: Mapped[float] = mapped_column(Float)  # interval mean
+    min_value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    max_value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    n: Mapped[int] = mapped_column(Integer, default=1)
+    unit: Mapped[str] = mapped_column(String(16))
+    approximate: Mapped[bool] = mapped_column(Boolean, default=False)
+    category: Mapped[str] = mapped_column(String(16), default="measured")
+
+
+class OsdrStudyRow(Base):
+    __tablename__ = "osdr_studies"
+
+    accession: Mapped[str] = mapped_column(String(32), primary_key=True)
+    title: Mapped[str] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    organism: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    project_type: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    flight_program: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    mission_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    mission_start: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    mission_end: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    assay_type: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    material_type: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    platform: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    release_date: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    data_source_accession: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    link: Mapped[str] = mapped_column(String(255))
+    topics: Mapped[list] = mapped_column(JSON, default=list)
+    retrieved_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    endpoint: Mapped[str] = mapped_column(String(64))
+
+
+class DataSyncRunRow(Base):
+    __tablename__ = "data_sync_runs"
+    __table_args__ = (Index("ix_sync_source_started", "source_id", "started_at"),)
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    source_id: Mapped[str] = mapped_column(String(32))
+    task: Mapped[str] = mapped_column(String(160))
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    finished_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    status: Mapped[str] = mapped_column(String(16))  # ok | partial | failed
+    endpoint: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    records_received: Mapped[int] = mapped_column(Integer, default=0)
+    records_new: Mapped[int] = mapped_column(Integer, default=0)
+    records_updated: Mapped[int] = mapped_column(Integer, default=0)
+    duplicates: Mapped[int] = mapped_column(Integer, default=0)
+    invalid: Mapped[int] = mapped_column(Integer, default=0)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    detail: Mapped[dict] = mapped_column(JSON, default=dict)

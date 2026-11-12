@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 
-from sqlalchemy import event
+from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -32,10 +32,23 @@ def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessi
     return async_sessionmaker(engine, expire_on_commit=False)
 
 
+# Column changes made after a table was first created. ``create_all`` never alters existing tables,
+# so these idempotent statements bring an older PostgreSQL database up to date (SQLite does not
+# enforce VARCHAR lengths, so it needs none). Alembic should replace this once migrations exist.
+_POSTGRES_UPGRADES = (
+    "ALTER TABLE space_weather_events ALTER COLUMN classification TYPE TEXT",
+    "ALTER TABLE space_weather_events ALTER COLUMN magnitude_unit TYPE VARCHAR(64)",
+    "ALTER TABLE data_sync_runs ALTER COLUMN task TYPE VARCHAR(160)",
+)
+
+
 async def create_schema(engine: AsyncEngine) -> None:
-    """Prototype schema bootstrap. Alembic migrations replace this in phase 4."""
+    """Prototype schema bootstrap (no Alembic yet)."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        if engine.dialect.name == "postgresql":
+            for statement in _POSTGRES_UPGRADES:
+                await conn.execute(text(statement))
 
 
 async def session_scope(factory: async_sessionmaker[AsyncSession]) -> AsyncIterator[AsyncSession]:

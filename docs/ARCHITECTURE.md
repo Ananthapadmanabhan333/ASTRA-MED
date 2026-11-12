@@ -39,6 +39,7 @@
 | `services/` | `monitoring` (runtime core), `seeding` (incremental backfill), `history` (bucketing), `health`, `mission`, `insights`, `hub` (WebSocket fan-out with per-socket send locks), `mappers` |
 | `schemas/` | Pydantic models: the API contract. WebSocket message models are injected into OpenAPI |
 | `api/` | Thin REST handlers and the WebSocket endpoint; `ai_routes.py` serves `/api/ai/*` |
+| `space/` | Phase 4 NASA open data: resilient HTTP client, DONKI, EDA and OSDR adapters (validation, normalisation, quality checks), repository, background synchronisation and source health, space-weather and radiation intelligence (categories A–D), mission timeline, correlation engine, data source report. See [SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md) |
 | `ai/` | Phase 3 intelligence engine: windows, personal baselines, causal features, five anomaly detectors + ensemble, forecasters with conformal intervals, rule-based risk, explanations, experiment runner and hash-verified model registry. See [AI_ENGINE.md](AI_ENGINE.md) |
 
 ### Runtime loop
@@ -80,6 +81,18 @@ restores open alerts into the evaluator so a restart doesn't duplicate them.
 
 Training is offline (`python -m app.ai.train`). It uses a separately generated, labelled synthetic
 dataset, never the live database, so evaluation labels cannot leak into serving.
+
+### Space environment at runtime
+
+`SpaceDataService` (`app/space/service.py`) runs beside the monitoring and AI services.
+
+- **Background syncs:** DONKI every 3 h, OSDR daily, EDA weekly. Each sync writes normalised rows
+  and a `data_sync_runs` entry.
+- **Serving:** the `/api/space` endpoints answer from the database, so pages keep working, labelled
+  as an offline fallback, when NASA services are unreachable.
+- **Isolation:** the simulator, detection and AI services never read NASA data. Crew data and NASA
+  data meet only on the timeline and in the correlation engine, where each series keeps its
+  category.
 
 ## Frontend modules (`frontend/src`)
 

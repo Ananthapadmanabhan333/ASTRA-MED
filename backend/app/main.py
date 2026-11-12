@@ -17,13 +17,14 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app import __version__
 from app.ai.service import AIService
-from app.api import ai_routes, routes, ws
+from app.api import ai_routes, routes, space_routes, ws
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.db.session import create_engine, create_schema, create_session_factory
 from app.schemas.ws import WS_SCHEMA_MODELS
 from app.services.monitoring import MonitoringService
+from app.space.service import SpaceDataService
 
 logger = logging.getLogger("astra.app")
 
@@ -32,6 +33,10 @@ Astronaut health monitoring engine for the ASTRA-MED prototype (NASA Space Apps 
 
 **All physiological data served by this API is simulated.** Crew members are fictional. Nothing
 here is clinically validated; thresholds and insights are software test scenarios, not diagnoses.
+
+Space-environment endpoints under `/api/space` serve **real NASA open data** (DONKI space weather,
+OSDR Environmental Data App ISS measurements, OSDR study metadata), each labelled with its category,
+source, retrieval time and licence. Environmental indicators are never converted into crew doses.
 
 Live data streams over the WebSocket at `/ws/health-monitoring`. Its message schemas are
 included below as `WsHello`, `WsVitals`, `WsAlert`, `WsSimulation` and `WsPong`.
@@ -71,12 +76,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.ai = AIService(settings, factory, monitor)
         if settings.ai_enabled:
             preload = asyncio.create_task(app.state.ai.bundle(), name="astra-ai-preload")
+        app.state.space = SpaceDataService(settings, factory) if settings.space_enabled else None
+        if app.state.space is not None and settings.space_sync_enabled:
+            app.state.space.start()
         logger.info("ASTRA-MED API ready (%s, db=%s)", settings.environment, db_engine.dialect.name)
         try:
             yield
         finally:
             if settings.ai_enabled and not preload.done():
                 preload.cancel()
+            if app.state.space is not None:
+                await app.state.space.stop()
             await monitor.stop()
             await db_engine.dispose()
 
@@ -113,6 +123,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_exception_handlers(app)
     app.include_router(routes.router)
     app.include_router(ai_routes.router)
+    app.include_router(space_routes.router)
     app.include_router(ws.router)
 
     def custom_openapi():

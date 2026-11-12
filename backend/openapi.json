@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "ASTRA-MED API",
-    "description": "\nAstronaut health monitoring engine for the ASTRA-MED prototype (NASA Space Apps Challenge 2026).\n\n**All physiological data served by this API is simulated.** Crew members are fictional. Nothing\nhere is clinically validated; thresholds and insights are software test scenarios, not diagnoses.\n\nLive data streams over the WebSocket at `/ws/health-monitoring`. Its message schemas are\nincluded below as `WsHello`, `WsVitals`, `WsAlert`, `WsSimulation` and `WsPong`.\n",
+    "description": "\nAstronaut health monitoring engine for the ASTRA-MED prototype (NASA Space Apps Challenge 2026).\n\n**All physiological data served by this API is simulated.** Crew members are fictional. Nothing\nhere is clinically validated; thresholds and insights are software test scenarios, not diagnoses.\n\nSpace-environment endpoints under `/api/space` serve **real NASA open data** (DONKI space weather,\nOSDR Environmental Data App ISS measurements, OSDR study metadata), each labelled with its category,\nsource, retrieval time and licence. Environmental indicators are never converted into crew doses.\n\nLive data streams over the WebSocket at `/ws/health-monitoring`. Its message schemas are\nincluded below as `WsHello`, `WsVitals`, `WsAlert`, `WsSimulation` and `WsPong`.\n",
     "version": "0.2.0"
   },
   "paths": {
@@ -1789,6 +1789,1141 @@
           }
         }
       }
+    },
+    "/api/space/sources": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Sources",
+        "description": "Dataset inventory with provenance, licensing, availability and data-quality indicators.",
+        "operationId": "sources_api_space_sources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/sync": {
+      "post": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Sync",
+        "description": "Run a synchronisation now (operator action; gated like simulation controls).",
+        "operationId": "sync_api_space_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/weather/summary": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Weather Summary",
+        "operationId": "weather_summary_api_space_weather_summary_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/weather/events": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Weather Events",
+        "operationId": "weather_events_api_space_weather_events_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "FLR, CME, SEP, GST, RBE, IPS, HSS, MPC, WSA",
+              "title": "Types"
+            },
+            "description": "FLR, CME, SEP, GST, RBE, IPS, HSS, MPC, WSA"
+          },
+          {
+            "name": "min_severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 5,
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Severity"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 1,
+              "default": 500,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/weather/events/{event_id}": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Weather Event",
+        "operationId": "weather_event_api_space_weather_events__event_id__get",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpaceWeatherEventDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/weather/notifications": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Weather Notifications",
+        "operationId": "weather_notifications_api_space_weather_notifications_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpaceNotification"
+                  },
+                  "title": "Response Weather Notifications Api Space Weather Notifications Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/alerts": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Space Alerts",
+        "description": "Radiation-related environmental alerts derived from DONKI events (indicators, never doses).",
+        "operationId": "space_alerts_api_space_alerts_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpaceAlert"
+                  },
+                  "title": "Response Space Alerts Api Space Alerts Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/radiation": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Radiation",
+        "operationId": "radiation_api_space_radiation_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 120,
+              "minimum": 1,
+              "default": 30,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadiationIntel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/iss/missions": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Iss Missions",
+        "operationId": "iss_missions_api_space_iss_missions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EnvMission"
+                  },
+                  "type": "array",
+                  "title": "Response Iss Missions Api Space Iss Missions Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/iss/missions/{name}": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Iss Mission",
+        "operationId": "iss_mission_api_space_iss_missions__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(iss|ground)$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Platform"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(1h|6h|1d)$",
+              "description": "Telemetry aggregation; dosimetry stays daily",
+              "default": "6h",
+              "title": "Resolution"
+            },
+            "description": "Telemetry aggregation; dosimetry stays daily"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvMissionDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/osdr/studies": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Osdr Studies",
+        "operationId": "osdr_studies_api_space_osdr_studies_get",
+        "parameters": [
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "radiation, rodent, spaceflight, physiology, environment",
+              "title": "Topic"
+            },
+            "description": "radiation, rodent, spaceflight, physiology, environment"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "organism",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organism"
+            }
+          },
+          {
+            "name": "project_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Type"
+            }
+          },
+          {
+            "name": "mission",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mission"
+            }
+          },
+          {
+            "name": "live",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Also query OSDR now for q (results are stored)",
+              "default": false,
+              "title": "Live"
+            },
+            "description": "Also query OSDR now for q (results are stored)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/timeline": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Timeline",
+        "operationId": "timeline_api_space_timeline_get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(mission|iss)$",
+              "default": "mission",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "mission",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mission"
+            }
+          },
+          {
+            "name": "include_ai",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Include Ai"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/timeline/nearby": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Timeline Nearby",
+        "description": "Space-weather events near a moment (for example a physiological anomaly).",
+        "operationId": "timeline_nearby_api_space_timeline_nearby_get",
+        "parameters": [
+          {
+            "name": "ts",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Ts"
+            }
+          },
+          {
+            "name": "window_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 240,
+              "exclusiveMinimum": 0,
+              "default": 48,
+              "title": "Window Hours"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NearbyEvents"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/correlation/series": {
+      "get": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Correlation Series",
+        "operationId": "correlation_series_api_space_correlation_series_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CorrelationSeriesInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Correlation Series Api Space Correlation Series Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/correlation/analyze": {
+      "post": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Correlation Analyze",
+        "description": "Exploratory pair analysis. Correlation does not establish causation.",
+        "operationId": "correlation_analyze_api_space_correlation_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrelationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrelationResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/space/correlation/matrix": {
+      "post": {
+        "tags": [
+          "space"
+        ],
+        "summary": "Correlation Matrix",
+        "operationId": "correlation_matrix_api_space_correlation_matrix_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatrixRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatrixResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3112,6 +4247,299 @@
         ],
         "title": "Contributor"
       },
+      "CorrStat": {
+        "properties": {
+          "r": {
+            "type": "number",
+            "title": "R"
+          },
+          "p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P"
+          },
+          "ci": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Ci"
+          }
+        },
+        "type": "object",
+        "required": [
+          "r",
+          "p",
+          "ci"
+        ],
+        "title": "CorrStat"
+      },
+      "CorrelationRequest": {
+        "properties": {
+          "x": {
+            "type": "string",
+            "title": "X"
+          },
+          "y": {
+            "type": "string",
+            "title": "Y"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "max_lag": {
+            "type": "integer",
+            "maximum": 14.0,
+            "minimum": 0.0,
+            "title": "Max Lag",
+            "default": 3
+          },
+          "rolling_window": {
+            "type": "integer",
+            "maximum": 90.0,
+            "minimum": 5.0,
+            "title": "Rolling Window",
+            "default": 14
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "start",
+          "end"
+        ],
+        "title": "CorrelationRequest"
+      },
+      "CorrelationResult": {
+        "properties": {
+          "x": {
+            "$ref": "#/components/schemas/SeriesMeta"
+          },
+          "y": {
+            "$ref": "#/components/schemas/SeriesMeta"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "insufficient"
+            ],
+            "title": "Status"
+          },
+          "pearson": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CorrStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "spearman": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CorrStat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "n_eff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Eff"
+          },
+          "lag1_autocorr_x": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lag1 Autocorr X"
+          },
+          "lag1_autocorr_y": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lag1 Autocorr Y"
+          },
+          "trend_adjusted": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TrendAdjusted"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lags": {
+            "items": {
+              "$ref": "#/components/schemas/LagRow"
+            },
+            "type": "array",
+            "title": "Lags",
+            "default": []
+          },
+          "cross_correlation": {
+            "items": {
+              "$ref": "#/components/schemas/CrossRow"
+            },
+            "type": "array",
+            "title": "Cross Correlation",
+            "default": []
+          },
+          "rolling": {
+            "items": {
+              "$ref": "#/components/schemas/RollingPoint"
+            },
+            "type": "array",
+            "title": "Rolling",
+            "default": []
+          },
+          "rolling_window": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rolling Window"
+          },
+          "scatter": {
+            "items": {
+              "$ref": "#/components/schemas/ScatterPoint"
+            },
+            "type": "array",
+            "title": "Scatter",
+            "default": []
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "start",
+          "end",
+          "n",
+          "status",
+          "warnings",
+          "interpretation"
+        ],
+        "title": "CorrelationResult"
+      },
+      "CorrelationSeriesInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "coverage": {
+            "items": {
+              "$ref": "#/components/schemas/DateRange"
+            },
+            "type": "array",
+            "title": "Coverage",
+            "description": "Days known to be covered; empty for simulated crew series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "unit",
+          "category",
+          "group",
+          "description",
+          "coverage"
+        ],
+        "title": "CorrelationSeriesInfo"
+      },
       "CrewRadiation": {
         "properties": {
           "astronaut_id": {
@@ -3350,6 +4778,36 @@
         ],
         "title": "CrewStatusCounts"
       },
+      "CrossRow": {
+        "properties": {
+          "lag_days": {
+            "type": "integer",
+            "title": "Lag Days"
+          },
+          "r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "R"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lag_days",
+          "r",
+          "n"
+        ],
+        "title": "CrossRow"
+      },
       "CurrentComparison": {
         "properties": {
           "ts": {
@@ -3496,6 +4954,202 @@
         ],
         "title": "DataQuality"
       },
+      "DataSourceStatus": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "homepage": {
+            "type": "string",
+            "title": "Homepage"
+          },
+          "data_format": {
+            "type": "string",
+            "title": "Data Format"
+          },
+          "categories": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "measured",
+                "indicator",
+                "model",
+                "estimate",
+                "simulated",
+                "metadata"
+              ]
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "update_frequency": {
+            "type": "string",
+            "title": "Update Frequency"
+          },
+          "units": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Units"
+          },
+          "license": {
+            "type": "string",
+            "title": "License"
+          },
+          "license_url": {
+            "type": "string",
+            "title": "License Url"
+          },
+          "citation": {
+            "type": "string",
+            "title": "Citation"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "endpoints": {
+            "items": {
+              "$ref": "#/components/schemas/EndpointStatus"
+            },
+            "type": "array",
+            "title": "Endpoints"
+          },
+          "collection_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection Start"
+          },
+          "collection_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collection End"
+          },
+          "records": {
+            "type": "integer",
+            "title": "Records"
+          },
+          "breakdown": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Breakdown"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "live",
+              "cached",
+              "offline-fallback",
+              "unavailable",
+              "pending"
+            ],
+            "title": "Availability"
+          },
+          "availability_message": {
+            "type": "string",
+            "title": "Availability Message"
+          },
+          "health": {
+            "$ref": "#/components/schemas/SourceHealthOut"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/QualityIndicators"
+          },
+          "recent_runs": {
+            "items": {
+              "$ref": "#/components/schemas/SyncRun"
+            },
+            "type": "array",
+            "title": "Recent Runs"
+          },
+          "running": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Running"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "provider",
+          "homepage",
+          "data_format",
+          "categories",
+          "update_frequency",
+          "units",
+          "license",
+          "license_url",
+          "citation",
+          "caveats",
+          "endpoints",
+          "collection_start",
+          "collection_end",
+          "records",
+          "breakdown",
+          "availability",
+          "availability_message",
+          "health",
+          "quality",
+          "recent_runs",
+          "running"
+        ],
+        "title": "DataSourceStatus"
+      },
+      "DateRange": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "title": "Start",
+            "description": "ISO date (UTC day)"
+          },
+          "end": {
+            "type": "string",
+            "title": "End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "DateRange"
+      },
       "Detection": {
         "properties": {
           "start": {
@@ -3619,6 +5273,368 @@
         ],
         "title": "Driver"
       },
+      "EndpointStatus": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "base_url": {
+            "type": "string",
+            "title": "Base Url"
+          },
+          "needs_key": {
+            "type": "boolean",
+            "title": "Needs Key"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "disabled_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Until"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "rate_limit_remaining": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Limit Remaining"
+          },
+          "rate_limit_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Limit Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "base_url",
+          "needs_key",
+          "note",
+          "available",
+          "disabled_until",
+          "reason",
+          "rate_limit_remaining",
+          "rate_limit_limit"
+        ],
+        "title": "EndpointStatus"
+      },
+      "EnvMission": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "telemetry_synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telemetry Synced At"
+          },
+          "radiation_synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radiation Synced At"
+          },
+          "has_telemetry": {
+            "type": "boolean",
+            "title": "Has Telemetry"
+          },
+          "has_radiation": {
+            "type": "boolean",
+            "title": "Has Radiation"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/Milestone"
+            },
+            "type": "array",
+            "title": "Milestones"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "title",
+          "description",
+          "link",
+          "start_time",
+          "end_time",
+          "telemetry_synced_at",
+          "radiation_synced_at",
+          "has_telemetry",
+          "has_radiation",
+          "milestones"
+        ],
+        "title": "EnvMission"
+      },
+      "EnvMissionDetail": {
+        "properties": {
+          "mission": {
+            "$ref": "#/components/schemas/EnvMission"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/EnvSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "space_weather": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceWeatherEvent"
+            },
+            "type": "array",
+            "title": "Space Weather"
+          },
+          "studies": {
+            "items": {
+              "$ref": "#/components/schemas/OsdrStudy"
+            },
+            "type": "array",
+            "title": "Studies"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mission",
+          "series",
+          "space_weather",
+          "studies",
+          "caveats",
+          "freshness"
+        ],
+        "title": "EnvMissionDetail"
+      },
+      "EnvPoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N",
+            "default": 1
+          },
+          "approximate": {
+            "type": "boolean",
+            "title": "Approximate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "value"
+        ],
+        "title": "EnvPoint"
+      },
+      "EnvSeries": {
+        "properties": {
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "iss",
+              "ground"
+            ],
+            "title": "Platform"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "measured"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/EnvPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SeriesQualityOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "quantity",
+          "label",
+          "platform",
+          "unit",
+          "resolution",
+          "points",
+          "quality"
+        ],
+        "title": "EnvSeries"
+      },
       "ErrorBody": {
         "properties": {
           "code": {
@@ -3657,6 +5673,105 @@
           "error"
         ],
         "title": "ErrorResponse"
+      },
+      "EstimateBlock": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "estimate"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "rate_msv_day": {
+            "type": "number",
+            "title": "Rate Msv Day"
+          },
+          "mission_days": {
+            "type": "integer",
+            "title": "Mission Days"
+          },
+          "mission_to_date_msv": {
+            "type": "number",
+            "title": "Mission To Date Msv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "description",
+          "unit",
+          "rate_msv_day",
+          "mission_days",
+          "mission_to_date_msv"
+        ],
+        "title": "EstimateBlock"
+      },
+      "EvaluatedSource": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "status"
+        ],
+        "title": "EvaluatedSource"
+      },
+      "EventList": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceWeatherEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "events",
+          "total",
+          "freshness"
+        ],
+        "title": "EventList"
       },
       "Evidence": {
         "properties": {
@@ -3722,6 +5837,53 @@
           "method"
         ],
         "title": "Explanation"
+      },
+      "ExposureDay": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "estimate_msv": {
+            "type": "number",
+            "title": "Estimate Msv",
+            "description": "Category C estimate, mSv"
+          },
+          "simulated_crew_mean_msv": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulated Crew Mean Msv",
+            "description": "Category D simulated crew mean, mSv"
+          },
+          "simulated_spe": {
+            "type": "boolean",
+            "title": "Simulated Spe"
+          },
+          "indicator_events": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Indicator Events",
+            "description": "Category B: radiation-relevant DONKI events that day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day",
+          "estimate_msv",
+          "simulated_crew_mean_msv",
+          "simulated_spe",
+          "indicator_events"
+        ],
+        "title": "ExposureDay"
       },
       "ForecastPoint": {
         "properties": {
@@ -3842,6 +6004,49 @@
           "limitations"
         ],
         "title": "ForecastResponse"
+      },
+      "Freshness": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "retrieved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved At"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "cached",
+              "offline-fallback",
+              "unavailable",
+              "pending"
+            ],
+            "title": "Mode"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "retrieved_at",
+          "mode",
+          "message"
+        ],
+        "title": "Freshness"
       },
       "HealthSnapshot": {
         "properties": {
@@ -4159,6 +6364,75 @@
         ],
         "title": "HorizonSummary"
       },
+      "IndicatorBlock": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "indicator"
+          },
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days"
+          },
+          "sep_events": {
+            "type": "integer",
+            "title": "Sep Events"
+          },
+          "flares_r1_plus": {
+            "type": "integer",
+            "title": "Flares R1 Plus"
+          },
+          "radiation_belt_enhancements": {
+            "type": "integer",
+            "title": "Radiation Belt Enhancements"
+          },
+          "storms_g1_plus": {
+            "type": "integer",
+            "title": "Storms G1 Plus"
+          },
+          "fast_cmes": {
+            "type": "integer",
+            "title": "Fast Cmes"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceWeatherEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "description",
+          "window_days",
+          "sep_events",
+          "flares_r1_plus",
+          "radiation_belt_enhancements",
+          "storms_g1_plus",
+          "fast_cmes",
+          "events"
+        ],
+        "title": "IndicatorBlock"
+      },
       "Insight": {
         "properties": {
           "id": {
@@ -4243,6 +6517,362 @@
           "generated_at"
         ],
         "title": "Insight"
+      },
+      "LagRow": {
+        "properties": {
+          "lag_days": {
+            "type": "integer",
+            "title": "Lag Days"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "R"
+          },
+          "spearman": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spearman"
+          },
+          "p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P"
+          },
+          "q": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lag_days",
+          "n",
+          "r",
+          "p",
+          "q"
+        ],
+        "title": "LagRow"
+      },
+      "MatrixCell": {
+        "properties": {
+          "i": {
+            "type": "integer",
+            "title": "I"
+          },
+          "j": {
+            "type": "integer",
+            "title": "J"
+          },
+          "r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "R"
+          },
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P"
+          },
+          "q": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q"
+          }
+        },
+        "type": "object",
+        "required": [
+          "i",
+          "j",
+          "r",
+          "n",
+          "p",
+          "q"
+        ],
+        "title": "MatrixCell"
+      },
+      "MatrixRequest": {
+        "properties": {
+          "series": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 2,
+            "title": "Series"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "spearman",
+              "pearson"
+            ],
+            "title": "Method",
+            "default": "spearman"
+          }
+        },
+        "type": "object",
+        "required": [
+          "series",
+          "start",
+          "end"
+        ],
+        "title": "MatrixRequest"
+      },
+      "MatrixResult": {
+        "properties": {
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SeriesMeta"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/MatrixCell"
+            },
+            "type": "array",
+            "title": "Cells"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "series",
+          "method",
+          "start",
+          "end",
+          "cells",
+          "warnings"
+        ],
+        "title": "MatrixResult"
+      },
+      "MeasuredBlock": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "measured"
+          },
+          "missions": {
+            "items": {
+              "$ref": "#/components/schemas/MeasuredMissionDose"
+            },
+            "type": "array",
+            "title": "Missions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "description",
+          "unit",
+          "missions"
+        ],
+        "title": "MeasuredBlock"
+      },
+      "MeasuredMissionDose": {
+        "properties": {
+          "mission": {
+            "type": "string",
+            "title": "Mission"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "approximate_days": {
+            "type": "integer",
+            "title": "Approximate Days"
+          },
+          "mean_total_mgy_day": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Total Mgy Day"
+          },
+          "mean_gcr_mgy_day": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Gcr Mgy Day"
+          },
+          "mean_saa_mgy_day": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Saa Mgy Day"
+          },
+          "cumulative_mgy": {
+            "type": "number",
+            "title": "Cumulative Mgy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mission",
+          "title",
+          "start",
+          "end",
+          "days",
+          "approximate_days",
+          "mean_total_mgy_day",
+          "mean_gcr_mgy_day",
+          "mean_saa_mgy_day",
+          "cumulative_mgy"
+        ],
+        "title": "MeasuredMissionDose"
+      },
+      "Milestone": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time",
+          "label"
+        ],
+        "title": "Milestone"
       },
       "MissionStatus": {
         "properties": {
@@ -4459,6 +7089,408 @@
         ],
         "title": "ModelVersionInfo"
       },
+      "NearbyEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "offset_hours": {
+            "type": "number",
+            "title": "Offset Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "lane",
+          "ts",
+          "start",
+          "end",
+          "title",
+          "detail",
+          "kind",
+          "severity",
+          "category",
+          "source",
+          "link",
+          "offset_hours"
+        ],
+        "title": "NearbyEvent"
+      },
+      "NearbyEvents": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "window_hours": {
+            "type": "number",
+            "title": "Window Hours"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/NearbyEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "window_hours",
+          "events",
+          "note"
+        ],
+        "title": "NearbyEvents"
+      },
+      "OsdrStudy": {
+        "properties": {
+          "accession": {
+            "type": "string",
+            "title": "Accession"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "organism": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organism"
+          },
+          "project_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Type"
+          },
+          "flight_program": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flight Program"
+          },
+          "mission_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Name"
+          },
+          "mission_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Start"
+          },
+          "mission_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission End"
+          },
+          "assay_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assay Type"
+          },
+          "material_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Material Type"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          },
+          "release_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Date"
+          },
+          "data_source_accession": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Source Accession"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accession",
+          "title",
+          "description",
+          "organism",
+          "project_type",
+          "flight_program",
+          "mission_name",
+          "mission_start",
+          "mission_end",
+          "assay_type",
+          "material_type",
+          "platform",
+          "release_date",
+          "data_source_accession",
+          "link",
+          "topics",
+          "retrieved_at"
+        ],
+        "title": "OsdrStudy"
+      },
+      "QualityIndicators": {
+        "properties": {
+          "records_received": {
+            "type": "integer",
+            "title": "Records Received"
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid"
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates"
+          },
+          "invalid_rate": {
+            "type": "number",
+            "title": "Invalid Rate"
+          },
+          "sync_runs": {
+            "type": "integer",
+            "title": "Sync Runs"
+          },
+          "failed_runs": {
+            "type": "integer",
+            "title": "Failed Runs"
+          },
+          "last_sync_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "records_received",
+          "invalid",
+          "duplicates",
+          "invalid_rate",
+          "sync_runs",
+          "failed_runs",
+          "last_sync_status"
+        ],
+        "title": "QualityIndicators"
+      },
       "RadiationBrief": {
         "properties": {
           "mission_dose_msv": {
@@ -4481,6 +7513,62 @@
           "career_limit_pct"
         ],
         "title": "RadiationBrief"
+      },
+      "RadiationIntel": {
+        "properties": {
+          "measured": {
+            "$ref": "#/components/schemas/MeasuredBlock"
+          },
+          "indicators": {
+            "$ref": "#/components/schemas/IndicatorBlock"
+          },
+          "estimate": {
+            "$ref": "#/components/schemas/EstimateBlock"
+          },
+          "simulated": {
+            "$ref": "#/components/schemas/SimulatedBlock"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/ExposureDay"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceAlert"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rules"
+          },
+          "freshness": {
+            "items": {
+              "$ref": "#/components/schemas/Freshness"
+            },
+            "type": "array",
+            "title": "Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "measured",
+          "indicators",
+          "estimate",
+          "simulated",
+          "timeline",
+          "alerts",
+          "rules",
+          "freshness"
+        ],
+        "title": "RadiationIntel"
       },
       "RadiationOverview": {
         "properties": {
@@ -4810,6 +7898,49 @@
         ],
         "title": "RiskWarning"
       },
+      "RollingPoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "r": {
+            "type": "number",
+            "title": "R"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "r"
+        ],
+        "title": "RollingPoint"
+      },
+      "ScatterPoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "x",
+          "y"
+        ],
+        "title": "ScatterPoint"
+      },
       "ScenarioInfo": {
         "properties": {
           "key": {
@@ -4860,6 +7991,65 @@
         ],
         "title": "ScenarioInfo"
       },
+      "SeriesMeta": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "measured",
+                  "indicator",
+                  "model",
+                  "estimate",
+                  "simulated",
+                  "metadata"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "observations": {
+            "type": "integer",
+            "title": "Observations",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "SeriesMeta"
+      },
       "SeriesPoint": {
         "properties": {
           "ts": {
@@ -4878,6 +8068,117 @@
           "value"
         ],
         "title": "SeriesPoint"
+      },
+      "SeriesQualityOut": {
+        "properties": {
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "raw_points": {
+            "type": "integer",
+            "title": "Raw Points"
+          },
+          "valid": {
+            "type": "integer",
+            "title": "Valid"
+          },
+          "missing": {
+            "type": "integer",
+            "title": "Missing"
+          },
+          "out_of_range": {
+            "type": "integer",
+            "title": "Out Of Range"
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates"
+          },
+          "completeness": {
+            "type": "number",
+            "title": "Completeness"
+          },
+          "first": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First"
+          },
+          "last": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last"
+          },
+          "median_interval_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Interval Min"
+          },
+          "gaps": {
+            "type": "integer",
+            "title": "Gaps"
+          },
+          "longest_gap_hours": {
+            "type": "number",
+            "title": "Longest Gap Hours"
+          },
+          "approximate_points": {
+            "type": "integer",
+            "title": "Approximate Points"
+          },
+          "consistency_failures": {
+            "type": "integer",
+            "title": "Consistency Failures"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quantity",
+          "platform",
+          "unit",
+          "raw_points",
+          "valid",
+          "missing",
+          "out_of_range",
+          "duplicates",
+          "completeness",
+          "first",
+          "last",
+          "median_interval_min",
+          "gaps",
+          "longest_gap_hours",
+          "approximate_points",
+          "consistency_failures"
+        ],
+        "title": "SeriesQualityOut"
       },
       "SignalBaseline": {
         "properties": {
@@ -5032,6 +8333,55 @@
           "description"
         ],
         "title": "Significance"
+      },
+      "SimulatedBlock": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "simulated"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "crew": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRadiation"
+            },
+            "type": "array",
+            "title": "Crew"
+          },
+          "reference_career_limit_msv": {
+            "type": "number",
+            "title": "Reference Career Limit Msv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "description",
+          "unit",
+          "crew",
+          "reference_career_limit_msv"
+        ],
+        "title": "SimulatedBlock"
       },
       "SimulationEvent": {
         "properties": {
@@ -5304,6 +8654,800 @@
         ],
         "title": "SleepSummary"
       },
+      "SourceHealthOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "healthy",
+              "degraded",
+              "offline"
+            ],
+            "title": "Status"
+          },
+          "last_attempt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Attempt"
+          },
+          "last_success": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_error_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error At"
+          },
+          "last_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Latency Ms"
+          },
+          "consecutive_failures": {
+            "type": "integer",
+            "title": "Consecutive Failures"
+          },
+          "requests": {
+            "type": "integer",
+            "title": "Requests"
+          },
+          "failures": {
+            "type": "integer",
+            "title": "Failures"
+          },
+          "cache_hits": {
+            "type": "integer",
+            "title": "Cache Hits"
+          },
+          "last_endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Endpoint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "last_attempt",
+          "last_success",
+          "last_error",
+          "last_error_at",
+          "last_latency_ms",
+          "consecutive_failures",
+          "requests",
+          "failures",
+          "cache_hits",
+          "last_endpoint"
+        ],
+        "title": "SourceHealthOut"
+      },
+      "SourcesResponse": {
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/DataSourceStatus"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "evaluated": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluatedSource"
+            },
+            "type": "array",
+            "title": "Evaluated"
+          },
+          "api_key_configured": {
+            "type": "boolean",
+            "title": "Api Key Configured",
+            "description": "Whether a personal NASA API key is set (the key itself is never exposed)"
+          },
+          "sync_enabled": {
+            "type": "boolean",
+            "title": "Sync Enabled"
+          },
+          "categories": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sources",
+          "evaluated",
+          "api_key_configured",
+          "sync_enabled",
+          "categories"
+        ],
+        "title": "SourcesResponse"
+      },
+      "SpaceAlert": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "event_id": {
+            "type": "integer",
+            "title": "Event Id"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "advisory",
+              "caution"
+            ],
+            "title": "Severity"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "recent",
+              "past"
+            ],
+            "title": "Status"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "event_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Event Time"
+          },
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event_id",
+          "event_type",
+          "severity",
+          "status",
+          "title",
+          "event_time",
+          "rule",
+          "category",
+          "note",
+          "link"
+        ],
+        "title": "SpaceAlert"
+      },
+      "SpaceNotification": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "message_id": {
+            "type": "string",
+            "title": "Message Id"
+          },
+          "message_type": {
+            "type": "string",
+            "title": "Message Type"
+          },
+          "issue_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issue Time"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category",
+            "default": "indicator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "message_id",
+          "message_type",
+          "issue_time",
+          "url",
+          "summary",
+          "retrieved_at"
+        ],
+        "title": "SpaceNotification"
+      },
+      "SpaceWeatherEvent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "type_label": {
+            "type": "string",
+            "title": "Type Label"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "peak_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification"
+          },
+          "scale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scale",
+            "description": "NOAA scale level where the record supports one (R for flares, G for storms)"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity",
+            "description": "1-5 scale level or CME speed class; null = unclassified"
+          },
+          "severity_label": {
+            "type": "string",
+            "title": "Severity Label"
+          },
+          "magnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude"
+          },
+          "magnitude_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude Unit"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "instruments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Instruments"
+          },
+          "linked_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Linked Ids"
+          },
+          "notification_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notification Ids"
+          },
+          "model_derived": {
+            "type": "boolean",
+            "title": "Model Derived"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "description": "Which NASA endpoint served this record (api.nasa.gov or ccmc)"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "NASA CCMC DONKI"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event_type",
+          "type_label",
+          "category",
+          "start_time",
+          "peak_time",
+          "end_time",
+          "classification",
+          "scale",
+          "severity",
+          "severity_label",
+          "magnitude",
+          "magnitude_unit",
+          "location",
+          "description",
+          "instruments",
+          "linked_ids",
+          "notification_ids",
+          "model_derived",
+          "link",
+          "version",
+          "submitted_at",
+          "retrieved_at",
+          "endpoint"
+        ],
+        "title": "SpaceWeatherEvent"
+      },
+      "SpaceWeatherEventDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "type_label": {
+            "type": "string",
+            "title": "Type Label"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "peak_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification"
+          },
+          "scale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scale",
+            "description": "NOAA scale level where the record supports one (R for flares, G for storms)"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity",
+            "description": "1-5 scale level or CME speed class; null = unclassified"
+          },
+          "severity_label": {
+            "type": "string",
+            "title": "Severity Label"
+          },
+          "magnitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude"
+          },
+          "magnitude_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magnitude Unit"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "instruments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Instruments"
+          },
+          "linked_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Linked Ids"
+          },
+          "notification_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notification Ids"
+          },
+          "model_derived": {
+            "type": "boolean",
+            "title": "Model Derived"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "description": "Which NASA endpoint served this record (api.nasa.gov or ccmc)"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "NASA CCMC DONKI"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw",
+            "description": "The original DONKI record, unchanged"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "event_type",
+          "type_label",
+          "category",
+          "start_time",
+          "peak_time",
+          "end_time",
+          "classification",
+          "scale",
+          "severity",
+          "severity_label",
+          "magnitude",
+          "magnitude_unit",
+          "location",
+          "description",
+          "instruments",
+          "linked_ids",
+          "notification_ids",
+          "model_derived",
+          "link",
+          "version",
+          "submitted_at",
+          "retrieved_at",
+          "endpoint",
+          "raw"
+        ],
+        "title": "SpaceWeatherEventDetail"
+      },
       "StateBaseline": {
         "properties": {
           "n": {
@@ -5411,6 +9555,237 @@
           "by_time_of_day"
         ],
         "title": "StateBaseline"
+      },
+      "StudyList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OsdrStudy"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/StudyTopic"
+            },
+            "type": "array",
+            "title": "Topics"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "topics",
+          "freshness"
+        ],
+        "title": "StudyList"
+      },
+      "StudyTopic": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "term": {
+            "type": "string",
+            "title": "Term"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "term"
+        ],
+        "title": "StudyTopic"
+      },
+      "SyncRequest": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "donki",
+              "eda",
+              "osdr"
+            ],
+            "title": "Source"
+          },
+          "days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3650.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days",
+            "description": "DONKI: days back from today"
+          },
+          "missions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missions",
+            "description": "EDA: missions to (re)ingest"
+          },
+          "force": {
+            "type": "boolean",
+            "title": "Force",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "SyncRequest"
+      },
+      "SyncResult": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Finished At"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "started_at",
+          "finished_at",
+          "summary"
+        ],
+        "title": "SyncResult"
+      },
+      "SyncRun": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "task": {
+            "type": "string",
+            "title": "Task"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint"
+          },
+          "records_received": {
+            "type": "integer",
+            "title": "Records Received"
+          },
+          "records_new": {
+            "type": "integer",
+            "title": "Records New"
+          },
+          "records_updated": {
+            "type": "integer",
+            "title": "Records Updated"
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates"
+          },
+          "invalid": {
+            "type": "integer",
+            "title": "Invalid"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "task",
+          "started_at",
+          "finished_at",
+          "status",
+          "endpoint",
+          "records_received",
+          "records_new",
+          "records_updated",
+          "duplicates",
+          "invalid",
+          "error"
+        ],
+        "title": "SyncRun"
       },
       "SystemHealth": {
         "properties": {
@@ -5629,6 +10004,338 @@
         ],
         "title": "TimeOfDayStats"
       },
+      "Timeline": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "mission",
+              "iss"
+            ],
+            "title": "Mode"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "mission": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission"
+          },
+          "lanes": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineLane"
+            },
+            "type": "array",
+            "title": "Lanes"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "start",
+          "end",
+          "astronaut_id",
+          "mission",
+          "lanes",
+          "series",
+          "notes"
+        ],
+        "title": "Timeline"
+      },
+      "TimelineItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "lane",
+          "ts",
+          "start",
+          "end",
+          "title",
+          "detail",
+          "kind",
+          "severity",
+          "category",
+          "source",
+          "link"
+        ],
+        "title": "TimelineItem"
+      },
+      "TimelineLane": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "category",
+          "items"
+        ],
+        "title": "TimelineLane"
+      },
+      "TimelinePoint": {
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "approximate": {
+            "type": "boolean",
+            "title": "Approximate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "ts",
+          "value"
+        ],
+        "title": "TimelinePoint"
+      },
+      "TimelineSeries": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "measured",
+              "indicator",
+              "model",
+              "estimate",
+              "simulated",
+              "metadata"
+            ],
+            "title": "Category"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/TimelinePoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "unit",
+          "category",
+          "points"
+        ],
+        "title": "TimelineSeries"
+      },
+      "TrendAdjusted": {
+        "properties": {
+          "r": {
+            "type": "number",
+            "title": "R"
+          },
+          "p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P"
+          },
+          "n_eff": {
+            "type": "number",
+            "title": "N Eff"
+          }
+        },
+        "type": "object",
+        "required": [
+          "r",
+          "p",
+          "n_eff"
+        ],
+        "title": "TrendAdjusted"
+      },
       "VitalReading": {
         "properties": {
           "astronaut_id": {
@@ -5741,6 +10448,111 @@
           "rhythm"
         ],
         "title": "VitalReading"
+      },
+      "WeatherSummary": {
+        "properties": {
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "flare_classes": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Flare Classes"
+          },
+          "strongest_flare": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpaceWeatherEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_storm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpaceWeatherEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fastest_cme": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpaceWeatherEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SpaceWeatherEvent"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Latest"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceAlert"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "notifications": {
+            "items": {
+              "$ref": "#/components/schemas/SpaceNotification"
+            },
+            "type": "array",
+            "title": "Notifications"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          }
+        },
+        "type": "object",
+        "required": [
+          "window_days",
+          "counts",
+          "flare_classes",
+          "strongest_flare",
+          "max_storm",
+          "fastest_cme",
+          "latest",
+          "alerts",
+          "notifications",
+          "caveats",
+          "freshness"
+        ],
+        "title": "WeatherSummary"
       },
       "EcgSegment": {
         "properties": {

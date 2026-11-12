@@ -1,0 +1,82 @@
+[
+ {
+  "rbeID": "2026-10-16T13:20:00-RBE-001",
+  "eventTime": "2026-10-16T13:20Z",
+  "instruments": [
+   {
+    "displayName": "GOES-P: SEISS >2MeV"
+   }
+  ],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/RBE/49129/-1",
+  "linkedEvents": [
+   {
+    "activityID": "2026-10-08T16:24:00-CME-001"
+   },
+   {
+    "activityID": "2026-10-08T16:53:00-CME-001"
+   },
+   {
+    "activityID": "2026-10-10T14:30:00-HSS-001"
+   },
+   {
+    "activityID": "2026-10-10T16:15:00-CME-001"
+   }
+  ],
+  "sentNotifications": [
+   {
+    "messageID": "20261016-AL-001",
+    "messageIssueTime": "2026-10-16T13:28Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49130/1"
+   },
+   {
+    "messageID": "20261016-AL-002",
+    "messageIssueTime": "2026-10-16T13:43Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49131/1"
+   }
+  ],
+  "submissionTime": "2026-10-16T13:28Z",
+  "versionId": 1
+ },
+ {
+  "rbeID": "2026-10-22T20:20:00-RBE-001",
+  "eventTime": "2026-10-22T20:20Z",
+  "instruments": [
+   {
+    "displayName": "GOES-P: SEISS >2MeV"
+   }
+  ],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/RBE/49205/-1",
+  "linkedEvents": [
+   {
+    "activityID": "2026-10-16T12:38:00-CME-001"
+   },
+   {
+    "activityID": "2026-10-21T09:46:00-HSS-001"
+   }
+  ],
+  "sentNotifications": [
+   {
+    "messageID": "20261022-AL-001",
+    "messageIssueTime": "2026-10-22T20:28Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49206/1"
+   },
+   {
+    "messageID": "20261022-AL-002",
+    "messageIssueTime": "2026-10-22T20:40Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49207/1"
+   },
+   {
+    "messageID": "20261024-AL-001",
+    "messageIssueTime": "2026-10-24T20:46Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49225/1"
+   },
+   {
+    "messageID": "20261026-AL-003",
+    "messageIssueTime": "2026-10-26T20:37Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49275/1"
+   }
+  ],
+  "submissionTime": "2026-10-22T20:28Z",
+  "versionId": 1
+ }
+]

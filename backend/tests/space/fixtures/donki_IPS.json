@@ -1,0 +1,37 @@
+[
+ {
+  "catalog": "M2M_CATALOG",
+  "activityID": "2026-10-13T00:21:00-IPS-001",
+  "location": "Earth",
+  "eventTime": "2026-10-13T00:21Z",
+  "instruments": [
+   {
+    "displayName": "SOLAR-1: MAG"
+   },
+   {
+    "displayName": "SOLAR-1: SWiPS"
+   },
+   {
+    "displayName": "IMAP: MAG"
+   },
+   {
+    "displayName": "IMAP: SWAPI"
+   }
+  ],
+  "linkedEvents": [
+   {
+    "activityID": "2026-10-10T16:15:00-CME-001"
+   }
+  ],
+  "sentNotifications": [
+   {
+    "messageID": "20261013-AL-001",
+    "messageIssueTime": "2026-10-13T00:50Z",
+    "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49104/1"
+   }
+  ],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/49103/-1",
+  "submissionTime": "2026-10-13T00:43Z",
+  "versionId": 1
+ }
+]

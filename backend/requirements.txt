@@ -12,3 +12,6 @@ scikit-learn>=1.5
 joblib>=1.4
 xgboost-cpu>=2.1; platform_system != "Darwin"
 xgboost>=2.1; platform_system == "Darwin"
+# NASA open data clients (phase 4)
+httpx>=0.27
+scipy>=1.11

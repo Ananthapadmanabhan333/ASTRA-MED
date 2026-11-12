@@ -516,6 +516,293 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/space/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sources
+         * @description Dataset inventory with provenance, licensing, availability and data-quality indicators.
+         */
+        get: operations["sources_api_space_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync
+         * @description Run a synchronisation now (operator action; gated like simulation controls).
+         */
+        post: operations["sync_api_space_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/weather/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Summary */
+        get: operations["weather_summary_api_space_weather_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/weather/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Events */
+        get: operations["weather_events_api_space_weather_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/weather/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Event */
+        get: operations["weather_event_api_space_weather_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/weather/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Notifications */
+        get: operations["weather_notifications_api_space_weather_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Space Alerts
+         * @description Radiation-related environmental alerts derived from DONKI events (indicators, never doses).
+         */
+        get: operations["space_alerts_api_space_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/radiation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Radiation */
+        get: operations["radiation_api_space_radiation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/iss/missions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Iss Missions */
+        get: operations["iss_missions_api_space_iss_missions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/iss/missions/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Iss Mission */
+        get: operations["iss_mission_api_space_iss_missions__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/osdr/studies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Osdr Studies */
+        get: operations["osdr_studies_api_space_osdr_studies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Timeline */
+        get: operations["timeline_api_space_timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/timeline/nearby": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Timeline Nearby
+         * @description Space-weather events near a moment (for example a physiological anomaly).
+         */
+        get: operations["timeline_nearby_api_space_timeline_nearby_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/correlation/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Correlation Series */
+        get: operations["correlation_series_api_space_correlation_series_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/correlation/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Correlation Analyze
+         * @description Exploratory pair analysis. Correlation does not establish causation.
+         */
+        post: operations["correlation_analyze_api_space_correlation_analyze_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/space/correlation/matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Correlation Matrix */
+        post: operations["correlation_matrix_api_space_correlation_matrix_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1044,6 +1331,122 @@ export interface components {
             /** Direction */
             direction?: ("above" | "below") | null;
         };
+        /** CorrStat */
+        CorrStat: {
+            /** R */
+            r: number;
+            /** P */
+            p: number | null;
+            /** Ci */
+            ci: number[];
+        };
+        /** CorrelationRequest */
+        CorrelationRequest: {
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /**
+             * Max Lag
+             * @default 3
+             */
+            max_lag: number;
+            /**
+             * Rolling Window
+             * @default 14
+             */
+            rolling_window: number;
+        };
+        /** CorrelationResult */
+        CorrelationResult: {
+            x: components["schemas"]["SeriesMeta"];
+            y: components["schemas"]["SeriesMeta"];
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** N */
+            n: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "insufficient";
+            pearson?: components["schemas"]["CorrStat"] | null;
+            spearman?: components["schemas"]["CorrStat"] | null;
+            /** N Eff */
+            n_eff?: number | null;
+            /** Lag1 Autocorr X */
+            lag1_autocorr_x?: number | null;
+            /** Lag1 Autocorr Y */
+            lag1_autocorr_y?: number | null;
+            trend_adjusted?: components["schemas"]["TrendAdjusted"] | null;
+            /**
+             * Lags
+             * @default []
+             */
+            lags: components["schemas"]["LagRow"][];
+            /**
+             * Cross Correlation
+             * @default []
+             */
+            cross_correlation: components["schemas"]["CrossRow"][];
+            /**
+             * Rolling
+             * @default []
+             */
+            rolling: components["schemas"]["RollingPoint"][];
+            /** Rolling Window */
+            rolling_window?: number | null;
+            /**
+             * Scatter
+             * @default []
+             */
+            scatter: components["schemas"]["ScatterPoint"][];
+            /** Warnings */
+            warnings: string[];
+            /** Interpretation */
+            interpretation: string;
+        };
+        /** CorrelationSeriesInfo */
+        CorrelationSeriesInfo: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Group */
+            group: string;
+            /** Description */
+            description: string;
+            /**
+             * Coverage
+             * @description Days known to be covered; empty for simulated crew series
+             */
+            coverage: components["schemas"]["DateRange"][];
+        };
         /** CrewRadiation */
         CrewRadiation: {
             /** Astronaut Id */
@@ -1138,6 +1541,15 @@ export interface components {
             /** Critical */
             critical: number;
         };
+        /** CrossRow */
+        CrossRow: {
+            /** Lag Days */
+            lag_days: number;
+            /** R */
+            r: number | null;
+            /** N */
+            n: number;
+        };
         /** CurrentComparison */
         CurrentComparison: {
             /**
@@ -1197,6 +1609,70 @@ export interface components {
             /** Implausible Values Removed */
             implausible_values_removed: number;
         };
+        /** DataSourceStatus */
+        DataSourceStatus: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Provider */
+            provider: string;
+            /** Homepage */
+            homepage: string;
+            /** Data Format */
+            data_format: string;
+            /** Categories */
+            categories: ("measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata")[];
+            /** Update Frequency */
+            update_frequency: string;
+            /** Units */
+            units: {
+                [key: string]: string;
+            };
+            /** License */
+            license: string;
+            /** License Url */
+            license_url: string;
+            /** Citation */
+            citation: string;
+            /** Caveats */
+            caveats: string[];
+            /** Endpoints */
+            endpoints: components["schemas"]["EndpointStatus"][];
+            /** Collection Start */
+            collection_start: string | null;
+            /** Collection End */
+            collection_end: string | null;
+            /** Records */
+            records: number;
+            /** Breakdown */
+            breakdown: {
+                [key: string]: number;
+            };
+            /**
+             * Availability
+             * @enum {string}
+             */
+            availability: "live" | "cached" | "offline-fallback" | "unavailable" | "pending";
+            /** Availability Message */
+            availability_message: string;
+            health: components["schemas"]["SourceHealthOut"];
+            quality: components["schemas"]["QualityIndicators"];
+            /** Recent Runs */
+            recent_runs: components["schemas"]["SyncRun"][];
+            /** Running */
+            running: string | null;
+        };
+        /** DateRange */
+        DateRange: {
+            /**
+             * Start
+             * @description ISO date (UTC day)
+             */
+            start: string;
+            /** End */
+            end: string;
+        };
         /** Detection */
         Detection: {
             /**
@@ -1246,6 +1722,114 @@ export interface components {
             /** Share */
             share: number;
         };
+        /** EndpointStatus */
+        EndpointStatus: {
+            /** Name */
+            name: string;
+            /** Base Url */
+            base_url: string;
+            /** Needs Key */
+            needs_key: boolean;
+            /** Note */
+            note: string;
+            /** Available */
+            available: boolean;
+            /** Disabled Until */
+            disabled_until: string | null;
+            /** Reason */
+            reason: string | null;
+            /** Rate Limit Remaining */
+            rate_limit_remaining: number | null;
+            /** Rate Limit Limit */
+            rate_limit_limit: number | null;
+        };
+        /** EnvMission */
+        EnvMission: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Link */
+            link: string | null;
+            /** Start Time */
+            start_time: string | null;
+            /** End Time */
+            end_time: string | null;
+            /** Telemetry Synced At */
+            telemetry_synced_at: string | null;
+            /** Radiation Synced At */
+            radiation_synced_at: string | null;
+            /** Has Telemetry */
+            has_telemetry: boolean;
+            /** Has Radiation */
+            has_radiation: boolean;
+            /** Milestones */
+            milestones: components["schemas"]["Milestone"][];
+        };
+        /** EnvMissionDetail */
+        EnvMissionDetail: {
+            mission: components["schemas"]["EnvMission"];
+            /** Series */
+            series: components["schemas"]["EnvSeries"][];
+            /** Space Weather */
+            space_weather: components["schemas"]["SpaceWeatherEvent"][];
+            /** Studies */
+            studies: components["schemas"]["OsdrStudy"][];
+            /** Caveats */
+            caveats: string[];
+            freshness: components["schemas"]["Freshness"];
+        };
+        /** EnvPoint */
+        EnvPoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Value */
+            value: number;
+            /** Min */
+            min?: number | null;
+            /** Max */
+            max?: number | null;
+            /**
+             * N
+             * @default 1
+             */
+            n: number;
+            /**
+             * Approximate
+             * @default false
+             */
+            approximate: boolean;
+        };
+        /** EnvSeries */
+        EnvSeries: {
+            /** Quantity */
+            quantity: string;
+            /** Label */
+            label: string;
+            /**
+             * Platform
+             * @enum {string}
+             */
+            platform: "iss" | "ground";
+            /** Unit */
+            unit: string;
+            /** Resolution */
+            resolution: string;
+            /**
+             * Category
+             * @default measured
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Points */
+            points: components["schemas"]["EnvPoint"][];
+            quality: components["schemas"]["SeriesQualityOut"] | null;
+        };
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -1258,6 +1842,44 @@ export interface components {
         /** ErrorResponse */
         ErrorResponse: {
             error: components["schemas"]["ErrorBody"];
+        };
+        /** EstimateBlock */
+        EstimateBlock: {
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /**
+             * Category
+             * @default estimate
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Unit */
+            unit: string;
+            /** Rate Msv Day */
+            rate_msv_day: number;
+            /** Mission Days */
+            mission_days: number;
+            /** Mission To Date Msv */
+            mission_to_date_msv: number;
+        };
+        /** EvaluatedSource */
+        EvaluatedSource: {
+            /** Name */
+            name: string;
+            /** Url */
+            url: string;
+            /** Status */
+            status: string;
+        };
+        /** EventList */
+        EventList: {
+            /** Events */
+            events: components["schemas"]["SpaceWeatherEvent"][];
+            /** Total */
+            total: number;
+            freshness: components["schemas"]["Freshness"];
         };
         /** Evidence */
         Evidence: {
@@ -1280,6 +1902,33 @@ export interface components {
             limitations: string[];
             /** Method */
             method: string;
+        };
+        /** ExposureDay */
+        ExposureDay: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /**
+             * Estimate Msv
+             * @description Category C estimate, mSv
+             */
+            estimate_msv: number;
+            /**
+             * Simulated Crew Mean Msv
+             * @description Category D simulated crew mean, mSv
+             */
+            simulated_crew_mean_msv: number | null;
+            /** Simulated Spe */
+            simulated_spe: boolean;
+            /**
+             * Indicator Events
+             * @description Category B: radiation-relevant DONKI events that day
+             */
+            indicator_events: {
+                [key: string]: number;
+            };
         };
         /** ForecastPoint */
         ForecastPoint: {
@@ -1339,6 +1988,20 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** Freshness */
+        Freshness: {
+            /** Source Id */
+            source_id: string;
+            /** Retrieved At */
+            retrieved_at: string | null;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "live" | "cached" | "offline-fallback" | "unavailable" | "pending";
+            /** Message */
+            message: string;
         };
         /** HealthSnapshot */
         HealthSnapshot: {
@@ -1467,6 +2130,33 @@ export interface components {
             /** Validation Coverage */
             validation_coverage: number | null;
         };
+        /** IndicatorBlock */
+        IndicatorBlock: {
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /**
+             * Category
+             * @default indicator
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Window Days */
+            window_days: number;
+            /** Sep Events */
+            sep_events: number;
+            /** Flares R1 Plus */
+            flares_r1_plus: number;
+            /** Radiation Belt Enhancements */
+            radiation_belt_enhancements: number;
+            /** Storms G1 Plus */
+            storms_g1_plus: number;
+            /** Fast Cmes */
+            fast_cmes: number;
+            /** Events */
+            events: components["schemas"]["SpaceWeatherEvent"][];
+        };
         /** Insight */
         Insight: {
             /** Id */
@@ -1510,6 +2200,134 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** LagRow */
+        LagRow: {
+            /** Lag Days */
+            lag_days: number;
+            /** N */
+            n: number;
+            /** R */
+            r: number | null;
+            /** Spearman */
+            spearman?: number | null;
+            /** P */
+            p: number | null;
+            /** Q */
+            q: number | null;
+        };
+        /** MatrixCell */
+        MatrixCell: {
+            /** I */
+            i: number;
+            /** J */
+            j: number;
+            /** R */
+            r: number | null;
+            /** N */
+            n: number;
+            /** P */
+            p: number | null;
+            /** Q */
+            q: number | null;
+        };
+        /** MatrixRequest */
+        MatrixRequest: {
+            /** Series */
+            series: string[];
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /**
+             * Method
+             * @default spearman
+             * @enum {string}
+             */
+            method: "spearman" | "pearson";
+        };
+        /** MatrixResult */
+        MatrixResult: {
+            /** Series */
+            series: components["schemas"]["SeriesMeta"][];
+            /** Method */
+            method: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Cells */
+            cells: components["schemas"]["MatrixCell"][];
+            /** Warnings */
+            warnings: string[];
+        };
+        /** MeasuredBlock */
+        MeasuredBlock: {
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Unit */
+            unit: string;
+            /**
+             * Category
+             * @default measured
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Missions */
+            missions: components["schemas"]["MeasuredMissionDose"][];
+        };
+        /** MeasuredMissionDose */
+        MeasuredMissionDose: {
+            /** Mission */
+            mission: string;
+            /** Title */
+            title: string;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /** Days */
+            days: number;
+            /** Approximate Days */
+            approximate_days: number;
+            /** Mean Total Mgy Day */
+            mean_total_mgy_day: number | null;
+            /** Mean Gcr Mgy Day */
+            mean_gcr_mgy_day: number | null;
+            /** Mean Saa Mgy Day */
+            mean_saa_mgy_day: number | null;
+            /** Cumulative Mgy */
+            cumulative_mgy: number;
+        };
+        /** Milestone */
+        Milestone: {
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /** Label */
+            label: string;
         };
         /** MissionStatus */
         MissionStatus: {
@@ -1602,6 +2420,123 @@ export interface components {
             /** Config Hash */
             config_hash: string | null;
         };
+        /** NearbyEvent */
+        NearbyEvent: {
+            /** Id */
+            id: string;
+            /** Lane */
+            lane: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /** End */
+            end: string | null;
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string | null;
+            /** Kind */
+            kind: string;
+            /** Severity */
+            severity: string | null;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Source */
+            source: string;
+            /** Link */
+            link: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /** Offset Hours */
+            offset_hours: number;
+        };
+        /** NearbyEvents */
+        NearbyEvents: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Window Hours */
+            window_hours: number;
+            /** Events */
+            events: components["schemas"]["NearbyEvent"][];
+            /** Note */
+            note: string;
+        };
+        /** OsdrStudy */
+        OsdrStudy: {
+            /** Accession */
+            accession: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Organism */
+            organism: string | null;
+            /** Project Type */
+            project_type: string | null;
+            /** Flight Program */
+            flight_program: string | null;
+            /** Mission Name */
+            mission_name: string | null;
+            /** Mission Start */
+            mission_start: string | null;
+            /** Mission End */
+            mission_end: string | null;
+            /** Assay Type */
+            assay_type: string | null;
+            /** Material Type */
+            material_type: string | null;
+            /** Platform */
+            platform: string | null;
+            /** Release Date */
+            release_date: string | null;
+            /** Data Source Accession */
+            data_source_accession: string | null;
+            /** Link */
+            link: string;
+            /** Topics */
+            topics: string[];
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /**
+             * Category
+             * @default metadata
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+        };
+        /** QualityIndicators */
+        QualityIndicators: {
+            /** Records Received */
+            records_received: number;
+            /** Invalid */
+            invalid: number;
+            /** Duplicates */
+            duplicates: number;
+            /** Invalid Rate */
+            invalid_rate: number;
+            /** Sync Runs */
+            sync_runs: number;
+            /** Failed Runs */
+            failed_runs: number;
+            /** Last Sync Status */
+            last_sync_status: string | null;
+        };
         /** RadiationBrief */
         RadiationBrief: {
             /** Mission Dose Msv */
@@ -1610,6 +2545,21 @@ export interface components {
             career_dose_msv: number;
             /** Career Limit Pct */
             career_limit_pct: number;
+        };
+        /** RadiationIntel */
+        RadiationIntel: {
+            measured: components["schemas"]["MeasuredBlock"];
+            indicators: components["schemas"]["IndicatorBlock"];
+            estimate: components["schemas"]["EstimateBlock"];
+            simulated: components["schemas"]["SimulatedBlock"];
+            /** Timeline */
+            timeline: components["schemas"]["ExposureDay"][];
+            /** Alerts */
+            alerts: components["schemas"]["SpaceAlert"][];
+            /** Rules */
+            rules: string[];
+            /** Freshness */
+            freshness: components["schemas"]["Freshness"][];
         };
         /** RadiationOverview */
         RadiationOverview: {
@@ -1724,6 +2674,28 @@ export interface components {
             /** Alert Id */
             alert_id?: string | null;
         };
+        /** RollingPoint */
+        RollingPoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** R */
+            r: number;
+        };
+        /** ScatterPoint */
+        ScatterPoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
+        };
         /** ScenarioInfo */
         ScenarioInfo: {
             /**
@@ -1742,6 +2714,22 @@ export interface components {
             /** Affected Metrics */
             affected_metrics: string[];
         };
+        /** SeriesMeta */
+        SeriesMeta: {
+            /** Id */
+            id: string;
+            /** Label */
+            label?: string | null;
+            /** Unit */
+            unit?: string | null;
+            /** Category */
+            category?: ("measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata") | null;
+            /**
+             * Observations
+             * @default 0
+             */
+            observations: number;
+        };
         /** SeriesPoint */
         SeriesPoint: {
             /**
@@ -1751,6 +2739,41 @@ export interface components {
             ts: string;
             /** Value */
             value: number;
+        };
+        /** SeriesQualityOut */
+        SeriesQualityOut: {
+            /** Quantity */
+            quantity: string;
+            /** Platform */
+            platform: string;
+            /** Unit */
+            unit: string;
+            /** Raw Points */
+            raw_points: number;
+            /** Valid */
+            valid: number;
+            /** Missing */
+            missing: number;
+            /** Out Of Range */
+            out_of_range: number;
+            /** Duplicates */
+            duplicates: number;
+            /** Completeness */
+            completeness: number;
+            /** First */
+            first: string | null;
+            /** Last */
+            last: string | null;
+            /** Median Interval Min */
+            median_interval_min: number | null;
+            /** Gaps */
+            gaps: number;
+            /** Longest Gap Hours */
+            longest_gap_hours: number;
+            /** Approximate Points */
+            approximate_points: number;
+            /** Consistency Failures */
+            consistency_failures: number;
         };
         /** SignalBaseline */
         SignalBaseline: {
@@ -1803,6 +2826,25 @@ export interface components {
             description: string;
             /** Percentile */
             percentile?: number | null;
+        };
+        /** SimulatedBlock */
+        SimulatedBlock: {
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /**
+             * Category
+             * @default simulated
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Unit */
+            unit: string;
+            /** Crew */
+            crew: components["schemas"]["CrewRadiation"][];
+            /** Reference Career Limit Msv */
+            reference_career_limit_msv: number;
         };
         /** SimulationEvent */
         SimulationEvent: {
@@ -1924,6 +2966,273 @@ export interface components {
              */
             sleep_debt_7d_hours: number | null;
         };
+        /** SourceHealthOut */
+        SourceHealthOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "healthy" | "degraded" | "offline";
+            /** Last Attempt */
+            last_attempt: string | null;
+            /** Last Success */
+            last_success: string | null;
+            /** Last Error */
+            last_error: string | null;
+            /** Last Error At */
+            last_error_at: string | null;
+            /** Last Latency Ms */
+            last_latency_ms: number | null;
+            /** Consecutive Failures */
+            consecutive_failures: number;
+            /** Requests */
+            requests: number;
+            /** Failures */
+            failures: number;
+            /** Cache Hits */
+            cache_hits: number;
+            /** Last Endpoint */
+            last_endpoint: string | null;
+        };
+        /** SourcesResponse */
+        SourcesResponse: {
+            /** Sources */
+            sources: components["schemas"]["DataSourceStatus"][];
+            /** Evaluated */
+            evaluated: components["schemas"]["EvaluatedSource"][];
+            /**
+             * Api Key Configured
+             * @description Whether a personal NASA API key is set (the key itself is never exposed)
+             */
+            api_key_configured: boolean;
+            /** Sync Enabled */
+            sync_enabled: boolean;
+            /** Categories */
+            categories: {
+                [key: string]: string;
+            };
+        };
+        /** SpaceAlert */
+        SpaceAlert: {
+            /** Id */
+            id: string;
+            /** Event Id */
+            event_id: number;
+            /** Event Type */
+            event_type: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "advisory" | "caution";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "recent" | "past";
+            /** Title */
+            title: string;
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /** Rule */
+            rule: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Note */
+            note: string;
+            /** Link */
+            link: string | null;
+        };
+        /** SpaceNotification */
+        SpaceNotification: {
+            /** Id */
+            id: number;
+            /** Message Id */
+            message_id: string;
+            /** Message Type */
+            message_type: string;
+            /**
+             * Issue Time
+             * Format: date-time
+             */
+            issue_time: string;
+            /** Url */
+            url: string | null;
+            /** Summary */
+            summary: string | null;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /**
+             * Category
+             * @default indicator
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+        };
+        /** SpaceWeatherEvent */
+        SpaceWeatherEvent: {
+            /** Id */
+            id: number;
+            /** Event Type */
+            event_type: string;
+            /** Type Label */
+            type_label: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /** Peak Time */
+            peak_time: string | null;
+            /** End Time */
+            end_time: string | null;
+            /** Classification */
+            classification: string | null;
+            /**
+             * Scale
+             * @description NOAA scale level where the record supports one (R for flares, G for storms)
+             */
+            scale: string | null;
+            /**
+             * Severity
+             * @description 1-5 scale level or CME speed class; null = unclassified
+             */
+            severity: number | null;
+            /** Severity Label */
+            severity_label: string;
+            /** Magnitude */
+            magnitude: number | null;
+            /** Magnitude Unit */
+            magnitude_unit: string | null;
+            /** Location */
+            location: string | null;
+            /** Description */
+            description: string | null;
+            /** Instruments */
+            instruments: string[];
+            /** Linked Ids */
+            linked_ids: string[];
+            /** Notification Ids */
+            notification_ids: string[];
+            /** Model Derived */
+            model_derived: boolean;
+            /** Link */
+            link: string | null;
+            /** Version */
+            version: number;
+            /** Submitted At */
+            submitted_at: string | null;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /**
+             * Endpoint
+             * @description Which NASA endpoint served this record (api.nasa.gov or ccmc)
+             */
+            endpoint: string;
+            /**
+             * Source
+             * @default NASA CCMC DONKI
+             */
+            source: string;
+        };
+        /** SpaceWeatherEventDetail */
+        SpaceWeatherEventDetail: {
+            /** Id */
+            id: number;
+            /** Event Type */
+            event_type: string;
+            /** Type Label */
+            type_label: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /** Peak Time */
+            peak_time: string | null;
+            /** End Time */
+            end_time: string | null;
+            /** Classification */
+            classification: string | null;
+            /**
+             * Scale
+             * @description NOAA scale level where the record supports one (R for flares, G for storms)
+             */
+            scale: string | null;
+            /**
+             * Severity
+             * @description 1-5 scale level or CME speed class; null = unclassified
+             */
+            severity: number | null;
+            /** Severity Label */
+            severity_label: string;
+            /** Magnitude */
+            magnitude: number | null;
+            /** Magnitude Unit */
+            magnitude_unit: string | null;
+            /** Location */
+            location: string | null;
+            /** Description */
+            description: string | null;
+            /** Instruments */
+            instruments: string[];
+            /** Linked Ids */
+            linked_ids: string[];
+            /** Notification Ids */
+            notification_ids: string[];
+            /** Model Derived */
+            model_derived: boolean;
+            /** Link */
+            link: string | null;
+            /** Version */
+            version: number;
+            /** Submitted At */
+            submitted_at: string | null;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /**
+             * Endpoint
+             * @description Which NASA endpoint served this record (api.nasa.gov or ccmc)
+             */
+            endpoint: string;
+            /**
+             * Source
+             * @default NASA CCMC DONKI
+             */
+            source: string;
+            /**
+             * Raw
+             * @description The original DONKI record, unchanged
+             */
+            raw: {
+                [key: string]: unknown;
+            };
+        };
         /** StateBaseline */
         StateBaseline: {
             /** N */
@@ -1948,6 +3257,97 @@ export interface components {
             scale: number;
             /** By Time Of Day */
             by_time_of_day: components["schemas"]["TimeOfDayStats"][];
+        };
+        /** StudyList */
+        StudyList: {
+            /** Items */
+            items: components["schemas"]["OsdrStudy"][];
+            /** Total */
+            total: number;
+            /** Topics */
+            topics: components["schemas"]["StudyTopic"][];
+            freshness: components["schemas"]["Freshness"];
+        };
+        /** StudyTopic */
+        StudyTopic: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Term */
+            term: string;
+        };
+        /** SyncRequest */
+        SyncRequest: {
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "donki" | "eda" | "osdr";
+            /**
+             * Days
+             * @description DONKI: days back from today
+             */
+            days?: number | null;
+            /**
+             * Missions
+             * @description EDA: missions to (re)ingest
+             */
+            missions?: string[] | null;
+            /**
+             * Force
+             * @default false
+             */
+            force: boolean;
+        };
+        /** SyncResult */
+        SyncResult: {
+            /** Source */
+            source: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Finished At
+             * Format: date-time
+             */
+            finished_at: string;
+            /** Summary */
+            summary: {
+                [key: string]: unknown;
+            };
+        };
+        /** SyncRun */
+        SyncRun: {
+            /** Id */
+            id: number;
+            /** Task */
+            task: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Status */
+            status: string;
+            /** Endpoint */
+            endpoint: string | null;
+            /** Records Received */
+            records_received: number;
+            /** Records New */
+            records_new: number;
+            /** Records Updated */
+            records_updated: number;
+            /** Duplicates */
+            duplicates: number;
+            /** Invalid */
+            invalid: number;
+            /** Error */
+            error: string | null;
         };
         /** SystemHealth */
         SystemHealth: {
@@ -2029,6 +3429,126 @@ export interface components {
             /** Hours */
             hours: string;
         };
+        /** Timeline */
+        Timeline: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "mission" | "iss";
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /** Mission */
+            mission: string | null;
+            /** Lanes */
+            lanes: components["schemas"]["TimelineLane"][];
+            /** Series */
+            series: components["schemas"]["TimelineSeries"][];
+            /** Notes */
+            notes: string[];
+        };
+        /** TimelineItem */
+        TimelineItem: {
+            /** Id */
+            id: string;
+            /** Lane */
+            lane: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /** End */
+            end: string | null;
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string | null;
+            /** Kind */
+            kind: string;
+            /** Severity */
+            severity: string | null;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Source */
+            source: string;
+            /** Link */
+            link: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+        };
+        /** TimelineLane */
+        TimelineLane: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Items */
+            items: components["schemas"]["TimelineItem"][];
+        };
+        /** TimelinePoint */
+        TimelinePoint: {
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Value */
+            value: number;
+            /**
+             * Approximate
+             * @default false
+             */
+            approximate: boolean;
+        };
+        /** TimelineSeries */
+        TimelineSeries: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "measured" | "indicator" | "model" | "estimate" | "simulated" | "metadata";
+            /** Points */
+            points: components["schemas"]["TimelinePoint"][];
+        };
+        /** TrendAdjusted */
+        TrendAdjusted: {
+            /** R */
+            r: number;
+            /** P */
+            p: number | null;
+            /** N Eff */
+            n_eff: number;
+        };
         /** VitalReading */
         VitalReading: {
             /** Astronaut Id */
@@ -2101,6 +3621,33 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** WeatherSummary */
+        WeatherSummary: {
+            /** Window Days */
+            window_days: number;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** Flare Classes */
+            flare_classes: {
+                [key: string]: number;
+            };
+            strongest_flare: components["schemas"]["SpaceWeatherEvent"] | null;
+            max_storm: components["schemas"]["SpaceWeatherEvent"] | null;
+            fastest_cme: components["schemas"]["SpaceWeatherEvent"] | null;
+            /** Latest */
+            latest: {
+                [key: string]: components["schemas"]["SpaceWeatherEvent"] | null;
+            };
+            /** Alerts */
+            alerts: components["schemas"]["SpaceAlert"][];
+            /** Notifications */
+            notifications: components["schemas"]["SpaceNotification"][];
+            /** Caveats */
+            caveats: string[];
+            freshness: components["schemas"]["Freshness"];
         };
         /** EcgSegment */
         EcgSegment: {
@@ -3447,6 +4994,670 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sources_api_space_sources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourcesResponse"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sync_api_space_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SyncRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResult"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    weather_summary_api_space_weather_summary_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherSummary"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    weather_events_api_space_weather_events_get: {
+        parameters: {
+            query?: {
+                start?: string | null;
+                end?: string | null;
+                /** @description FLR, CME, SEP, GST, RBE, IPS, HSS, MPC, WSA */
+                types?: string[] | null;
+                min_severity?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventList"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    weather_event_api_space_weather_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpaceWeatherEventDetail"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    weather_notifications_api_space_weather_notifications_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpaceNotification"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    space_alerts_api_space_alerts_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpaceAlert"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    radiation_api_space_radiation_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RadiationIntel"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    iss_missions_api_space_iss_missions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvMission"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    iss_mission_api_space_iss_missions__name__get: {
+        parameters: {
+            query?: {
+                platform?: string | null;
+                /** @description Telemetry aggregation; dosimetry stays daily */
+                resolution?: string;
+            };
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnvMissionDetail"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    osdr_studies_api_space_osdr_studies_get: {
+        parameters: {
+            query?: {
+                /** @description radiation, rodent, spaceflight, physiology, environment */
+                topic?: string | null;
+                q?: string | null;
+                organism?: string | null;
+                project_type?: string | null;
+                mission?: string | null;
+                /** @description Also query OSDR now for q (results are stored) */
+                live?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudyList"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    timeline_api_space_timeline_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                start?: string | null;
+                end?: string | null;
+                astronaut_id?: string | null;
+                mission?: string | null;
+                include_ai?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Timeline"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    timeline_nearby_api_space_timeline_nearby_get: {
+        parameters: {
+            query: {
+                ts: string;
+                window_hours?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NearbyEvents"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    correlation_series_api_space_correlation_series_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrelationSeriesInfo"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    correlation_analyze_api_space_correlation_analyze_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrelationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrelationResult"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    correlation_matrix_api_space_correlation_matrix_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MatrixRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatrixResult"];
                 };
             };
             /** @description Resource not found */

@@ -55,3 +55,26 @@ export type CrewRiskOverview = Schemas["CrewRiskOverview"];
 export type CrewRiskSummary = Schemas["CrewRiskSummary"];
 export type ModelPerformance = Schemas["ModelPerformanceResponse"];
 export type AlertExplanation = Schemas["AlertExplanationResponse"];
+
+// Space environment intelligence (phase 4): real NASA open data
+export type DataCategory = Schemas["SpaceWeatherEvent"]["category"];
+export type Freshness = Schemas["Freshness"];
+export type FreshnessMode = Freshness["mode"];
+export type SpaceWeatherEvent = Schemas["SpaceWeatherEvent"];
+export type SpaceWeatherEventDetail = Schemas["SpaceWeatherEventDetail"];
+export type SpaceNotification = Schemas["SpaceNotification"];
+export type SpaceAlert = Schemas["SpaceAlert"];
+export type WeatherSummary = Schemas["WeatherSummary"];
+export type RadiationIntel = Schemas["RadiationIntel"];
+export type EnvMission = Schemas["EnvMission"];
+export type EnvMissionDetail = Schemas["EnvMissionDetail"];
+export type EnvSeries = Schemas["EnvSeries"];
+export type OsdrStudy = Schemas["OsdrStudy"];
+export type DataSourceStatus = Schemas["DataSourceStatus"];
+export type SourcesResponse = Schemas["SourcesResponse"];
+export type Timeline = Schemas["Timeline"];
+export type TimelineItem = Schemas["TimelineItem"];
+export type NearbyEvents = Schemas["NearbyEvents"];
+export type CorrelationSeriesInfo = Schemas["CorrelationSeriesInfo"];
+export type CorrelationResult = Schemas["CorrelationResult"];
+export type MatrixResult = Schemas["MatrixResult"];

@@ -159,6 +159,49 @@ data limitations. None of it is a diagnosis. Methods and results are in [AI_ENGI
 
 Responses are cached for `ASTRA_AI_CACHE_SECONDS` (30 s).
 
+## Space environment (phase 4)
+
+**Real NASA open data:**
+- DONKI space weather.
+- OSDR Environmental Data App ISS measurements.
+- OSDR study metadata.
+
+**Every payload states:**
+- each value's `category`: `measured`, `indicator`, `model`, `estimate`, `simulated` or `metadata`;
+- a `freshness` object, with `source_id`, `retrieved_at` and `mode`, where mode is one of `live`,
+  `cached`, `offline-fallback`, `unavailable` or `pending`, plus a message.
+
+Responses always come from the local store, so they work when NASA services are down. Sources,
+licences and limitations are in [NASA_DATA_SOURCES.md](NASA_DATA_SOURCES.md); methods are in
+[SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md).
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/space/sources` | `SourcesResponse`: per source, endpoints with failover and rate-limit state, collection period, record counts, units, update frequency, licence, citation, caveats, health, quality indicators and recent sync runs. Also the evaluated sources, and whether a personal NASA key is configured (the key itself is never returned) |
+| POST | `/api/space/sync` | `SyncResult`. Body: `{"source": "donki" or "eda" or "osdr", "days"?, "missions"?, "force"?}`. Operator action; 403 unless `ASTRA_SIMULATION_CONTROL_ENABLED=true` |
+| GET | `/api/space/weather/summary?days=30` | `WeatherSummary`: counts by type, flare classes, strongest flare, strongest storm, fastest CME, latest per type, radiation-related alerts, notifications, provider caveats |
+| GET | `/api/space/weather/events` | `EventList`. Query: `start`, `end` (ISO 8601, default the last 30 days), `types` (repeatable: FLR, CME, SEP, GST, RBE, IPS, HSS, MPC, WSA), `min_severity` (0–5), `limit` |
+| GET | `/api/space/weather/events/{id}` | `SpaceWeatherEventDetail`: the normalised event plus the original DONKI record in `raw` |
+| GET | `/api/space/weather/notifications?days=30` | `SpaceNotification[]` |
+| GET | `/api/space/alerts?days=30` | `SpaceAlert[]`: prototype radiation-related alerts from DONKI events (indicators, never doses) |
+| GET | `/api/space/radiation?days=30` | `RadiationIntel`: `measured` (A, mGy/day), `indicators` (B), `estimate` (C, mSv), `simulated` (D, mSv/day), daily `timeline`, `alerts`, `rules` |
+| GET | `/api/space/iss/missions` | `EnvMission[]`: EDA missions with period, milestones and what has been ingested |
+| GET | `/api/space/iss/missions/{name}?resolution=6h` | `EnvMissionDetail`: series (resolution `1h`, `6h` or `1d` for telemetry; dosimetry stays daily) with per-series quality, DONKI events during the mission, linked OSDR studies, caveats |
+| GET | `/api/space/osdr/studies` | `StudyList`. Query: `topic` (radiation, rodent, spaceflight, physiology, environment), `q`, `organism`, `project_type`, `mission`, `live` (also query OSDR now), `limit`, `offset` |
+| GET | `/api/space/timeline` | `Timeline`. `mode=mission` (default) with `start`, `end` (at most 31 days) and `astronaut_id`; or `mode=iss&mission=RR-1` |
+| GET | `/api/space/timeline/nearby?ts=…&window_hours=48` | `NearbyEvents`: space-weather events within the window, with offsets in hours |
+| GET | `/api/space/correlation/series` | `CorrelationSeriesInfo[]`: available daily series with category, unit and covered date ranges |
+| POST | `/api/space/correlation/analyze` | `CorrelationResult`. Body: `{x, y, start, end, max_lag (0–14), rolling_window (5–90)}`. Returns Pearson and Spearman with CIs, n and n_eff, trend-adjusted r, lags with BH q-values, cross-correlation, rolling r, scatter, warnings and interpretation. `status: insufficient` when fewer than 5 days overlap |
+| POST | `/api/space/correlation/matrix` | `MatrixResult`. Body: `{series: [2..10 ids], start, end, method}`. Pairwise r, n, p and BH q |
+
+**Error responses:**
+
+| Status | `code` | When |
+| --- | --- | --- |
+| 400 | `bad_request` | Invalid type, period or mode |
+| 404 | `not_found` | Unknown event, mission or series |
+| 503 | `space_disabled` | `ASTRA_SPACE_ENABLED=false` |
+
 ## WebSocket: `/ws/health-monitoring`
 
 One connection carries everything live. All messages are JSON with a `type` discriminator; the

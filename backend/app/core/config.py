@@ -6,7 +6,7 @@ from datetime import date
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -47,6 +47,28 @@ class Settings(BaseSettings):
     ai_artifacts_dir: str = ""  # empty: backend/artifacts
     ai_cache_seconds: float = Field(default=30.0, ge=0)
     ai_history_hours: int = Field(default=168, ge=24, le=720)  # history used to fit live baselines
+
+    # NASA open data (phase 4). The API key stays on the backend: it is never returned by the API,
+    # logged, or sent to the browser. Empty uses NASA's public DEMO_KEY (heavily rate limited).
+    space_enabled: bool = True
+    space_sync_enabled: bool = True  # background synchronisation with NASA services
+    nasa_api_key: SecretStr = SecretStr("")
+    donki_endpoints: str = "api.nasa.gov,ccmc"  # tried in order; see app/space/provenance.py
+    donki_sync_minutes: int = Field(default=180, ge=15)
+    donki_backfill_days: int = Field(default=180, ge=7, le=3650)
+    eda_sync_hours: int = Field(default=168, ge=1)
+    eda_missions: str = ""  # comma-separated EDA mission names to ingest; empty = all
+    osdr_sync_hours: int = Field(default=24, ge=1)
+    space_http_timeout_s: float = Field(default=45.0, gt=1, le=300)
+    space_request_spacing_s: float = Field(default=1.0, ge=0, le=30)  # politeness gap per host
+
+    @property
+    def nasa_api_key_value(self) -> str:
+        return self.nasa_api_key.get_secret_value().strip()
+
+    @property
+    def eda_mission_list(self) -> list[str]:
+        return [m.strip() for m in self.eda_missions.split(",") if m.strip()]
 
     @property
     def cors_origin_list(self) -> list[str]:

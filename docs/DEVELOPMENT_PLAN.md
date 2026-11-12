@@ -22,6 +22,18 @@ team, during a long-duration mission.
 
 ## Status (2026-11-12)
 
+Phase 4 is implemented (see [SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md) and
+[NASA_DATA_SOURCES.md](NASA_DATA_SOURCES.md)):
+
+- **NASA ingestion:** DONKI, the OSDR Environmental Data App and the OSDR catalogue, with resilient
+  clients, scheduled synchronisation, provenance and quality checks.
+- **Analysis:** radiation intelligence in four separate categories, a mission timeline, and an
+  exploratory correlation engine.
+- **Dashboard:** six new pages under "Space environment".
+- **Tests:** the backend suite has 166 tests (including 2 opt-in PostgreSQL tests); the frontend has
+  24.
+
+
 Phase 3 is implemented (see [AI_ENGINE.md](AI_ENGINE.md)): personal baselines, five anomaly
 detectors plus an ensemble, XGBoost/LSTM/GRU/TCN forecasters with conformal intervals, rule-based
 risk scoring, explanations, the AI intelligence center and a reproducible evaluation pipeline. The
@@ -65,7 +77,14 @@ Still open from the phase 3 brief:
 - Validation on real data. None has been used; see `NASA_DATA_INTEGRATION.md`.
 - A NASA dataset adapter for radiation.
 
-### Phase 4 — Hardening
+### Phase 4 — NASA data integration and space environment intelligence (this iteration)
+- DONKI space weather (flares, CMEs, SEP, storms, radiation belt, notifications, WSA-ENLIL), OSDR EDA
+  ISS environment and dosimetry, OSDR study metadata.
+- Radiation intelligence: measured, indicator, estimate and simulated, never converted.
+- Mission timeline in UTC with display timezones; exploratory correlation with autocorrelation and
+  multiple-comparison control.
+
+### Phase 5 — Hardening
 - Alembic migrations, authentication for operator actions, audit log, TimescaleDB hypertables
   for long histories, end-to-end tests (Playwright), accessibility audit.
 

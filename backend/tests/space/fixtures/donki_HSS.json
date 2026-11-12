@@ -1,0 +1,23 @@
+[
+ {
+  "hssID": "2026-10-14T06:42:00-HSS-001",
+  "eventTime": "2026-10-14T06:42Z",
+  "instruments": [
+   {
+    "displayName": "STEREO A: PLASTIC"
+   },
+   {
+    "displayName": "STEREO A: IMPACT"
+   }
+  ],
+  "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/HSS/49111/-1",
+  "linkedEvents": [
+   {
+    "activityID": "2026-10-14T03:52:00-IPS-001"
+   }
+  ],
+  "sentNotifications": null,
+  "submissionTime": "2026-10-14T18:26Z",
+  "versionId": 1
+ }
+]

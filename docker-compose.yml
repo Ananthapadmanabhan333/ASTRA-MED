@@ -34,6 +34,8 @@ services:
       ASTRA_CORS_ORIGINS: ${ASTRA_CORS_ORIGINS:-http://localhost:3000}
       ASTRA_RANDOM_EVENTS_PER_HOUR: ${ASTRA_RANDOM_EVENTS_PER_HOUR:-6}
       ASTRA_SIMULATION_CONTROL_ENABLED: ${ASTRA_SIMULATION_CONTROL_ENABLED:-true}
+      ASTRA_NASA_API_KEY: ${ASTRA_NASA_API_KEY:-}  # optional; server side only
+      ASTRA_SPACE_SYNC_ENABLED: ${ASTRA_SPACE_SYNC_ENABLED:-true}
     volumes:
       - ai-artifacts:/app/artifacts  # trained model versions persist across restarts
     ports:

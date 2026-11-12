@@ -1,8 +1,14 @@
 # Integrating NASA datasets
 
-ASTRA-MED ships with simulated data only. This guide describes how real or archival NASA data
-could replace or calibrate parts of the simulator. Nothing here is implemented yet; it is the
-design the code is shaped for.
+**Status (phase 4, 2026-11-12):**
+
+- **Integrated:** three public NASA sources (DONKI space weather, the OSDR Environmental Data App
+  for ISS telemetry and dosimetry, and the OSDR study catalogue). They feed the space environment
+  module, labelled by category and never mixed into the simulated crew data. See
+  [NASA_DATA_SOURCES.md](NASA_DATA_SOURCES.md) and [SPACE_ENVIRONMENT.md](SPACE_ENVIRONMENT.md).
+- **Not implemented:** this guide also covers how archival data could calibrate or replace parts of
+  the simulator; those sections remain design proposals. In particular, DONKI events are **not**
+  replayed into the simulator. An environmental event must never become a fabricated crew dose.
 
 > Access to identifiable astronaut medical data is restricted. Most crew physiological datasets
 > must be requested through NASA's Life Sciences Data Archive, under data-use agreements. Public
@@ -47,13 +53,13 @@ Its type is currently `Literal["simulated"]`; integrating real data widens it to
 `simulated | replay | archival`, and the frontend's "Simulated data" marker becomes a provenance
 badge driven by that field. A screen must never mix sources without labelling each series.
 
-### 3. Example: replaying DONKI solar particle events
+### 3. Example: replaying DONKI solar particle events (proposal, deliberately not implemented)
 
 ```python
 # backend/app/sources/donki.py (proposed)
 import httpx
 
-DONKI_SEP = "https://api.nasa.gov/DONKI/SEP"
+DONKI_SEP = "https://ccmc.gsfc.nasa.gov/DONKI/WS/get/SEP"  # api.nasa.gov/DONKI returned 404 on 2026-11-12
 
 async def fetch_sep_events(start: date, end: date, api_key: str) -> list[dict]:
     async with httpx.AsyncClient(timeout=20) as client:
