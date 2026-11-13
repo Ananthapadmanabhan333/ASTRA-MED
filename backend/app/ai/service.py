@@ -775,6 +775,78 @@ class AIService:
             ],
         }
 
+    # ------------------------------------------------- phase 6: deviations, streams ----
+    async def current_deviations(self, astronaut_id: str, reading) -> dict[str, Any]:
+        """One reading against the learned personal baseline. Cheap: no history query after the fit."""
+        entry = await self.baseline(astronaut_id)
+        if reading is None:
+            return {"available": False, "reason": "No live reading yet.", "signals": []}
+        ts = pd.Timestamp(as_utc(reading.ts))
+        state = getattr(reading, "activity_state", None)
+        signals = []
+        for s in SIGNALS:
+            value = _f(getattr(reading, s, None))
+            if value is None:
+                continue
+            ref = entry.baseline.reference(s, state, ts)
+            z = ref.z_or_none(value)
+            pct = ref.percentile_or_none(value)
+            signals.append({
+                "signal": s, "label": LABELS[s], "unit": UNITS[s], "value": round(value, 2),
+                "expected": round(ref.center, 2) if ref.comparable else None,
+                "z": None if z is None else round(z, 2), "percentile": None if pct is None else round(pct, 1),
+                "basis": ref.basis,
+                "flag": None if z is None else "far" if abs(z) >= 4 else "outside" if abs(z) >= 2.5 else "edge" if abs(z) >= 1.5 else None,
+            })
+        return {
+            "available": True, "ts": as_utc(reading.ts), "activity_state": state, "signals": signals,
+            "baseline_fitted_at": entry.fitted_at, "windows_used": entry.windows_used,
+            "method": "Robust personal baseline per signal, activity state and time of day (phase 3); z = (value - center) / scale.",
+        }
+
+    async def analyse_stream(self, astronaut_id: str, samples: pd.DataFrame, now: datetime,
+                             alerts: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        """Anomaly detection, forecast and risk for a supplied telemetry stream (mission simulation sandbox).
+
+        ``samples`` (columns ``ts``, the signals, ``activity_state``, ``activity_met``) continue the
+        crew member's stored history from their first timestamp; ``now`` is the stream's own clock.
+        Stored windows before the stream supply the warm-up and forecast look-back, so a short
+        sandbox run is analysed exactly like live data. Nothing is written anywhere.
+        """
+        bundle = await self.require_bundle()
+        self._require_astronaut(astronaut_id)
+        if samples.empty:
+            raise InsufficientDataError("The stream has no samples yet.")
+        entry = await self.baseline(astronaut_id)
+        now = as_utc(now)
+        first = samples["ts"].min().to_pydatetime()
+        lookback = timedelta(hours=LOOKBACK / 2 + 2)
+        context = await self.windows(astronaut_id, now - lookback, first)
+        sw = to_windows(samples)
+        windows = pd.concat([context[context.index < sw.index.min()], sw]) if len(context) else sw
+        windows = self._regular(windows, now - lookback, now)
+        b = entry.baseline
+        history_hours = ((b.last_ts - b.first_ts).total_seconds() / 3600) if b.first_ts and b.last_ts else 0.0
+        _, removed = drop_implausible(samples)
+        detect_start = max(as_utc(first), now - MAX_RANGE)
+
+        def run():
+            det = self._detect_sync(bundle, b, windows, list(bundle.detectors), detect_start, now, "supplied",
+                                    True, removed, history_hours, astronaut_id)
+            forecast = None
+            forecast_error = None
+            try:
+                forecast = self._forecast_sync(bundle, b, windows, bundle.serving, astronaut_id, now)
+            except InsufficientDataError as exc:
+                forecast_error = exc.message
+            risk_windows = windows[windows.index >= pd.Timestamp(now) - WARMUP - timedelta(hours=2)]
+            risk = self._risk_sync(astronaut_id, b, bundle, risk_windows, forecast, alerts or [], now, history_hours)
+            return det, forecast, forecast_error, risk
+
+        det, forecast, forecast_error, risk = await asyncio.to_thread(run)
+        return {"astronaut_id": astronaut_id, "generated_at": now, "model_version": bundle.version,
+                "detection": det, "forecast": forecast, "forecast_error": forecast_error, "risk": risk}
+
     async def crew_overview(self) -> dict[str, Any]:
         bundle = await self.bundle()
         crew = []

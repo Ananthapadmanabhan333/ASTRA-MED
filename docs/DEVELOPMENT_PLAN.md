@@ -20,7 +20,24 @@ team, during a long-duration mission.
 | Risk scoring, v1 | Configurable point rules (`risk_config.json`) | Inspectable and adjustable; a probabilistic risk model only after validation on real data. |
 | Insights, v1 | Deterministic rule engine with cited evidence | Every statement can be traced to data. LLM summarisation is a later, optional layer. |
 
-## Status (2026-11-13)
+## Status (2026-11-13, phase 6)
+
+Phase 6 is implemented (see [MISSION_CONTROL.md](MISSION_CONTROL.md) and the
+[phase 6 report](PHASE6_REPORT.md), which holds the architecture audit, test results, known issues,
+deployment and demo):
+
+- **Unified mission control:** event orchestration across every module, a unified alert centre,
+  correlation, crew monitoring, a situational-awareness timeline and a command dashboard.
+- **Mission simulation sandbox:** own engine and clock, speed, pause, reset, presets, injection,
+  telemetry ingestion, AI analysis of the stream, sandbox incident reports, playback.
+- **Analytics and reliability:** mission analytics with exports, component health, consistency
+  checks with safe repair, collector health, socket reconnection with refetch, error boundaries.
+- **Dashboard:** redesigned shell (collapsible sidebar, mission header, notification centre) and seven
+  new or rebuilt pages.
+- **Tests:** 20 new backend tests (288 in the suite, including 3 opt-in PostgreSQL tests); the
+  frontend has 31; a live end-to-end script (`backend/scripts/e2e_mission.py`).
+
+## Status (2026-11-13, phase 5)
 
 Phase 5 is implemented (see [MEDICAL_DECISION_SUPPORT.md](MEDICAL_DECISION_SUPPORT.md) and
 [SECURITY.md](SECURITY.md)):
@@ -104,11 +121,16 @@ Still open from the phase 3 brief:
 - Authentication (scrypt, server-side sessions, CSRF), four roles with a permission matrix, audit log,
   security headers.
 
-### Phase 6 — Hardening
-- Alembic migrations, TimescaleDB hypertables for long histories, end-to-end tests (Playwright),
-  accessibility audit, multi-factor authentication, row-level (per crew member) access, a
-  tamper-evident audit store, a shared rate-limit store, and an approved aerospace-medicine
-  reference library for the assistant.
+### Phase 6 — Unified mission control (this iteration)
+- Event orchestration and a unified alert centre across every module, correlation, crew monitoring,
+  situational-awareness timeline, command dashboard, mission simulation sandbox, mission analytics,
+  component health and consistency checks, redesigned shell. See [MISSION_CONTROL.md](MISSION_CONTROL.md).
+
+### Phase 7 — Hardening (next)
+- Alembic migrations, TimescaleDB hypertables for long histories, browser end-to-end tests
+  (Playwright), accessibility audit, multi-factor authentication, row-level (per crew member)
+  access, a tamper-evident audit store, a shared rate-limit store, multi-instance collectors and
+  sandbox, and an approved aerospace-medicine reference library for the assistant.
 
 ## Working agreement
 - Modules land one at a time with tests before the next starts.

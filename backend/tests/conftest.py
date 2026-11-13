@@ -22,6 +22,18 @@ from app.simulator.profiles import CREW
 T0 = datetime(2026, 11, 9, 11, 0, tzinfo=UTC)
 
 
+@pytest.fixture(scope="session")
+def trained_artifacts(tmp_path_factory):
+    """A small model version trained once per test session (shared by the AI and phase 6 tests)."""
+    from app.ai.experiments.config import ExperimentConfig
+    from app.ai.experiments.runner import run
+
+    root = tmp_path_factory.mktemp("ai-artifacts")
+    results = run(ExperimentConfig().quick(), root)
+    assert results["version"]
+    return root
+
+
 @pytest.fixture
 def engine() -> SimulationEngine:
     return SimulationEngine(CREW, seed=7, random_events_per_hour=0)

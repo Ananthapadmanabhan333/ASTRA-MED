@@ -27,7 +27,18 @@ export type WsVitals = Schemas["WsVitals"];
 export type WsAlert = Schemas["WsAlert"];
 export type WsSimulation = Schemas["WsSimulation"];
 export type WsPong = Schemas["WsPong"];
-export type WsServerMessage = WsHello | WsVitals | WsAlert | WsSimulation | WsPong;
+export type WsMissionEvent = Schemas["WsMissionEvent"];
+export type WsMissionAlert = Schemas["WsMissionAlert"];
+export type WsSimState = Schemas["WsSimState"];
+export type WsServerMessage =
+  | WsHello
+  | WsVitals
+  | WsAlert
+  | WsSimulation
+  | WsPong
+  | WsMissionEvent
+  | WsMissionAlert
+  | WsSimState;
 
 export type TimeRange = HistorySeries["range"];
 export type Metric = ComparisonSeries["metric"];
@@ -126,3 +137,39 @@ export type StatementKind = AnswerStatement["kind"];
 
 export type MissionOverview = Schemas["MissionOverview"];
 export type OverviewCrew = Schemas["OverviewCrew"];
+
+// Phase 6: unified mission control
+export type MissionEvent = Schemas["MissionEvent"];
+export type MissionAlert = Schemas["MissionAlert"];
+export type MissionAlertDetail = Schemas["MissionAlertDetail"];
+export type MissionAlertAction = Schemas["MissionAlertAction"];
+export type AlertCenterSummary = Schemas["AlertCenterSummary"];
+export type AlertCenterStatus = MissionAlert["status"];
+export type EventSeverity = MissionEvent["severity"];
+export type DataOrigin = MissionEvent["data_origin"];
+export type MissionContext = MissionEvent["context"];
+export type EventCounts = Schemas["EventCounts"];
+export type MissionTimeline = Schemas["MissionTimeline"];
+export type EventLane = Schemas["EventLane"];
+export type CrewMonitoring = Schemas["CrewMonitoring"];
+export type CrewMonitorCard = Schemas["CrewMonitorCard"];
+export type Deviation = Schemas["Deviation"];
+export type CrewAI = Schemas["CrewAI"];
+export type MissionControlOverview = Schemas["MissionControlOverview"];
+export type DashboardSection = Schemas["DashboardSection"];
+export type ComponentStatus = Schemas["ComponentStatus"];
+export type SimCatalogue = Schemas["SimCatalogue"];
+export type SimPreset = Schemas["SimPreset"];
+export type SimInjectionType = Schemas["SimInjectionType"];
+export type SimState = Schemas["SimState"];
+export type SimRun = Schemas["SimRun"];
+export type SimStart = Schemas["SimStart"];
+export type SimInject = Schemas["SimInject"];
+export type SimPlayback = Schemas["SimPlayback"];
+export type SimFrame = Schemas["SimFrame"];
+export type SimCrewReading = Schemas["SimCrewReading"];
+export type SimIngestResult = Schemas["SimIngestResult"];
+export type SimTelemetryReading = Schemas["SimTelemetryReading"];
+export type AnalyticsSummary = Schemas["AnalyticsSummary"];
+export type PlatformStatus = Schemas["SystemStatus"];
+export type ConsistencyReport = Schemas["ConsistencyReport"];

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections import defaultdict
+from dataclasses import replace
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -65,6 +66,20 @@ class MonitoringService:
         self._ticks = 0
         self._task: asyncio.Task | None = None
         self.started_at: datetime | None = None
+        self.last_tick_at: datetime | None = None
+        self.tick_failures = 0
+        self.last_tick_error: str | None = None
+        # Synchronous change hooks (phase 6 mission orchestrator): called with ("alert", (kind, record))
+        # or ("scenario", (kind, scenario)) for every change, whether or not a socket is connected.
+        # They must not block; the orchestrator only enqueues.
+        self.listeners: list = []
+
+    def _notify(self, topic: str, payload) -> None:
+        for listener in self.listeners:
+            try:
+                listener(topic, payload)
+            except Exception:  # a broken listener must never stop monitoring
+                logger.exception("monitor listener failed")
 
     # ---------------------------------------------------------------- lifecycle ----
     @property
@@ -104,7 +119,9 @@ class MonitoringService:
                 await self.tick(utcnow())
             except asyncio.CancelledError:
                 raise
-            except Exception:  # keep monitoring alive through transient failures
+            except Exception as exc:  # keep monitoring alive through transient failures
+                self.tick_failures += 1
+                self.last_tick_error = f"{type(exc).__name__}: {exc}"[:300]
                 logger.exception("tick failed")
             next_at += interval
             delay = next_at - loop.time()
@@ -124,6 +141,7 @@ class MonitoringService:
             self._dose[aid] += dose
         self._pending.extend(result.readings)
         self._ticks += 1
+        self.last_tick_at = now
 
         await self._persist(result, force=self._ticks % self.settings.persist_every_ticks == 0)
         await self._broadcast(result, changes, now)
@@ -162,14 +180,14 @@ class MonitoringService:
             logger.exception("final flush failed")
 
     async def _broadcast(self, result: TickResult, changes: list[AlertChange], now: datetime) -> None:
-        if self.hub.count == 0:
-            return
-        msg = WsVitals(
-            ts=result.ts,
-            readings=[mappers.reading_schema(r) for r in result.readings],
-            ecg=[mappers.ecg_schema(c) for c in result.ecg],
-        )
-        await self.hub.broadcast(msg.model_dump_json())
+        if self.hub.count:
+            msg = WsVitals(
+                ts=result.ts,
+                readings=[mappers.reading_schema(r) for r in result.readings],
+                ecg=[mappers.ecg_schema(c) for c in result.ecg],
+            )
+            await self.hub.broadcast(msg.model_dump_json())
+        # Change events always reach the listeners; the socket send is a no-op without clients.
         for s in result.started:
             await self._send_simulation("started", s, now)
         for s in result.ended:
@@ -178,12 +196,16 @@ class MonitoringService:
             await self._send_alert(change.kind, change.alert)
 
     async def _send_alert(self, kind: str, alert: AlertRecord) -> None:
-        msg = WsAlert(event=kind, alert=mappers.alert_schema(alert))  # type: ignore[arg-type]
-        await self.hub.broadcast(msg.model_dump_json())
+        self._notify("alert", (kind, replace(alert)))  # snapshot: the evaluator keeps mutating its record
+        if self.hub.count:
+            msg = WsAlert(event=kind, alert=mappers.alert_schema(alert))  # type: ignore[arg-type]
+            await self.hub.broadcast(msg.model_dump_json())
 
     async def _send_simulation(self, kind: str, s: ActiveScenario, now: datetime) -> None:
-        msg = WsSimulation(event=kind, scenario=mappers.scenario_schema(s, now))  # type: ignore[arg-type]
-        await self.hub.broadcast(msg.model_dump_json())
+        self._notify("scenario", (kind, replace(s)))
+        if self.hub.count:
+            msg = WsSimulation(event=kind, scenario=mappers.scenario_schema(s, now))  # type: ignore[arg-type]
+            await self.hub.broadcast(msg.model_dump_json())
 
     # ----------------------------------------------------------------- snapshots ----
     def hello(self) -> WsHello:

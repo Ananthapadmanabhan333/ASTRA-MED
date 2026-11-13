@@ -24,6 +24,7 @@ from app.api import (
     auth_routes,
     emergency_routes,
     medical_routes,
+    mission_routes,
     overview_routes,
     report_routes,
     routes,
@@ -38,6 +39,11 @@ from app.core.logging import configure_logging
 from app.db.session import create_engine, create_schema, create_session_factory
 from app.emergency.service import EmergencyService
 from app.medical.multisystem import MultisystemEngine
+from app.mission.alerts import RULE_SOURCE, AlertCenter
+from app.mission.events import MissionEventService
+from app.mission.orchestrator import MissionOrchestrator
+from app.mission.sandbox import MissionSimulator
+from app.mission.system import consistency
 from app.reports.service import ReportService
 from app.schemas.ws import WS_SCHEMA_MODELS
 from app.security.audit import (
@@ -114,8 +120,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.audit = AuditLog(factory, settings.audit_read_dedupe_seconds)
         monitor = MonitoringService(settings, factory)
         await monitor.bootstrap()
-        if settings.simulator_enabled:
-            monitor.start()
         app.state.db_engine = db_engine
         app.state.session_factory = factory
         app.state.monitor = monitor
@@ -132,6 +136,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.reports = ReportService(factory, monitor, app.state.ai, app.state.multisystem)
         app.state.assistant = AssistantService(settings, factory, monitor, app.state.ai, app.state.twin,
                                                app.state.multisystem)
+        # Phase 6: unified event store, alert centre, orchestrator and the mission simulation sandbox.
+        app.state.mission_events = MissionEventService(settings, factory, monitor.hub)
+        app.state.alert_center = AlertCenter(factory, monitor.hub)
+        app.state.alert_center.delegates[(RULE_SOURCE, "operations")] = monitor.update_alert
+        app.state.orchestrator = MissionOrchestrator(settings, factory, monitor, app.state.ai, app.state.space,
+                                                     app.state.mission_events, app.state.alert_center)
+        app.state.orchestrator.attach(app.state.emergency, app.state.reports)  # before the monitor starts ticking
+        app.state.sandbox = MissionSimulator(settings, factory, monitor.hub, app.state.ai, app.state.mission_events,
+                                             app.state.alert_center, app.state.orchestrator, app.state.reports)
+        if settings.mission_consistency_on_start:
+            try:
+                report = await consistency(app.state, repair=True)
+                logger.info("consistency check at start-up: %s (%s)", report["status"],
+                            ", ".join(f"{c['key']}={c['status']}" for c in report["checks"] if c["status"] != "ok") or "all ok")
+            except Exception:
+                logger.exception("start-up consistency check failed")
+        app.state.orchestrator.start()
+        if settings.simulator_enabled:
+            monitor.start()
         if settings.twin_background:
             app.state.twin.start()
         logger.info("ASTRA-MED API ready (%s, db=%s)", settings.environment, db_engine.dialect.name)
@@ -140,6 +163,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             if settings.ai_enabled and not preload.done():
                 preload.cancel()
+            run = app.state.sandbox.run
+            if run is not None and run.status in ("running", "paused"):
+                try:
+                    await app.state.sandbox._finish(run, "interrupted", by="shutdown")
+                except Exception:
+                    logger.exception("could not close the active simulation")
+            try:
+                await app.state.orchestrator.drain(timeout=5)
+            except Exception:
+                logger.warning("mission event queue not drained at shutdown")
+            await app.state.orchestrator.stop()
             await app.state.twin.stop()
             if app.state.space is not None:
                 await app.state.space.stop()
@@ -200,6 +234,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(report_routes.router, dependencies=[require("reports:read")])
     app.include_router(assistant_routes.router, dependencies=[require("health:read")])
     app.include_router(overview_routes.router, dependencies=[require("health:read")])
+    app.include_router(mission_routes.router, dependencies=[require("health:read")])
+    app.include_router(mission_routes.system_router)
     app.include_router(ws.router)
 
     def custom_openapi():

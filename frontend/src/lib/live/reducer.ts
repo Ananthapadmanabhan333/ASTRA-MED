@@ -1,4 +1,19 @@
-import type { Alert, SimulationEvent, VitalReading, WsServerMessage } from "@/lib/api/types";
+import type {
+  Alert,
+  MissionAlert,
+  MissionEvent,
+  SimState,
+  SimulationEvent,
+  VitalReading,
+  WsServerMessage,
+} from "@/lib/api/types";
+
+/** Recent unified mission events kept for the notification centre and live feeds. */
+export const EVENT_BUFFER = 80;
+/** Sandbox frames kept for the live sandbox charts (one row per simulation step received). */
+export const SIM_TRAIL = 900;
+
+export type SimTrailRow = { t: number } & Record<string, number | null>;
 
 /** Seconds of 1 Hz readings kept in memory for the "Live" chart range and sparklines. */
 export const TRAIL_SECONDS = 600;
@@ -22,6 +37,16 @@ export interface LiveData {
   /** serverTime − clientTime, smoothed; lets the ECG sweep line up with sample times. */
   serverOffsetMs: number | null;
   lastMessageAt: number | null;
+  /** Phase 6: newest first, de-duplicated by id. */
+  missionEvents: MissionEvent[];
+  /** Phase 6: unresolved unified alerts that changed since the page loaded, by id. */
+  missionAlerts: Record<string, MissionAlert>;
+  /** Alerts opened or escalated since the notification centre was last opened. */
+  unread: number;
+  /** Live state of the mission simulation sandbox (null until the first sim_state message). */
+  sim: SimState | null;
+  /** HR and SpO2 per crew member over simulation time, for the run in `id`. */
+  simTrail: { id: string | null; rows: SimTrailRow[] };
 }
 
 export function initialLive(): LiveData {
@@ -32,6 +57,11 @@ export function initialLive(): LiveData {
     scenarios: {},
     serverOffsetMs: null,
     lastMessageAt: null,
+    missionEvents: [],
+    missionAlerts: {},
+    unread: 0,
+    sim: null,
+    simTrail: { id: null, rows: [] },
   };
 }
 
@@ -105,6 +135,34 @@ export function applyMessage(state: LiveData, msg: WsServerMessage, receivedAt: 
       if (msg.event === "started") scenarios[msg.scenario.id] = msg.scenario;
       else delete scenarios[msg.scenario.id];
       return { ...state, scenarios, lastMessageAt: receivedAt };
+    }
+    case "mission_event": {
+      const rest = state.missionEvents.filter((e) => e.id !== msg.item.id);
+      return { ...state, missionEvents: [msg.item, ...rest].slice(0, EVENT_BUFFER), lastMessageAt: receivedAt };
+    }
+    case "mission_alert": {
+      const missionAlerts = { ...state.missionAlerts };
+      if (msg.alert.status === "resolved") delete missionAlerts[msg.alert.id];
+      else missionAlerts[msg.alert.id] = msg.alert;
+      const bump = msg.event === "opened" || msg.event === "escalated" ? 1 : 0;
+      return { ...state, missionAlerts, unread: state.unread + bump, lastMessageAt: receivedAt };
+    }
+    case "sim_state": {
+      const st = msg.state;
+      let simTrail = st.id === state.simTrail.id ? state.simTrail : { id: st.id ?? null, rows: [] };
+      if (st.latest.length) {
+        const t = Date.parse(st.latest[0].ts);
+        const last = simTrail.rows[simTrail.rows.length - 1];
+        if (!last || last.t < t) {
+          const row: SimTrailRow = { t };
+          for (const r of st.latest) {
+            row[`hr_${r.astronaut_id}`] = r.heart_rate;
+            row[`spo2_${r.astronaut_id}`] = r.spo2;
+          }
+          simTrail = { id: simTrail.id, rows: [...simTrail.rows.slice(-(SIM_TRAIL - 1)), row] };
+        }
+      }
+      return { ...state, sim: st, simTrail, lastMessageAt: receivedAt };
     }
     case "pong":
       return {

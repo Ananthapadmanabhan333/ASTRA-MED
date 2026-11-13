@@ -64,8 +64,12 @@ class WsPong(ApiModel):
     server_time: datetime
 
 
+# Phase 6 messages on the same socket (defined with the mission-control contract).
+from app.schemas.mission_control import WsMissionAlert, WsMissionEvent, WsSimState  # noqa: E402
+
 WsServerMessage = Annotated[
-    WsHello | WsVitals | WsAlert | WsSimulation | WsPong, Field(discriminator="type")
+    WsHello | WsVitals | WsAlert | WsSimulation | WsPong | WsMissionEvent | WsMissionAlert | WsSimState,
+    Field(discriminator="type"),
 ]
 
 
@@ -80,5 +84,8 @@ WS_SCHEMA_MODELS: tuple[type[BaseModel], ...] = (
     WsAlert,
     WsSimulation,
     WsPong,
+    WsMissionEvent,
+    WsMissionAlert,
+    WsSimState,
     WsClientMessage,
 )

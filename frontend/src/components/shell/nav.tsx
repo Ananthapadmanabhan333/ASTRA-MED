@@ -2,24 +2,28 @@
 
 import {
   Activity,
-  Bot,
-  ClipboardList,
-  Fingerprint,
-  HeartPulse,
-  KeyRound,
-  Siren,
-  Stethoscope,
+  BarChart3,
   BellRing,
+  Bot,
   BrainCircuit,
   CalendarRange,
   ChartScatter,
+  ClipboardList,
   Database,
+  Fingerprint,
   FlaskConical,
+  GanttChart,
+  HeartPulse,
+  KeyRound,
   LayoutDashboard,
   Lightbulb,
   Moon,
+  PlayCircle,
   Radiation,
   Satellite,
+  ServerCog,
+  Siren,
+  Stethoscope,
   Sun,
   Users,
   type LucideIcon,
@@ -28,6 +32,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/lib/auth/store";
 import { useLive } from "@/lib/live/store";
 import { cn } from "@/lib/utils";
@@ -45,15 +50,26 @@ interface NavGroup {
   items: NavItem[];
 }
 
+/** Every role signs in with at least one of these, so the page is open to all signed-in users. */
+const ANY_ROLE = ["health:read", "space:read", "audit:read", "users:manage"];
+
 export const NAV_GROUPS: NavGroup[] = [
   {
-    label: null,
+    label: "Command",
     items: [
       { href: "/", label: "Mission control", icon: LayoutDashboard },
+      { href: "/crew", label: "Crew monitoring", icon: Users },
+      { href: "/alerts", label: "Alert centre", icon: BellRing },
+      { href: "/timeline", label: "Situational awareness", icon: GanttChart },
+      { href: "/simulation", label: "Mission simulation", icon: PlayCircle },
+      { href: "/analytics", label: "Mission analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Health and AI",
+    items: [
       { href: "/intelligence", label: "AI intelligence", icon: BrainCircuit },
-      { href: "/crew", label: "Crew health", icon: Users },
       { href: "/vitals", label: "Vitals compare", icon: Activity },
-      { href: "/alerts", label: "Alerts", icon: BellRing },
       { href: "/anomalies", label: "Anomalies & tests", icon: FlaskConical },
       { href: "/sleep", label: "Sleep & circadian", icon: Moon },
       { href: "/insights", label: "Insights", icon: Lightbulb },
@@ -77,13 +93,16 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/radiation", label: "Radiation intelligence", icon: Radiation },
       { href: "/space/iss", label: "ISS environment", icon: Satellite, perms: ["space:read"] },
       { href: "/space/explorer", label: "NASA data explorer", icon: Database, perms: ["space:read"] },
-      { href: "/space/timeline", label: "Mission timeline", icon: CalendarRange },
+      { href: "/space/timeline", label: "Space timeline", icon: CalendarRange },
       { href: "/space/correlation", label: "Environment-health", icon: ChartScatter },
     ],
   },
   {
-    label: "Administration",
-    items: [{ href: "/admin", label: "Users & audit log", icon: KeyRound, perms: ["users:manage", "audit:read"] }],
+    label: "System",
+    items: [
+      { href: "/system", label: "System status", icon: ServerCog, perms: ANY_ROLE },
+      { href: "/admin", label: "Users & audit log", icon: KeyRound, perms: ["users:manage", "audit:read"] },
+    ],
   },
 ];
 
@@ -113,65 +132,98 @@ function isActive(pathname: string | null, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function AlertCount() {
+function AlertCount({ collapsed }: { collapsed: boolean }) {
   const count = useLive((s) => Object.keys(s.openAlerts).length);
   if (!count) return null;
   return (
-    <span className="ml-auto rounded-full bg-critical/15 px-1.5 text-[11px] font-semibold text-critical tabular-nums">
+    <span
+      className={cn(
+        "rounded-full bg-critical/15 px-1.5 text-[11px] font-semibold text-critical tabular-nums",
+        collapsed ? "absolute -top-1 -right-1 bg-critical px-1 text-[10px] text-[#2a0606]" : "ml-auto",
+      )}
+    >
       {count}
       <span className="sr-only"> open alerts</span>
     </span>
   );
 }
 
-function NavLink({ item, pathname, layout }: { item: NavItem; pathname: string | null; layout: "rail" | "bar" }) {
+function SimDot({ collapsed }: { collapsed: boolean }) {
+  const active = useLive((s) => s.sim?.active);
+  if (!active) return null;
+  return (
+    <span
+      className={cn("size-2 rounded-full bg-sandbox", collapsed ? "absolute -top-0.5 -right-0.5" : "ml-auto")}
+      title="A sandbox mission is running"
+    >
+      <span className="sr-only">Sandbox mission running</span>
+    </span>
+  );
+}
+
+function NavLink({ item, pathname, collapsed, onNavigate }: {
+  item: NavItem;
+  pathname: string | null;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
   const { href, label, icon: Icon } = item;
   const active = isActive(pathname, href);
+  const link = (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? label : undefined}
+      className={cn(
+        "group relative flex items-center gap-2.5 rounded-md text-sm transition-colors",
+        collapsed ? "mx-auto size-9 justify-center" : "px-2.5 py-[7px]",
+        active ? "bg-sidebar-accent text-foreground" : "text-ink-2 hover:bg-sidebar-accent/60 hover:text-foreground",
+      )}
+    >
+      {active && !collapsed && <span aria-hidden className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-telemetry" />}
+      <Icon
+        className={cn("size-4 shrink-0", active ? "text-telemetry" : "text-ink-3 group-hover:text-ink-2")}
+        aria-hidden
+      />
+      {!collapsed && <span className="truncate">{label}</span>}
+      {href === "/alerts" && <AlertCount collapsed={collapsed} />}
+      {href === "/simulation" && <SimDot collapsed={collapsed} />}
+    </Link>
+  );
   return (
-    <li className="shrink-0">
-      <Link
-        href={href}
-        aria-current={active ? "page" : undefined}
-        className={cn(
-          "group flex items-center gap-2.5 rounded-md text-sm transition-colors",
-          layout === "rail" ? "px-3 py-2" : "px-3 py-1.5 whitespace-nowrap",
-          active
-            ? "bg-sidebar-accent text-foreground"
-            : "text-ink-2 hover:bg-sidebar-accent/60 hover:text-foreground",
-        )}
-      >
-        <Icon
-          className={cn("size-4 shrink-0", active ? "text-telemetry" : "text-ink-3 group-hover:text-ink-2")}
-          aria-hidden
-        />
-        <span>{label}</span>
-        {href === "/alerts" && <AlertCount />}
-      </Link>
+    <li>
+      {collapsed ? (
+        <Tooltip>
+          <TooltipTrigger asChild>{link}</TooltipTrigger>
+          <TooltipContent side="right">{label}</TooltipContent>
+        </Tooltip>
+      ) : (
+        link
+      )}
     </li>
   );
 }
 
-function NavList({ pathname, layout }: { pathname: string | null; layout: "rail" | "bar" }) {
+function NavList({ pathname, collapsed, onNavigate }: {
+  pathname: string | null;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
   const groups = useVisibleGroups();
-  if (layout === "bar") {
-    return (
-      <ul className="flex gap-1">
-        {groups.flatMap((g) => g.items).map((item) => (
-          <NavLink key={item.href} item={item} pathname={pathname} layout="bar" />
-        ))}
-      </ul>
-    );
-  }
   return (
-    <div className="space-y-4">
+    <div className={cn(collapsed ? "space-y-3" : "space-y-5")}>
       {groups.map((group) => (
         <div key={group.label ?? "main"}>
-          {group.label && (
-            <p className="mb-1 px-3 text-[11px] font-medium tracking-wide text-ink-3 uppercase">{group.label}</p>
-          )}
-          <ul className="space-y-0.5">
+          {group.label &&
+            (collapsed ? (
+              <div className="mx-3 mb-2 border-t border-bulkhead/70" aria-hidden />
+            ) : (
+              <p className="mb-1 px-2.5 text-xs font-medium text-ink-3">{group.label}</p>
+            ))}
+          <ul className="space-y-0.5" aria-label={group.label ?? undefined}>
             {group.items.map((item) => (
-              <NavLink key={item.href} item={item} pathname={pathname} layout="rail" />
+              <NavLink key={item.href} item={item} pathname={pathname} collapsed={collapsed} onNavigate={onNavigate} />
             ))}
           </ul>
         </div>
@@ -180,16 +232,16 @@ function NavList({ pathname, layout }: { pathname: string | null; layout: "rail"
   );
 }
 
-function ActiveNav({ layout }: { layout: "rail" | "bar" }) {
+function ActiveNav(props: { collapsed: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
-  return <NavList pathname={pathname} layout={layout} />;
+  return <NavList pathname={pathname} {...props} />;
 }
 
-export function Nav({ layout }: { layout: "rail" | "bar" }) {
+export function Nav({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   return (
     <nav aria-label="Primary">
-      <Suspense fallback={<NavList pathname={null} layout={layout} />}>
-        <ActiveNav layout={layout} />
+      <Suspense fallback={<NavList pathname={null} collapsed={collapsed} />}>
+        <ActiveNav collapsed={collapsed} onNavigate={onNavigate} />
       </Suspense>
     </nav>
   );

@@ -4961,6 +4961,2406 @@
           }
         }
       }
+    },
+    "/api/mission-control/overview": {
+      "get": {
+        "tags": [
+          "mission control"
+        ],
+        "summary": "Mission Control Overview",
+        "description": "Consolidated command dashboard. Each section reports its own availability.",
+        "operationId": "mission_control_overview_api_mission_control_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionControlOverview"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/crew/monitoring": {
+      "get": {
+        "tags": [
+          "mission control"
+        ],
+        "summary": "Crew Monitoring",
+        "description": "Every crew member: current measurements, baseline deviations, open alerts, AI risk and 7-day trend.",
+        "operationId": "crew_monitoring_api_crew_monitoring_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewMonitoring"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List Events",
+        "description": "Unified event history (newest first) from every module, with filters.",
+        "operationId": "list_events_api_events_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "operations",
+                    "simulation"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "simulation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Simulation Id"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2160,
+              "minimum": 1,
+              "default": 24,
+              "title": "Hours"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MissionEvent"
+                  },
+                  "title": "Response List Events Api Events Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/counts": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Event Counts",
+        "operationId": "event_counts_api_events_counts_get",
+        "parameters": [
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "operations",
+                "simulation"
+              ],
+              "type": "string",
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2160,
+              "minimum": 1,
+              "default": 24,
+              "title": "Hours"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventCounts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/timeline": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Event Timeline",
+        "description": "Situational awareness: events in lanes by category, filtered by crew member, category and time range.",
+        "operationId": "event_timeline_api_events_timeline_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "operations",
+                "simulation"
+              ],
+              "type": "string",
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "simulation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Simulation Id"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 744,
+              "minimum": 1,
+              "default": 24,
+              "title": "Hours"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionTimeline"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{event_id}": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Get Event",
+        "operationId": "get_event_api_events__event_id__get",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionEvent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert-center": {
+      "get": {
+        "tags": [
+          "alert centre"
+        ],
+        "summary": "Alert Center List",
+        "description": "Unified alerts, unresolved first, then by priority and time. Unresolved alerts always show.",
+        "operationId": "alert_center_list_api_alert_center_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "open",
+                      "acknowledged",
+                      "resolved"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "classification",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Classification"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "operations",
+                    "simulation"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "simulation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Simulation Id"
+            }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2160,
+              "minimum": 1,
+              "default": 168,
+              "title": "Hours"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MissionAlert"
+                  },
+                  "title": "Response Alert Center List Api Alert Center Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert-center/summary": {
+      "get": {
+        "tags": [
+          "alert centre"
+        ],
+        "summary": "Alert Center Summary",
+        "operationId": "alert_center_summary_api_alert_center_summary_get",
+        "parameters": [
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "operations",
+                    "simulation"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "simulation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Simulation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertCenterSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert-center/{alert_id}": {
+      "get": {
+        "tags": [
+          "alert centre"
+        ],
+        "summary": "Alert Center Get",
+        "description": "One alert with its supporting measurements, explanation, correlations and full lifecycle trail.",
+        "operationId": "alert_center_get_api_alert_center__alert_id__get",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionAlertDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert-center/{alert_id}/acknowledge": {
+      "post": {
+        "tags": [
+          "alert centre"
+        ],
+        "summary": "Alert Center Acknowledge",
+        "operationId": "alert_center_acknowledge_api_alert_center__alert_id__acknowledge_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AlertCenterAction"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionAlert"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert-center/{alert_id}/resolve": {
+      "post": {
+        "tags": [
+          "alert centre"
+        ],
+        "summary": "Alert Center Resolve",
+        "description": "Resolve with resolution notes (required).",
+        "operationId": "alert_center_resolve_api_alert_center__alert_id__resolve_post",
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertCenterAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionAlert"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/catalogue": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Catalogue",
+        "operationId": "sim_catalogue_api_mission_sim_catalogue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimCatalogue"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/state": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim State",
+        "description": "The active (or most recent) sandbox run's live state; ``status: idle`` when there is none.",
+        "operationId": "sim_state_api_mission_sim_state_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Runs",
+        "operationId": "sim_runs_api_mission_sim_runs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimRun"
+                  },
+                  "title": "Response Sim Runs Api Mission Sim Runs Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Start",
+        "description": "Start a sandbox mission (preset or custom crew, speed and length).",
+        "operationId": "sim_start_api_mission_sim_runs_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimStart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Get",
+        "operationId": "sim_get_api_mission_sim_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimRun"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/pause": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Pause",
+        "description": "Freeze the simulation clock.",
+        "operationId": "sim_pause_api_mission_sim_runs__run_id__pause_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/resume": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Resume",
+        "description": "Continue a paused run.",
+        "operationId": "sim_resume_api_mission_sim_runs__run_id__resume_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/stop": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Stop",
+        "description": "End the run now; its alerts stay open for review and reports.",
+        "operationId": "sim_stop_api_mission_sim_runs__run_id__stop_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/reset": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Reset",
+        "description": "Abandon the run, close its open sandbox alerts and return to idle. Data are kept for playback.",
+        "operationId": "sim_reset_api_mission_sim_runs__run_id__reset_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/speed": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Speed",
+        "operationId": "sim_speed_api_mission_sim_runs__run_id__speed_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimSpeed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimState"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/inject": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Inject",
+        "description": "Inject a health anomaly, environmental event or simulated space-weather event (now or at a time).",
+        "operationId": "sim_inject_api_mission_sim_runs__run_id__inject_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimInject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Sim Inject Api Mission Sim Runs  Run Id  Inject Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/telemetry": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Telemetry",
+        "description": "Send measurements to the backend for a sandbox run; they pass through rule detection like generated ones.",
+        "operationId": "sim_telemetry_api_mission_sim_runs__run_id__telemetry_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimTelemetryBatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimIngestResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/analyze": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Analyze",
+        "description": "Run the phase 3 models over the sandbox stream now (anomaly ensemble, forecast, risk).",
+        "operationId": "sim_analyze_api_mission_sim_runs__run_id__analyze_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Sim Analyze Api Mission Sim Runs  Run Id  Analyze Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/playback": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Playback",
+        "operationId": "sim_playback_api_mission_sim_runs__run_id__playback_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "max_points",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 20,
+              "default": 240,
+              "title": "Max Points"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimPlayback"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/frame": {
+      "get": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Frame",
+        "operationId": "sim_frame_api_mission_sim_runs__run_id__frame_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "at",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "title": "At"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimFrame"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mission-sim/runs/{run_id}/report": {
+      "post": {
+        "tags": [
+          "mission simulation"
+        ],
+        "summary": "Sim Report",
+        "description": "Freeze a sandbox incident into an incident report (draft, same review workflow).",
+        "operationId": "sim_report_api_mission_sim_runs__run_id__report_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimReportBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/summary": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Analytics Summary",
+        "operationId": "analytics_summary_api_analytics_summary_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "operations",
+                "simulation",
+                "all"
+              ],
+              "type": "string",
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/export": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Analytics Export",
+        "description": "Exportable summary of the same analytics (CSV daily table, full JSON, or a Markdown report).",
+        "operationId": "analytics_export_api_analytics_export_get",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "csv",
+                "json",
+                "md"
+              ],
+              "type": "string",
+              "default": "csv",
+              "title": "Format"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "operations",
+                "simulation",
+                "all"
+              ],
+              "type": "string",
+              "default": "operations",
+              "title": "Context"
+            }
+          },
+          {
+            "name": "astronaut_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/csv": {},
+              "text/markdown": {}
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/status": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "System Status",
+        "description": "Deep health check of every component (no health data).",
+        "operationId": "system_status_api_system_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/consistency": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "System Consistency",
+        "description": "Run the database consistency checks without changing anything.",
+        "operationId": "system_consistency_api_system_consistency_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsistencyReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/consistency/repair": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "System Consistency Repair",
+        "description": "Run the checks and repair what is safe to repair (mirrors, links, interrupted runs, orphans).",
+        "operationId": "system_consistency_repair_api_system_consistency_repair_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsistencyReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5409,6 +7809,108 @@
         "type": "object",
         "title": "AlertAction"
       },
+      "AlertCenterAction": {
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Acknowledgement note or resolution notes"
+          }
+        },
+        "type": "object",
+        "title": "AlertCenterAction"
+      },
+      "AlertCenterSummary": {
+        "properties": {
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "acknowledged": {
+            "type": "integer",
+            "title": "Acknowledged"
+          },
+          "unresolved": {
+            "type": "integer",
+            "title": "Unresolved"
+          },
+          "resolved_24h": {
+            "type": "integer",
+            "title": "Resolved 24H"
+          },
+          "by_priority": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Priority"
+          },
+          "by_source": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Source"
+          },
+          "experimental_open": {
+            "type": "integer",
+            "title": "Experimental Open"
+          },
+          "oldest_unresolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Unresolved At"
+          },
+          "mean_minutes_to_acknowledge_7d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Minutes To Acknowledge 7D"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "open",
+          "acknowledged",
+          "unresolved",
+          "resolved_24h",
+          "by_priority",
+          "by_source",
+          "experimental_open"
+        ],
+        "title": "AlertCenterSummary"
+      },
       "AlertDay": {
         "properties": {
           "day": {
@@ -5507,6 +8009,124 @@
           "model_version"
         ],
         "title": "AlertExplanationResponse"
+      },
+      "AnalyticsSummary": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "context": {
+            "type": "string",
+            "title": "Context"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "crew_trends": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Crew Trends"
+          },
+          "anomalies": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Anomalies"
+          },
+          "sleep": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Sleep"
+          },
+          "environment": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Environment"
+          },
+          "radiation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Radiation"
+          },
+          "model_performance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Model Performance"
+          },
+          "alert_frequency": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Alert Frequency"
+          },
+          "alert_totals": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Alert Totals"
+          },
+          "event_distribution": {
+            "$ref": "#/components/schemas/EventCounts"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "start",
+          "end",
+          "context",
+          "astronaut_id",
+          "crew_trends",
+          "anomalies",
+          "sleep",
+          "environment",
+          "radiation",
+          "model_performance",
+          "alert_frequency",
+          "alert_totals",
+          "event_distribution",
+          "notes"
+        ],
+        "title": "AnalyticsSummary"
       },
       "AnomalyDetectionRequest": {
         "properties": {
@@ -6892,6 +9512,47 @@
         ],
         "title": "ComponentInfo"
       },
+      "ComponentStatus": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded",
+              "down",
+              "disabled",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "status",
+          "detail"
+        ],
+        "title": "ComponentStatus"
+      },
       "Confidence": {
         "properties": {
           "score": {
@@ -6923,6 +9584,88 @@
           "basis"
         ],
         "title": "Confidence"
+      },
+      "ConsistencyCheck": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "repaired",
+              "warning",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "found": {
+            "type": "integer",
+            "title": "Found"
+          },
+          "repaired": {
+            "type": "integer",
+            "title": "Repaired"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "status",
+          "found",
+          "repaired",
+          "detail"
+        ],
+        "title": "ConsistencyCheck"
+      },
+      "ConsistencyReport": {
+        "properties": {
+          "ran_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ran At"
+          },
+          "repair": {
+            "type": "boolean",
+            "title": "Repair"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "repaired",
+              "warning",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/ConsistencyCheck"
+            },
+            "type": "array",
+            "title": "Checks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ran_at",
+          "repair",
+          "status",
+          "checks"
+        ],
+        "title": "ConsistencyReport"
       },
       "Contributor": {
         "properties": {
@@ -7308,6 +10051,315 @@
         ],
         "title": "CorrelationSeriesInfo"
       },
+      "CrewAI": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "category_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Label"
+          },
+          "health_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Health Score"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "what_changed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "What Changed"
+          },
+          "warnings": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "default": []
+          },
+          "anomaly": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anomaly"
+          },
+          "contributors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Contributors",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "CrewAI"
+      },
+      "CrewMonitorCard": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "specialty": {
+            "type": "string",
+            "title": "Specialty"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "nominal",
+              "advisory",
+              "caution",
+              "critical"
+            ],
+            "title": "Status"
+          },
+          "live": {
+            "type": "boolean",
+            "title": "Live",
+            "description": "A reading arrived within the live window"
+          },
+          "last_reading_age_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Reading Age S"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VitalReading"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "deviations": {
+            "$ref": "#/components/schemas/Deviations"
+          },
+          "open_rule_alerts": {
+            "items": {
+              "$ref": "#/components/schemas/Alert"
+            },
+            "type": "array",
+            "title": "Open Rule Alerts"
+          },
+          "open_alerts": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAlert"
+            },
+            "type": "array",
+            "title": "Open Alerts"
+          },
+          "ai": {
+            "$ref": "#/components/schemas/CrewAI"
+          },
+          "trend_7d": {
+            "items": {
+              "$ref": "#/components/schemas/CrewTrendPoint"
+            },
+            "type": "array",
+            "title": "Trend 7D"
+          },
+          "active_scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Active Scenarios"
+          },
+          "mission_dose_msv": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Dose Msv"
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "default": "simulated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "role",
+          "specialty",
+          "status",
+          "live",
+          "deviations",
+          "open_rule_alerts",
+          "open_alerts",
+          "ai",
+          "trend_7d",
+          "active_scenarios"
+        ],
+        "title": "CrewMonitorCard"
+      },
+      "CrewMonitoring": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "ai_sweep_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Sweep At"
+          },
+          "crew": {
+            "items": {
+              "$ref": "#/components/schemas/CrewMonitorCard"
+            },
+            "type": "array",
+            "title": "Crew"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "crew",
+          "notes"
+        ],
+        "title": "CrewMonitoring"
+      },
       "CrewRadiation": {
         "properties": {
           "astronaut_id": {
@@ -7652,6 +10704,86 @@
         ],
         "title": "CrewTrend"
       },
+      "CrewTrendPoint": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "heart_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heart Rate"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "respiratory_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Respiratory Rate"
+          },
+          "temperature_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature C"
+          },
+          "sleep_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sleep Hours"
+          },
+          "dose_msv": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dose Msv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day"
+        ],
+        "title": "CrewTrendPoint"
+      },
       "CrossRow": {
         "properties": {
           "lag_days": {
@@ -7862,6 +10994,34 @@
           "solar_particle_event"
         ],
         "title": "DailyDose"
+      },
+      "DashboardSection": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": true
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "DashboardSection"
       },
       "DataQuality": {
         "properties": {
@@ -8303,6 +11463,177 @@
           "weight"
         ],
         "title": "DetectorInfo"
+      },
+      "Deviation": {
+        "properties": {
+          "signal": {
+            "type": "string",
+            "title": "Signal"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z"
+          },
+          "percentile": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentile"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "edge",
+                  "outside",
+                  "far"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal",
+          "label",
+          "unit",
+          "value",
+          "basis"
+        ],
+        "title": "Deviation"
+      },
+      "Deviations": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "ts": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ts"
+          },
+          "activity_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity State"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/Deviation"
+            },
+            "type": "array",
+            "title": "Signals",
+            "default": []
+          },
+          "baseline_fitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Fitted At"
+          },
+          "windows_used": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Windows Used"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "Deviations"
       },
       "Driver": {
         "properties": {
@@ -9250,6 +12581,85 @@
         ],
         "title": "EvaluatedSource"
       },
+      "EventCounts": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "by_category": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Category"
+          },
+          "by_source": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Source"
+          },
+          "by_priority": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Priority"
+          },
+          "by_origin": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Origin"
+          },
+          "by_severity": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Severity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "by_category",
+          "by_source",
+          "by_priority",
+          "by_origin",
+          "by_severity"
+        ],
+        "title": "EventCounts"
+      },
+      "EventLane": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MissionEvent"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "items"
+        ],
+        "title": "EventLane"
+      },
       "EventList": {
         "properties": {
           "events": {
@@ -9978,6 +13388,29 @@
             ],
             "title": "Severity"
           },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id",
+            "description": "Mission simulation sandbox run (phase 6)"
+          },
+          "source_kind": {
+            "type": "string",
+            "enum": [
+              "alert",
+              "emergency_run",
+              "simulation",
+              "manual"
+            ],
+            "title": "Source Kind",
+            "default": "manual"
+          },
           "data_source": {
             "type": "string",
             "const": "simulated",
@@ -10564,6 +13997,1090 @@
         ],
         "title": "Milestone"
       },
+      "MissionAlert": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Alert identifier"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source module"
+          },
+          "source_label": {
+            "type": "string",
+            "title": "Source Label"
+          },
+          "source_ref": {
+            "type": "string",
+            "title": "Source Ref"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "operations",
+              "simulation"
+            ],
+            "title": "Context"
+          },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id"
+          },
+          "data_origin": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "sandbox",
+              "nasa",
+              "system"
+            ],
+            "title": "Data Origin"
+          },
+          "data_origin_label": {
+            "type": "string",
+            "title": "Data Origin Label"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "classification": {
+            "type": "string",
+            "title": "Classification"
+          },
+          "classification_label": {
+            "type": "string",
+            "title": "Classification Label"
+          },
+          "classification_note": {
+            "type": "string",
+            "title": "Classification Note"
+          },
+          "experimental": {
+            "type": "boolean",
+            "title": "Experimental",
+            "description": "Experimental AI prediction: never a confirmed medical emergency"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "advisory",
+              "caution",
+              "critical"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Priority"
+          },
+          "priority_label": {
+            "type": "string",
+            "title": "Priority Label"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "acknowledged",
+              "resolved"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the condition was observed (source time)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At"
+          },
+          "measurements": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Measurements",
+            "description": "Supporting measurements"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Explanation",
+            "description": "Rule or AI explanation"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "0-1 for model output; null for deterministic rules"
+          },
+          "confidence_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Level"
+          },
+          "uncertainty": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Uncertainty"
+          },
+          "correlations": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Correlations"
+          },
+          "condition_cleared_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition Cleared At"
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged By"
+          },
+          "ack_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ack Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "resolved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved By"
+          },
+          "resolution_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Notes"
+          },
+          "occurrences": {
+            "type": "integer",
+            "title": "Occurrences"
+          },
+          "data_source": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "nasa"
+            ],
+            "title": "Data Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "source_label",
+          "source_ref",
+          "context",
+          "data_origin",
+          "data_origin_label",
+          "category",
+          "category_label",
+          "classification",
+          "classification_label",
+          "classification_note",
+          "experimental",
+          "severity",
+          "priority",
+          "priority_label",
+          "title",
+          "status",
+          "created_at",
+          "updated_at",
+          "received_at",
+          "measurements",
+          "explanation",
+          "uncertainty",
+          "correlations",
+          "occurrences",
+          "data_source"
+        ],
+        "title": "MissionAlert"
+      },
+      "MissionAlertAction": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "alert_id": {
+            "type": "string",
+            "title": "Alert Id"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "from_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Status"
+          },
+          "to_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Status"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "actor_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Role"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alert_id",
+          "ts",
+          "action",
+          "actor",
+          "detail"
+        ],
+        "title": "MissionAlertAction"
+      },
+      "MissionAlertDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Alert identifier"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source module"
+          },
+          "source_label": {
+            "type": "string",
+            "title": "Source Label"
+          },
+          "source_ref": {
+            "type": "string",
+            "title": "Source Ref"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "operations",
+              "simulation"
+            ],
+            "title": "Context"
+          },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id"
+          },
+          "data_origin": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "sandbox",
+              "nasa",
+              "system"
+            ],
+            "title": "Data Origin"
+          },
+          "data_origin_label": {
+            "type": "string",
+            "title": "Data Origin Label"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "classification": {
+            "type": "string",
+            "title": "Classification"
+          },
+          "classification_label": {
+            "type": "string",
+            "title": "Classification Label"
+          },
+          "classification_note": {
+            "type": "string",
+            "title": "Classification Note"
+          },
+          "experimental": {
+            "type": "boolean",
+            "title": "Experimental",
+            "description": "Experimental AI prediction: never a confirmed medical emergency"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "advisory",
+              "caution",
+              "critical"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Priority"
+          },
+          "priority_label": {
+            "type": "string",
+            "title": "Priority Label"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "acknowledged",
+              "resolved"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the condition was observed (source time)"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At"
+          },
+          "measurements": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Measurements",
+            "description": "Supporting measurements"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Explanation",
+            "description": "Rule or AI explanation"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "0-1 for model output; null for deterministic rules"
+          },
+          "confidence_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Level"
+          },
+          "uncertainty": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Uncertainty"
+          },
+          "correlations": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Correlations"
+          },
+          "condition_cleared_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition Cleared At"
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged By"
+          },
+          "ack_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ack Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "resolved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved By"
+          },
+          "resolution_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution Notes"
+          },
+          "occurrences": {
+            "type": "integer",
+            "title": "Occurrences"
+          },
+          "data_source": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "nasa"
+            ],
+            "title": "Data Source"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAlertAction"
+            },
+            "type": "array",
+            "title": "Actions",
+            "description": "Audit trail of every lifecycle transition"
+          },
+          "event": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "source_label",
+          "source_ref",
+          "context",
+          "data_origin",
+          "data_origin_label",
+          "category",
+          "category_label",
+          "classification",
+          "classification_label",
+          "classification_note",
+          "experimental",
+          "severity",
+          "priority",
+          "priority_label",
+          "title",
+          "status",
+          "created_at",
+          "updated_at",
+          "received_at",
+          "measurements",
+          "explanation",
+          "uncertainty",
+          "correlations",
+          "occurrences",
+          "data_source",
+          "actions"
+        ],
+        "title": "MissionAlertDetail"
+      },
+      "MissionControlOverview": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "mission": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "crew": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "health_monitoring": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "alerts": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "ai": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "space_weather": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "radiation_timeline": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "incidents": {
+            "$ref": "#/components/schemas/DashboardSection"
+          },
+          "connectivity": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentStatus"
+            },
+            "type": "array",
+            "title": "Connectivity"
+          },
+          "simulation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Simulation"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "crew",
+          "health_monitoring",
+          "alerts",
+          "ai",
+          "space_weather",
+          "environment",
+          "radiation_timeline",
+          "incidents",
+          "connectivity",
+          "simulation",
+          "notes"
+        ],
+        "title": "MissionControlOverview"
+      },
+      "MissionEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "source_label": {
+            "type": "string",
+            "title": "Source Label"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "category_label": {
+            "type": "string",
+            "title": "Category Label"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "advisory",
+              "caution",
+              "critical"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Priority",
+            "description": "1 critical, 2 high, 3 medium, 4 low"
+          },
+          "priority_label": {
+            "type": "string",
+            "title": "Priority Label"
+          },
+          "priority_score": {
+            "type": "number",
+            "title": "Priority Score"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "operations",
+              "simulation"
+            ],
+            "title": "Context"
+          },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id"
+          },
+          "data_origin": {
+            "type": "string",
+            "enum": [
+              "simulated",
+              "sandbox",
+              "nasa",
+              "system"
+            ],
+            "title": "Data Origin"
+          },
+          "data_origin_label": {
+            "type": "string",
+            "title": "Data Origin Label"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification"
+          },
+          "classification_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification Note"
+          },
+          "experimental": {
+            "type": "boolean",
+            "title": "Experimental"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "ref_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Type"
+          },
+          "ref_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At",
+            "description": "Source time in UTC (the simulation clock for sandbox events)"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At",
+            "description": "Wall-clock UTC time the pipeline received the event"
+          },
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen At"
+          },
+          "latency_s": {
+            "type": "number",
+            "title": "Latency S"
+          },
+          "clock_skew_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clock Skew S",
+            "description": "Seconds a future source timestamp was clamped by"
+          },
+          "occurrences": {
+            "type": "integer",
+            "title": "Occurrences",
+            "description": "How many times this event was reported (duplicates merged)"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "source_label",
+          "kind",
+          "category",
+          "category_label",
+          "severity",
+          "priority",
+          "priority_label",
+          "priority_score",
+          "title",
+          "context",
+          "data_origin",
+          "data_origin_label",
+          "experimental",
+          "occurred_at",
+          "received_at",
+          "last_seen_at",
+          "latency_s",
+          "occurrences",
+          "payload"
+        ],
+        "title": "MissionEvent"
+      },
       "MissionOverview": {
         "properties": {
           "generated_at": {
@@ -10802,6 +15319,79 @@
           "method"
         ],
         "title": "MissionSummary"
+      },
+      "MissionTimeline": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "operations",
+              "simulation"
+            ],
+            "title": "Context"
+          },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id"
+          },
+          "lanes": {
+            "items": {
+              "$ref": "#/components/schemas/EventLane"
+            },
+            "type": "array",
+            "title": "Lanes"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/EventCounts"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "astronaut_id",
+          "context",
+          "simulation_id",
+          "lanes",
+          "counts",
+          "notes"
+        ],
+        "title": "MissionTimeline"
       },
       "ModelPerformanceResponse": {
         "properties": {
@@ -12349,6 +16939,29 @@
             ],
             "title": "Severity"
           },
+          "simulation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Id",
+            "description": "Mission simulation sandbox run (phase 6)"
+          },
+          "source_kind": {
+            "type": "string",
+            "enum": [
+              "alert",
+              "emergency_run",
+              "simulation",
+              "manual"
+            ],
+            "title": "Source Kind",
+            "default": "manual"
+          },
           "data_source": {
             "type": "string",
             "const": "simulated",
@@ -13384,6 +17997,1228 @@
           "description"
         ],
         "title": "Significance"
+      },
+      "SimCatalogue": {
+        "properties": {
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/SimPreset"
+            },
+            "type": "array",
+            "title": "Presets"
+          },
+          "injections": {
+            "items": {
+              "$ref": "#/components/schemas/SimInjectionType"
+            },
+            "type": "array",
+            "title": "Injections"
+          },
+          "max_speed": {
+            "type": "number",
+            "title": "Max Speed"
+          },
+          "max_minutes": {
+            "type": "integer",
+            "title": "Max Minutes"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "presets",
+          "injections",
+          "max_speed",
+          "max_minutes",
+          "enabled",
+          "label"
+        ],
+        "title": "SimCatalogue"
+      },
+      "SimCrewReading": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts"
+          },
+          "heart_rate": {
+            "type": "number",
+            "title": "Heart Rate"
+          },
+          "spo2": {
+            "type": "number",
+            "title": "Spo2"
+          },
+          "systolic": {
+            "type": "number",
+            "title": "Systolic"
+          },
+          "diastolic": {
+            "type": "number",
+            "title": "Diastolic"
+          },
+          "temperature_c": {
+            "type": "number",
+            "title": "Temperature C"
+          },
+          "respiratory_rate": {
+            "type": "number",
+            "title": "Respiratory Rate"
+          },
+          "activity_state": {
+            "type": "string",
+            "title": "Activity State"
+          },
+          "rhythm": {
+            "type": "string",
+            "title": "Rhythm"
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "dose_msv": {
+            "type": "number",
+            "title": "Dose Msv"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "ts",
+          "heart_rate",
+          "spo2",
+          "systolic",
+          "diastolic",
+          "temperature_c",
+          "respiratory_rate",
+          "activity_state",
+          "rhythm",
+          "status",
+          "dose_msv"
+        ],
+        "title": "SimCrewReading"
+      },
+      "SimFrame": {
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "title": "Simulation Id"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At"
+          },
+          "t_plus": {
+            "type": "string",
+            "title": "T Plus"
+          },
+          "crew": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Crew"
+          },
+          "active_injections": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Active Injections"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAlert"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "at",
+          "t_plus",
+          "crew",
+          "active_injections",
+          "alerts",
+          "label"
+        ],
+        "title": "SimFrame"
+      },
+      "SimIngestResult": {
+        "properties": {
+          "simulation_id": {
+            "type": "string",
+            "title": "Simulation Id"
+          },
+          "received": {
+            "type": "integer",
+            "title": "Received"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "issues": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "alerts_opened": {
+            "type": "integer",
+            "title": "Alerts Opened"
+          },
+          "sim_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sim Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation_id",
+          "received",
+          "accepted",
+          "rejected",
+          "issues",
+          "alerts_opened",
+          "sim_time"
+        ],
+        "title": "SimIngestResult"
+      },
+      "SimInject": {
+        "properties": {
+          "injection": {
+            "type": "string",
+            "title": "Injection"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          },
+          "intensity": {
+            "type": "number",
+            "maximum": 1.5,
+            "minimum": 0.3,
+            "title": "Intensity",
+            "default": 1.0
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 14400.0,
+                "minimum": 30.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration S"
+          },
+          "at_minute": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At Minute",
+            "description": "Simulated minutes after start; omit for now"
+          }
+        },
+        "type": "object",
+        "required": [
+          "injection"
+        ],
+        "title": "SimInject"
+      },
+      "SimInjectionType": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "health",
+              "environment",
+              "space_weather"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "crew_wide": {
+            "type": "boolean",
+            "title": "Crew Wide"
+          },
+          "default_duration_s": {
+            "type": "integer",
+            "title": "Default Duration S"
+          },
+          "event_only": {
+            "type": "boolean",
+            "title": "Event Only"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "kind",
+          "label",
+          "description",
+          "crew_wide",
+          "default_duration_s",
+          "event_only"
+        ],
+        "title": "SimInjectionType"
+      },
+      "SimPlayback": {
+        "properties": {
+          "simulation": {
+            "$ref": "#/components/schemas/SimRun"
+          },
+          "resolution_seconds": {
+            "type": "number",
+            "title": "Resolution Seconds"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/SimSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "injections": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Injections"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/MissionEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAlert"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "simulation",
+          "resolution_seconds",
+          "start",
+          "end",
+          "series",
+          "injections",
+          "events",
+          "alerts",
+          "label"
+        ],
+        "title": "SimPlayback"
+      },
+      "SimPreset": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "title": "Duration Minutes"
+          },
+          "speed": {
+            "type": "number",
+            "title": "Speed"
+          },
+          "crew_size": {
+            "type": "integer",
+            "title": "Crew Size"
+          },
+          "script": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Script"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "duration_minutes",
+          "speed",
+          "crew_size",
+          "script"
+        ],
+        "title": "SimPreset"
+      },
+      "SimReportBody": {
+        "properties": {
+          "alert_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Id"
+          },
+          "astronaut_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Astronaut Id"
+          }
+        },
+        "type": "object",
+        "title": "SimReportBody"
+      },
+      "SimRun": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset"
+          },
+          "crew": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Crew"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "speed": {
+            "type": "number",
+            "title": "Speed"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "sim_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sim Start"
+          },
+          "sim_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sim Time"
+          },
+          "sim_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sim End"
+          },
+          "t_plus": {
+            "type": "string",
+            "title": "T Plus"
+          },
+          "progress": {
+            "type": "number",
+            "title": "Progress"
+          },
+          "wall_started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Wall Started At"
+          },
+          "wall_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Wall Updated At"
+          },
+          "wall_ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Ended At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          },
+          "injections": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Injections"
+          },
+          "analyses": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Analyses"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Stats"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "context": {
+            "type": "string",
+            "const": "simulation",
+            "title": "Context",
+            "default": "simulation"
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "default": "simulated"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "preset",
+          "crew",
+          "status",
+          "speed",
+          "seed",
+          "sim_start",
+          "sim_time",
+          "sim_end",
+          "t_plus",
+          "progress",
+          "wall_started_at",
+          "wall_updated_at",
+          "wall_ended_at",
+          "created_by",
+          "config",
+          "injections",
+          "analyses",
+          "stats",
+          "error",
+          "label"
+        ],
+        "title": "SimRun"
+      },
+      "SimSeries": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "points": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "points"
+        ],
+        "title": "SimSeries"
+      },
+      "SimSpeed": {
+        "properties": {
+          "speed": {
+            "type": "number",
+            "maximum": 600.0,
+            "minimum": 0.5,
+            "title": "Speed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "speed"
+        ],
+        "title": "SimSpeed"
+      },
+      "SimStart": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset"
+          },
+          "crew": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 8,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crew"
+          },
+          "speed": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 600.0,
+                "minimum": 0.5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10080.0,
+                "minimum": 5.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "ai_every_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 240.0,
+                "minimum": 5.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Every Minutes"
+          }
+        },
+        "type": "object",
+        "title": "SimStart"
+      },
+      "SimState": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "context": {
+            "type": "string",
+            "const": "simulation",
+            "title": "Context",
+            "default": "simulation"
+          },
+          "data_source": {
+            "type": "string",
+            "const": "simulated",
+            "title": "Data Source",
+            "default": "simulated"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset"
+          },
+          "speed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speed"
+          },
+          "step_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Seconds"
+          },
+          "crew": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Crew",
+            "default": []
+          },
+          "sim_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim Start"
+          },
+          "sim_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim Time"
+          },
+          "sim_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim End"
+          },
+          "t_plus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Plus"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progress"
+          },
+          "wall_started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Started At"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "latest": {
+            "items": {
+              "$ref": "#/components/schemas/SimCrewReading"
+            },
+            "type": "array",
+            "title": "Latest",
+            "default": []
+          },
+          "active_injections": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Active Injections",
+            "default": []
+          },
+          "next_injection": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Injection"
+          },
+          "habitat": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Habitat",
+            "default": {}
+          },
+          "dose_rate_multiplier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dose Rate Multiplier"
+          },
+          "open_alerts": {
+            "type": "integer",
+            "title": "Open Alerts",
+            "default": 0
+          },
+          "stats": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Stats",
+            "default": {}
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status"
+          },
+          "last_ai_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ai At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active",
+          "status",
+          "label"
+        ],
+        "title": "SimState"
+      },
+      "SimTelemetryBatch": {
+        "properties": {
+          "readings": {
+            "items": {
+              "$ref": "#/components/schemas/SimTelemetryReading"
+            },
+            "type": "array",
+            "maxItems": 2000,
+            "minItems": 1,
+            "title": "Readings"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 16,
+            "title": "Source",
+            "default": "external"
+          }
+        },
+        "type": "object",
+        "required": [
+          "readings"
+        ],
+        "title": "SimTelemetryBatch"
+      },
+      "SimTelemetryReading": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ts",
+            "description": "Measurement time on the simulation clock (UTC)"
+          },
+          "heart_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 250.0,
+                "minimum": 20.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heart Rate"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 50.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "systolic": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 260.0,
+                "minimum": 60.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Systolic"
+          },
+          "diastolic": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 160.0,
+                "minimum": 30.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diastolic"
+          },
+          "temperature_c": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 43.0,
+                "minimum": 30.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature C"
+          },
+          "respiratory_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 70.0,
+                "minimum": 3.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Respiratory Rate"
+          },
+          "activity_state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sleep",
+                  "rest",
+                  "work",
+                  "exercise"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity State"
+          },
+          "activity_met": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 20.0,
+                "minimum": 0.5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Met"
+          },
+          "rhythm": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "regular",
+                  "irregular"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rhythm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "ts"
+        ],
+        "title": "SimTelemetryReading"
       },
       "SimulatedBlock": {
         "properties": {
@@ -15356,6 +21191,59 @@
         ],
         "title": "SystemQuality"
       },
+      "SystemStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded",
+              "down"
+            ],
+            "title": "Status"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "uptime_s": {
+            "type": "number",
+            "title": "Uptime S"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentStatus"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "orchestrator": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Orchestrator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "generated_at",
+          "version",
+          "environment",
+          "uptime_s",
+          "components",
+          "orchestrator"
+        ],
+        "title": "SystemStatus"
+      },
       "ThresholdInfo": {
         "properties": {
           "key": {
@@ -17301,6 +23189,63 @@
         "title": "WsHello",
         "type": "object"
       },
+      "WsMissionAlert": {
+        "properties": {
+          "type": {
+            "const": "mission_alert",
+            "default": "mission_alert",
+            "title": "Type",
+            "type": "string"
+          },
+          "event": {
+            "enum": [
+              "opened",
+              "escalated",
+              "updated",
+              "acknowledged",
+              "resolved"
+            ],
+            "title": "Event",
+            "type": "string"
+          },
+          "alert": {
+            "$ref": "#/components/schemas/MissionAlert"
+          }
+        },
+        "required": [
+          "event",
+          "alert"
+        ],
+        "title": "WsMissionAlert",
+        "type": "object"
+      },
+      "WsMissionEvent": {
+        "properties": {
+          "type": {
+            "const": "mission_event",
+            "default": "mission_event",
+            "title": "Type",
+            "type": "string"
+          },
+          "event": {
+            "enum": [
+              "created",
+              "updated"
+            ],
+            "title": "Event",
+            "type": "string"
+          },
+          "item": {
+            "$ref": "#/components/schemas/MissionEvent"
+          }
+        },
+        "required": [
+          "event",
+          "item"
+        ],
+        "title": "WsMissionEvent",
+        "type": "object"
+      },
       "WsPong": {
         "properties": {
           "type": {
@@ -17319,6 +23264,24 @@
           "server_time"
         ],
         "title": "WsPong",
+        "type": "object"
+      },
+      "WsSimState": {
+        "properties": {
+          "type": {
+            "const": "sim_state",
+            "default": "sim_state",
+            "title": "Type",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SimState"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "WsSimState",
         "type": "object"
       },
       "WsSimulation": {

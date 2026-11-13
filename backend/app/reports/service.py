@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import math
 import uuid
 from datetime import UTC, date, datetime, timedelta
@@ -84,6 +85,15 @@ class ReportService:
         self.monitor = monitor
         self.ai = ai
         self.multisystem = multisystem
+        # Phase 6 change hooks: called with (kind, report_row) after a report is created or reviewed.
+        self.listeners: list = []
+
+    def _emit(self, kind: str, row: IncidentReportRow) -> None:
+        for listener in self.listeners:
+            try:
+                listener(kind, row)
+            except Exception:
+                logging.getLogger("astra.reports").exception("report listener failed")
 
     async def _measurements_around(self, session: AsyncSession, aid: str, ts: datetime) -> dict[str, Any]:
         cols = ("heart_rate", "spo2", "respiratory_rate", "temperature_c", "systolic", "diastolic", "activity_state", "scenario")
@@ -175,7 +185,31 @@ class ReportService:
             )
             session.add(report)
             await session.commit()
-            return report
+        self._emit("created", report)
+        return report
+
+    async def store_snapshot(self, principal: Principal, *, title: str, astronaut_id: str, occurred_at: datetime,
+                             content: dict[str, Any], alert_id: str | None = None,
+                             run_id: str | None = None) -> IncidentReportRow:
+        """Store a report whose content another module assembled (phase 6 mission simulation sandbox).
+
+        The same integrity digest, draft status and review workflow apply as for any report.
+        """
+        now = utcnow()
+        content = _jsonable(content)
+        report = IncidentReportRow(
+            id=uuid.uuid4().hex[:16], title=title[:200], astronaut_id=astronaut_id, alert_id=alert_id, run_id=run_id,
+            occurred_at=as_utc(occurred_at), created_at=now, updated_at=now, created_by=principal.username,
+            review_status="draft",
+            review_history=[{"ts": now.isoformat(), "by": principal.username, "role": principal.role,
+                             "from": None, "to": "draft", "note": "Report created"}],
+            content=content, content_sha256=digest(content),
+        )
+        async with self.factory() as session:
+            session.add(report)
+            await session.commit()
+        self._emit("created", report)
+        return report
 
     async def list(self, astronaut_id: str | None, status: str | None, limit: int) -> list[IncidentReportRow]:
         stmt = select(IncidentReportRow).order_by(IncidentReportRow.created_at.desc()).limit(limit)
@@ -216,7 +250,8 @@ class ReportService:
                                                         "role": principal.role, "from": frm, "to": to,
                                                         "note": (note or "").strip()[:2000] or None}]
             await session.commit()
-            return row
+        self._emit("reviewed", row)
+        return row
 
 
 def report_view(row: IncidentReportRow, include_content: bool = True) -> dict[str, Any]:
@@ -229,6 +264,9 @@ def report_view(row: IncidentReportRow, include_content: bool = True) -> dict[st
         "review_status_label": STATUS_LABELS[row.review_status], "review_history": row.review_history,
         "content_sha256": row.content_sha256, "integrity": "intact" if intact else "modified",
         "severity": ((row.content.get("observation") or {}).get("severity")), "data_source": "simulated",
+        "simulation_id": (row.content.get("source") or {}).get("simulation_id"),
+        "source_kind": ("simulation" if (row.content.get("source") or {}).get("simulation_id") else
+                        "alert" if row.alert_id else "emergency_run" if row.run_id else "manual"),
     }
     if include_content:
         out["content"] = row.content

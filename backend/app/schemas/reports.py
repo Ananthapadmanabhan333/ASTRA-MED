@@ -56,6 +56,8 @@ class ReportSummary(ApiModel):
     content_sha256: str
     integrity: Literal["intact", "modified"]
     severity: str | None
+    simulation_id: str | None = Field(default=None, description="Mission simulation sandbox run (phase 6)")
+    source_kind: Literal["alert", "emergency_run", "simulation", "manual"] = "manual"
     data_source: DataSource = DATA_SOURCE_FIELD
 
 

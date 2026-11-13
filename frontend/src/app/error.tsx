@@ -2,12 +2,12 @@
 
 import { ErrorState } from "@/components/data/states";
 
-export default function RouteError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function RouteError({ error, retry }: { error: unknown; retry: () => void }) {
   return (
     <ErrorState
       title="This view failed to render"
       error={error}
-      onRetry={reset}
+      onRetry={() => retry()}
       className="mx-auto max-w-2xl"
     />
   );

@@ -1392,6 +1392,597 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/mission-control/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mission Control Overview
+         * @description Consolidated command dashboard. Each section reports its own availability.
+         */
+        get: operations["mission_control_overview_api_mission_control_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/crew/monitoring": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Crew Monitoring
+         * @description Every crew member: current measurements, baseline deviations, open alerts, AI risk and 7-day trend.
+         */
+        get: operations["crew_monitoring_api_crew_monitoring_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Events
+         * @description Unified event history (newest first) from every module, with filters.
+         */
+        get: operations["list_events_api_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Event Counts */
+        get: operations["event_counts_api_events_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Event Timeline
+         * @description Situational awareness: events in lanes by category, filtered by crew member, category and time range.
+         */
+        get: operations["event_timeline_api_events_timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Event */
+        get: operations["get_event_api_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alert-center": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Alert Center List
+         * @description Unified alerts, unresolved first, then by priority and time. Unresolved alerts always show.
+         */
+        get: operations["alert_center_list_api_alert_center_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alert-center/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alert Center Summary */
+        get: operations["alert_center_summary_api_alert_center_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alert-center/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Alert Center Get
+         * @description One alert with its supporting measurements, explanation, correlations and full lifecycle trail.
+         */
+        get: operations["alert_center_get_api_alert_center__alert_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alert-center/{alert_id}/acknowledge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Alert Center Acknowledge */
+        post: operations["alert_center_acknowledge_api_alert_center__alert_id__acknowledge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alert-center/{alert_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Alert Center Resolve
+         * @description Resolve with resolution notes (required).
+         */
+        post: operations["alert_center_resolve_api_alert_center__alert_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sim Catalogue */
+        get: operations["sim_catalogue_api_mission_sim_catalogue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sim State
+         * @description The active (or most recent) sandbox run's live state; ``status: idle`` when there is none.
+         */
+        get: operations["sim_state_api_mission_sim_state_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sim Runs */
+        get: operations["sim_runs_api_mission_sim_runs_get"];
+        put?: never;
+        /**
+         * Sim Start
+         * @description Start a sandbox mission (preset or custom crew, speed and length).
+         */
+        post: operations["sim_start_api_mission_sim_runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sim Get */
+        get: operations["sim_get_api_mission_sim_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Pause
+         * @description Freeze the simulation clock.
+         */
+        post: operations["sim_pause_api_mission_sim_runs__run_id__pause_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Resume
+         * @description Continue a paused run.
+         */
+        post: operations["sim_resume_api_mission_sim_runs__run_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Stop
+         * @description End the run now; its alerts stay open for review and reports.
+         */
+        post: operations["sim_stop_api_mission_sim_runs__run_id__stop_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Reset
+         * @description Abandon the run, close its open sandbox alerts and return to idle. Data are kept for playback.
+         */
+        post: operations["sim_reset_api_mission_sim_runs__run_id__reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/speed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sim Speed */
+        post: operations["sim_speed_api_mission_sim_runs__run_id__speed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/inject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Inject
+         * @description Inject a health anomaly, environmental event or simulated space-weather event (now or at a time).
+         */
+        post: operations["sim_inject_api_mission_sim_runs__run_id__inject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/telemetry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Telemetry
+         * @description Send measurements to the backend for a sandbox run; they pass through rule detection like generated ones.
+         */
+        post: operations["sim_telemetry_api_mission_sim_runs__run_id__telemetry_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Analyze
+         * @description Run the phase 3 models over the sandbox stream now (anomaly ensemble, forecast, risk).
+         */
+        post: operations["sim_analyze_api_mission_sim_runs__run_id__analyze_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/playback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sim Playback */
+        get: operations["sim_playback_api_mission_sim_runs__run_id__playback_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/frame": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sim Frame */
+        get: operations["sim_frame_api_mission_sim_runs__run_id__frame_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/mission-sim/runs/{run_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sim Report
+         * @description Freeze a sandbox incident into an incident report (draft, same review workflow).
+         */
+        post: operations["sim_report_api_mission_sim_runs__run_id__report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Analytics Summary */
+        get: operations["analytics_summary_api_analytics_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Analytics Export
+         * @description Exportable summary of the same analytics (CSV daily table, full JSON, or a Markdown report).
+         */
+        get: operations["analytics_export_api_analytics_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Status
+         * @description Deep health check of every component (no health data).
+         */
+        get: operations["system_status_api_system_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/consistency": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Consistency
+         * @description Run the database consistency checks without changing anything.
+         */
+        get: operations["system_consistency_api_system_consistency_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/consistency/repair": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * System Consistency Repair
+         * @description Run the checks and repair what is safe to repair (mirrors, links, interrupted runs, orphans).
+         */
+        post: operations["system_consistency_repair_api_system_consistency_repair_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1548,6 +2139,41 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /** AlertCenterAction */
+        AlertCenterAction: {
+            /**
+             * Note
+             * @description Acknowledgement note or resolution notes
+             */
+            note?: string | null;
+        };
+        /** AlertCenterSummary */
+        AlertCenterSummary: {
+            /** Open */
+            open: number;
+            /** Acknowledged */
+            acknowledged: number;
+            /** Unresolved */
+            unresolved: number;
+            /** Resolved 24H */
+            resolved_24h: number;
+            /** By Priority */
+            by_priority: {
+                [key: string]: number;
+            };
+            /** By Source */
+            by_source: {
+                [key: string]: number;
+            };
+            /** Experimental Open */
+            experimental_open: number;
+            /** Oldest Unresolved At */
+            oldest_unresolved_at?: string | null;
+            /** Mean Minutes To Acknowledge 7D */
+            mean_minutes_to_acknowledge_7d?: number | null;
+            /** Context */
+            context?: string | null;
+        };
         /** AlertDay */
         AlertDay: {
             /**
@@ -1594,6 +2220,63 @@ export interface components {
              * @constant
              */
             data_source: "simulated";
+        };
+        /** AnalyticsSummary */
+        AnalyticsSummary: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Context */
+            context: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /** Crew Trends */
+            crew_trends: {
+                [key: string]: unknown;
+            }[];
+            /** Anomalies */
+            anomalies: {
+                [key: string]: unknown;
+            }[];
+            /** Sleep */
+            sleep: {
+                [key: string]: unknown;
+            }[];
+            /** Environment */
+            environment: {
+                [key: string]: unknown;
+            }[];
+            /** Radiation */
+            radiation: {
+                [key: string]: unknown;
+            };
+            /** Model Performance */
+            model_performance: {
+                [key: string]: unknown;
+            };
+            /** Alert Frequency */
+            alert_frequency: {
+                [key: string]: unknown;
+            }[];
+            /** Alert Totals */
+            alert_totals: {
+                [key: string]: unknown;
+            };
+            event_distribution: components["schemas"]["EventCounts"];
+            /** Notes */
+            notes: string[];
         };
         /** AnomalyDetectionRequest */
         AnomalyDetectionRequest: {
@@ -2113,6 +2796,27 @@ export interface components {
             /** Factor */
             factor: number;
         };
+        /** ComponentStatus */
+        ComponentStatus: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "degraded" | "down" | "disabled" | "unavailable";
+            /** Detail */
+            detail: string;
+            /**
+             * Metrics
+             * @default {}
+             */
+            metrics: {
+                [key: string]: unknown;
+            };
+        };
         /** Confidence */
         Confidence: {
             /**
@@ -2127,6 +2831,41 @@ export interface components {
             level: "low" | "medium" | "high";
             /** Basis */
             basis: string[];
+        };
+        /** ConsistencyCheck */
+        ConsistencyCheck: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "repaired" | "warning" | "error";
+            /** Found */
+            found: number;
+            /** Repaired */
+            repaired: number;
+            /** Detail */
+            detail: string;
+        };
+        /** ConsistencyReport */
+        ConsistencyReport: {
+            /**
+             * Ran At
+             * Format: date-time
+             */
+            ran_at: string;
+            /** Repair */
+            repair: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "repaired" | "warning" | "error";
+            /** Checks */
+            checks: components["schemas"]["ConsistencyCheck"][];
         };
         /** Contributor */
         Contributor: {
@@ -2280,6 +3019,105 @@ export interface components {
              */
             coverage: components["schemas"]["DateRange"][];
         };
+        /** CrewAI */
+        CrewAI: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason?: string | null;
+            /** Generated At */
+            generated_at?: string | null;
+            /** Model Version */
+            model_version?: string | null;
+            /** Risk Score */
+            risk_score?: number | null;
+            /** Category */
+            category?: string | null;
+            /** Category Label */
+            category_label?: string | null;
+            /** Health Score */
+            health_score?: number | null;
+            /** Confidence */
+            confidence?: {
+                [key: string]: unknown;
+            } | null;
+            /** What Changed */
+            what_changed?: string | null;
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: {
+                [key: string]: unknown;
+            }[];
+            /** Anomaly */
+            anomaly?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Contributors
+             * @default []
+             */
+            contributors: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** CrewMonitorCard */
+        CrewMonitorCard: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string;
+            /** Specialty */
+            specialty: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "nominal" | "advisory" | "caution" | "critical";
+            /**
+             * Live
+             * @description A reading arrived within the live window
+             */
+            live: boolean;
+            /** Last Reading Age S */
+            last_reading_age_s?: number | null;
+            latest?: components["schemas"]["VitalReading"] | null;
+            deviations: components["schemas"]["Deviations"];
+            /** Open Rule Alerts */
+            open_rule_alerts: components["schemas"]["Alert"][];
+            /** Open Alerts */
+            open_alerts: components["schemas"]["MissionAlert"][];
+            ai: components["schemas"]["CrewAI"];
+            /** Trend 7D */
+            trend_7d: components["schemas"]["CrewTrendPoint"][];
+            /** Active Scenarios */
+            active_scenarios: string[];
+            /** Mission Dose Msv */
+            mission_dose_msv?: number | null;
+            /**
+             * Data Source
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+        };
+        /** CrewMonitoring */
+        CrewMonitoring: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Ai Sweep At */
+            ai_sweep_at?: string | null;
+            /** Crew */
+            crew: components["schemas"]["CrewMonitorCard"][];
+            /** Notes */
+            notes: string[];
+        };
         /** CrewRadiation */
         CrewRadiation: {
             /** Astronaut Id */
@@ -2417,6 +3255,26 @@ export interface components {
             /** Points */
             points: components["schemas"]["TrendPointLite"][];
         };
+        /** CrewTrendPoint */
+        CrewTrendPoint: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Heart Rate */
+            heart_rate?: number | null;
+            /** Spo2 */
+            spo2?: number | null;
+            /** Respiratory Rate */
+            respiratory_rate?: number | null;
+            /** Temperature C */
+            temperature_c?: number | null;
+            /** Sleep Hours */
+            sleep_hours?: number | null;
+            /** Dose Msv */
+            dose_msv?: number | null;
+        };
         /** CrossRow */
         CrossRow: {
             /** Lag Days */
@@ -2498,6 +3356,23 @@ export interface components {
             dose_msv: number;
             /** Solar Particle Event */
             solar_particle_event: boolean;
+        };
+        /** DashboardSection */
+        DashboardSection: {
+            /**
+             * Available
+             * @default true
+             */
+            available: boolean;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Data
+             * @default {}
+             */
+            data: {
+                [key: string]: unknown;
+            };
         };
         /** DataQuality */
         DataQuality: {
@@ -2677,6 +3552,49 @@ export interface components {
             threshold: number | null;
             /** Weight */
             weight: number;
+        };
+        /** Deviation */
+        Deviation: {
+            /** Signal */
+            signal: string;
+            /** Label */
+            label: string;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+            /** Expected */
+            expected?: number | null;
+            /** Z */
+            z?: number | null;
+            /** Percentile */
+            percentile?: number | null;
+            /** Basis */
+            basis: string;
+            /** Flag */
+            flag?: ("edge" | "outside" | "far") | null;
+        };
+        /** Deviations */
+        Deviations: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason?: string | null;
+            /** Ts */
+            ts?: string | null;
+            /** Activity State */
+            activity_state?: string | null;
+            /**
+             * Signals
+             * @default []
+             */
+            signals: components["schemas"]["Deviation"][];
+            /** Baseline Fitted At */
+            baseline_fitted_at?: string | null;
+            /** Windows Used */
+            windows_used?: number | null;
+            /** Method */
+            method?: string | null;
         };
         /** Driver */
         Driver: {
@@ -3022,6 +3940,40 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** EventCounts */
+        EventCounts: {
+            /** Total */
+            total: number;
+            /** By Category */
+            by_category: {
+                [key: string]: number;
+            };
+            /** By Source */
+            by_source: {
+                [key: string]: number;
+            };
+            /** By Priority */
+            by_priority: {
+                [key: string]: number;
+            };
+            /** By Origin */
+            by_origin: {
+                [key: string]: number;
+            };
+            /** By Severity */
+            by_severity: {
+                [key: string]: number;
+            };
+        };
+        /** EventLane */
+        EventLane: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Items */
+            items: components["schemas"]["MissionEvent"][];
+        };
         /** EventList */
         EventList: {
             /** Events */
@@ -3331,6 +4283,17 @@ export interface components {
             /** Severity */
             severity: string | null;
             /**
+             * Simulation Id
+             * @description Mission simulation sandbox run (phase 6)
+             */
+            simulation_id?: string | null;
+            /**
+             * Source Kind
+             * @default manual
+             * @enum {string}
+             */
+            source_kind: "alert" | "emergency_run" | "simulation" | "manual";
+            /**
              * Data Source
              * @description Always 'simulated' in this prototype. No real astronaut data is used.
              * @default simulated
@@ -3558,6 +4521,423 @@ export interface components {
             /** Label */
             label: string;
         };
+        /** MissionAlert */
+        MissionAlert: {
+            /**
+             * Id
+             * @description Alert identifier
+             */
+            id: string;
+            /**
+             * Source
+             * @description Source module
+             */
+            source: string;
+            /** Source Label */
+            source_label: string;
+            /** Source Ref */
+            source_ref: string;
+            /** Event Id */
+            event_id?: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /**
+             * Context
+             * @enum {string}
+             */
+            context: "operations" | "simulation";
+            /** Simulation Id */
+            simulation_id?: string | null;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "simulated" | "sandbox" | "nasa" | "system";
+            /** Data Origin Label */
+            data_origin_label: string;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /** Classification */
+            classification: string;
+            /** Classification Label */
+            classification_label: string;
+            /** Classification Note */
+            classification_note: string;
+            /**
+             * Experimental
+             * @description Experimental AI prediction: never a confirmed medical emergency
+             */
+            experimental: boolean;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "info" | "advisory" | "caution" | "critical";
+            /** Priority */
+            priority: number;
+            /** Priority Label */
+            priority_label: string;
+            /** Title */
+            title: string;
+            /** Summary */
+            summary?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "acknowledged" | "resolved";
+            /**
+             * Created At
+             * Format: date-time
+             * @description When the condition was observed (source time)
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Received At
+             * Format: date-time
+             */
+            received_at: string;
+            /**
+             * Measurements
+             * @description Supporting measurements
+             */
+            measurements: {
+                [key: string]: unknown;
+            };
+            /**
+             * Explanation
+             * @description Rule or AI explanation
+             */
+            explanation: {
+                [key: string]: unknown;
+            };
+            /**
+             * Confidence
+             * @description 0-1 for model output; null for deterministic rules
+             */
+            confidence?: number | null;
+            /** Confidence Level */
+            confidence_level?: string | null;
+            /** Uncertainty */
+            uncertainty: string[];
+            /** Correlations */
+            correlations: {
+                [key: string]: unknown;
+            };
+            /** Condition Cleared At */
+            condition_cleared_at?: string | null;
+            /** Acknowledged At */
+            acknowledged_at?: string | null;
+            /** Acknowledged By */
+            acknowledged_by?: string | null;
+            /** Ack Note */
+            ack_note?: string | null;
+            /** Resolved At */
+            resolved_at?: string | null;
+            /** Resolved By */
+            resolved_by?: string | null;
+            /** Resolution Notes */
+            resolution_notes?: string | null;
+            /** Occurrences */
+            occurrences: number;
+            /**
+             * Data Source
+             * @enum {string}
+             */
+            data_source: "simulated" | "nasa";
+        };
+        /** MissionAlertAction */
+        MissionAlertAction: {
+            /** Id */
+            id: number;
+            /** Alert Id */
+            alert_id: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Action */
+            action: string;
+            /** From Status */
+            from_status?: string | null;
+            /** To Status */
+            to_status?: string | null;
+            /** Actor */
+            actor: string;
+            /** Actor Role */
+            actor_role?: string | null;
+            /** Note */
+            note?: string | null;
+            /** Detail */
+            detail: {
+                [key: string]: unknown;
+            };
+        };
+        /** MissionAlertDetail */
+        MissionAlertDetail: {
+            /**
+             * Id
+             * @description Alert identifier
+             */
+            id: string;
+            /**
+             * Source
+             * @description Source module
+             */
+            source: string;
+            /** Source Label */
+            source_label: string;
+            /** Source Ref */
+            source_ref: string;
+            /** Event Id */
+            event_id?: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /**
+             * Context
+             * @enum {string}
+             */
+            context: "operations" | "simulation";
+            /** Simulation Id */
+            simulation_id?: string | null;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "simulated" | "sandbox" | "nasa" | "system";
+            /** Data Origin Label */
+            data_origin_label: string;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /** Classification */
+            classification: string;
+            /** Classification Label */
+            classification_label: string;
+            /** Classification Note */
+            classification_note: string;
+            /**
+             * Experimental
+             * @description Experimental AI prediction: never a confirmed medical emergency
+             */
+            experimental: boolean;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "info" | "advisory" | "caution" | "critical";
+            /** Priority */
+            priority: number;
+            /** Priority Label */
+            priority_label: string;
+            /** Title */
+            title: string;
+            /** Summary */
+            summary?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "acknowledged" | "resolved";
+            /**
+             * Created At
+             * Format: date-time
+             * @description When the condition was observed (source time)
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Received At
+             * Format: date-time
+             */
+            received_at: string;
+            /**
+             * Measurements
+             * @description Supporting measurements
+             */
+            measurements: {
+                [key: string]: unknown;
+            };
+            /**
+             * Explanation
+             * @description Rule or AI explanation
+             */
+            explanation: {
+                [key: string]: unknown;
+            };
+            /**
+             * Confidence
+             * @description 0-1 for model output; null for deterministic rules
+             */
+            confidence?: number | null;
+            /** Confidence Level */
+            confidence_level?: string | null;
+            /** Uncertainty */
+            uncertainty: string[];
+            /** Correlations */
+            correlations: {
+                [key: string]: unknown;
+            };
+            /** Condition Cleared At */
+            condition_cleared_at?: string | null;
+            /** Acknowledged At */
+            acknowledged_at?: string | null;
+            /** Acknowledged By */
+            acknowledged_by?: string | null;
+            /** Ack Note */
+            ack_note?: string | null;
+            /** Resolved At */
+            resolved_at?: string | null;
+            /** Resolved By */
+            resolved_by?: string | null;
+            /** Resolution Notes */
+            resolution_notes?: string | null;
+            /** Occurrences */
+            occurrences: number;
+            /**
+             * Data Source
+             * @enum {string}
+             */
+            data_source: "simulated" | "nasa";
+            /**
+             * Actions
+             * @description Audit trail of every lifecycle transition
+             */
+            actions: components["schemas"]["MissionAlertAction"][];
+            event?: components["schemas"]["MissionEvent"] | null;
+        };
+        /** MissionControlOverview */
+        MissionControlOverview: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            mission?: components["schemas"]["MissionStatus"] | null;
+            crew: components["schemas"]["DashboardSection"];
+            health_monitoring: components["schemas"]["DashboardSection"];
+            alerts: components["schemas"]["DashboardSection"];
+            ai: components["schemas"]["DashboardSection"];
+            space_weather: components["schemas"]["DashboardSection"];
+            environment: components["schemas"]["DashboardSection"];
+            radiation_timeline: components["schemas"]["DashboardSection"];
+            incidents: components["schemas"]["DashboardSection"];
+            /** Connectivity */
+            connectivity: components["schemas"]["ComponentStatus"][];
+            /** Simulation */
+            simulation: {
+                [key: string]: unknown;
+            };
+            /** Notes */
+            notes: string[];
+        };
+        /** MissionEvent */
+        MissionEvent: {
+            /** Id */
+            id: string;
+            /** Source */
+            source: string;
+            /** Source Label */
+            source_label: string;
+            /** Kind */
+            kind: string;
+            /** Category */
+            category: string;
+            /** Category Label */
+            category_label: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "info" | "advisory" | "caution" | "critical";
+            /**
+             * Priority
+             * @description 1 critical, 2 high, 3 medium, 4 low
+             */
+            priority: number;
+            /** Priority Label */
+            priority_label: string;
+            /** Priority Score */
+            priority_score: number;
+            /** Title */
+            title: string;
+            /** Summary */
+            summary?: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /**
+             * Context
+             * @enum {string}
+             */
+            context: "operations" | "simulation";
+            /** Simulation Id */
+            simulation_id?: string | null;
+            /**
+             * Data Origin
+             * @enum {string}
+             */
+            data_origin: "simulated" | "sandbox" | "nasa" | "system";
+            /** Data Origin Label */
+            data_origin_label: string;
+            /** Classification */
+            classification?: string | null;
+            /** Classification Note */
+            classification_note?: string | null;
+            /** Experimental */
+            experimental: boolean;
+            /** Confidence */
+            confidence?: number | null;
+            /** Ref Type */
+            ref_type?: string | null;
+            /** Ref Id */
+            ref_id?: string | null;
+            /**
+             * Occurred At
+             * Format: date-time
+             * @description Source time in UTC (the simulation clock for sandbox events)
+             */
+            occurred_at: string;
+            /**
+             * Received At
+             * Format: date-time
+             * @description Wall-clock UTC time the pipeline received the event
+             */
+            received_at: string;
+            /**
+             * Last Seen At
+             * Format: date-time
+             */
+            last_seen_at: string;
+            /** Latency S */
+            latency_s: number;
+            /**
+             * Clock Skew S
+             * @description Seconds a future source timestamp was clamped by
+             */
+            clock_skew_s?: number | null;
+            /**
+             * Occurrences
+             * @description How many times this event was reported (duplicates merged)
+             */
+            occurrences: number;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+        };
         /** MissionOverview */
         MissionOverview: {
             /**
@@ -3667,6 +5047,33 @@ export interface components {
             statements: components["schemas"]["SummaryStatement"][];
             /** Method */
             method: string;
+        };
+        /** MissionTimeline */
+        MissionTimeline: {
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /** Astronaut Id */
+            astronaut_id: string | null;
+            /**
+             * Context
+             * @enum {string}
+             */
+            context: "operations" | "simulation";
+            /** Simulation Id */
+            simulation_id: string | null;
+            /** Lanes */
+            lanes: components["schemas"]["EventLane"][];
+            counts: components["schemas"]["EventCounts"];
+            /** Notes */
+            notes: string[];
         };
         /** ModelPerformanceResponse */
         ModelPerformanceResponse: {
@@ -4175,6 +5582,17 @@ export interface components {
             /** Severity */
             severity: string | null;
             /**
+             * Simulation Id
+             * @description Mission simulation sandbox run (phase 6)
+             */
+            simulation_id?: string | null;
+            /**
+             * Source Kind
+             * @default manual
+             * @enum {string}
+             */
+            source_kind: "alert" | "emergency_run" | "simulation" | "manual";
+            /**
              * Data Source
              * @description Always 'simulated' in this prototype. No real astronaut data is used.
              * @default simulated
@@ -4558,6 +5976,441 @@ export interface components {
             description: string;
             /** Percentile */
             percentile?: number | null;
+        };
+        /** SimCatalogue */
+        SimCatalogue: {
+            /** Presets */
+            presets: components["schemas"]["SimPreset"][];
+            /** Injections */
+            injections: components["schemas"]["SimInjectionType"][];
+            /** Max Speed */
+            max_speed: number;
+            /** Max Minutes */
+            max_minutes: number;
+            /** Enabled */
+            enabled: boolean;
+            /** Label */
+            label: string;
+        };
+        /** SimCrewReading */
+        SimCrewReading: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+            /** Heart Rate */
+            heart_rate: number;
+            /** Spo2 */
+            spo2: number;
+            /** Systolic */
+            systolic: number;
+            /** Diastolic */
+            diastolic: number;
+            /** Temperature C */
+            temperature_c: number;
+            /** Respiratory Rate */
+            respiratory_rate: number;
+            /** Activity State */
+            activity_state: string;
+            /** Rhythm */
+            rhythm: string;
+            /** Scenario */
+            scenario?: string | null;
+            /** Status */
+            status: string;
+            /** Dose Msv */
+            dose_msv: number;
+        };
+        /** SimFrame */
+        SimFrame: {
+            /** Simulation Id */
+            simulation_id: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** T Plus */
+            t_plus: string;
+            /** Crew */
+            crew: {
+                [key: string]: unknown;
+            }[];
+            /** Active Injections */
+            active_injections: {
+                [key: string]: unknown;
+            }[];
+            /** Alerts */
+            alerts: components["schemas"]["MissionAlert"][];
+            /** Label */
+            label: string;
+        };
+        /** SimIngestResult */
+        SimIngestResult: {
+            /** Simulation Id */
+            simulation_id: string;
+            /** Received */
+            received: number;
+            /** Accepted */
+            accepted: number;
+            /** Rejected */
+            rejected: number;
+            /** Issues */
+            issues: {
+                [key: string]: unknown;
+            }[];
+            /** Alerts Opened */
+            alerts_opened: number;
+            /**
+             * Sim Time
+             * Format: date-time
+             */
+            sim_time: string;
+        };
+        /** SimInject */
+        SimInject: {
+            /** Injection */
+            injection: string;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+            /**
+             * Intensity
+             * @default 1
+             */
+            intensity: number;
+            /** Duration S */
+            duration_s?: number | null;
+            /**
+             * At Minute
+             * @description Simulated minutes after start; omit for now
+             */
+            at_minute?: number | null;
+        };
+        /** SimInjectionType */
+        SimInjectionType: {
+            /** Key */
+            key: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "health" | "environment" | "space_weather";
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Crew Wide */
+            crew_wide: boolean;
+            /** Default Duration S */
+            default_duration_s: number;
+            /** Event Only */
+            event_only: boolean;
+        };
+        /** SimPlayback */
+        SimPlayback: {
+            simulation: components["schemas"]["SimRun"];
+            /** Resolution Seconds */
+            resolution_seconds: number;
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /** Series */
+            series: components["schemas"]["SimSeries"][];
+            /** Injections */
+            injections: {
+                [key: string]: unknown;
+            }[];
+            /** Events */
+            events: components["schemas"]["MissionEvent"][];
+            /** Alerts */
+            alerts: components["schemas"]["MissionAlert"][];
+            /** Label */
+            label: string;
+        };
+        /** SimPreset */
+        SimPreset: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Duration Minutes */
+            duration_minutes: number;
+            /** Speed */
+            speed: number;
+            /** Crew Size */
+            crew_size: number;
+            /** Script */
+            script: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** SimReportBody */
+        SimReportBody: {
+            /** Alert Id */
+            alert_id?: string | null;
+            /** Astronaut Id */
+            astronaut_id?: string | null;
+        };
+        /** SimRun */
+        SimRun: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Preset */
+            preset: string | null;
+            /** Crew */
+            crew: string[];
+            /** Status */
+            status: string;
+            /** Speed */
+            speed: number;
+            /** Seed */
+            seed: number;
+            /**
+             * Sim Start
+             * Format: date-time
+             */
+            sim_start: string;
+            /**
+             * Sim Time
+             * Format: date-time
+             */
+            sim_time: string;
+            /**
+             * Sim End
+             * Format: date-time
+             */
+            sim_end: string;
+            /** T Plus */
+            t_plus: string;
+            /** Progress */
+            progress: number;
+            /**
+             * Wall Started At
+             * Format: date-time
+             */
+            wall_started_at: string;
+            /**
+             * Wall Updated At
+             * Format: date-time
+             */
+            wall_updated_at: string;
+            /** Wall Ended At */
+            wall_ended_at: string | null;
+            /** Created By */
+            created_by: string;
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /** Injections */
+            injections: {
+                [key: string]: unknown;
+            }[];
+            /** Analyses */
+            analyses: {
+                [key: string]: unknown;
+            };
+            /** Stats */
+            stats: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error: string | null;
+            /**
+             * Context
+             * @default simulation
+             * @constant
+             */
+            context: "simulation";
+            /**
+             * Data Source
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+            /** Label */
+            label: string;
+        };
+        /** SimSeries */
+        SimSeries: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /** Points */
+            points: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** SimSpeed */
+        SimSpeed: {
+            /** Speed */
+            speed: number;
+        };
+        /** SimStart */
+        SimStart: {
+            /** Name */
+            name?: string | null;
+            /** Preset */
+            preset?: string | null;
+            /** Crew */
+            crew?: string[] | null;
+            /** Speed */
+            speed?: number | null;
+            /** Duration Minutes */
+            duration_minutes?: number | null;
+            /** Seed */
+            seed?: number | null;
+            /** Ai Every Minutes */
+            ai_every_minutes?: number | null;
+        };
+        /** SimState */
+        SimState: {
+            /** Active */
+            active: boolean;
+            /** Status */
+            status: string;
+            /**
+             * Context
+             * @default simulation
+             * @constant
+             */
+            context: "simulation";
+            /**
+             * Data Source
+             * @default simulated
+             * @constant
+             */
+            data_source: "simulated";
+            /** Label */
+            label: string;
+            /** Id */
+            id?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Preset */
+            preset?: string | null;
+            /** Speed */
+            speed?: number | null;
+            /** Step Seconds */
+            step_seconds?: number | null;
+            /**
+             * Crew
+             * @default []
+             */
+            crew: string[];
+            /** Sim Start */
+            sim_start?: string | null;
+            /** Sim Time */
+            sim_time?: string | null;
+            /** Sim End */
+            sim_end?: string | null;
+            /** T Plus */
+            t_plus?: string | null;
+            /** Progress */
+            progress?: number | null;
+            /** Wall Started At */
+            wall_started_at?: string | null;
+            /** Created By */
+            created_by?: string | null;
+            /**
+             * Latest
+             * @default []
+             */
+            latest: components["schemas"]["SimCrewReading"][];
+            /**
+             * Active Injections
+             * @default []
+             */
+            active_injections: {
+                [key: string]: unknown;
+            }[];
+            /** Next Injection */
+            next_injection?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Habitat
+             * @default {}
+             */
+            habitat: {
+                [key: string]: unknown;
+            };
+            /** Dose Rate Multiplier */
+            dose_rate_multiplier?: number | null;
+            /**
+             * Open Alerts
+             * @default 0
+             */
+            open_alerts: number;
+            /**
+             * Stats
+             * @default {}
+             */
+            stats: {
+                [key: string]: unknown;
+            };
+            /** Ai Status */
+            ai_status?: string | null;
+            /** Last Ai At */
+            last_ai_at?: string | null;
+            /** Error */
+            error?: string | null;
+        };
+        /** SimTelemetryBatch */
+        SimTelemetryBatch: {
+            /** Readings */
+            readings: components["schemas"]["SimTelemetryReading"][];
+            /**
+             * Source
+             * @default external
+             */
+            source: string;
+        };
+        /** SimTelemetryReading */
+        SimTelemetryReading: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Ts
+             * Format: date-time
+             * @description Measurement time on the simulation clock (UTC)
+             */
+            ts: string;
+            /** Heart Rate */
+            heart_rate?: number | null;
+            /** Spo2 */
+            spo2?: number | null;
+            /** Systolic */
+            systolic?: number | null;
+            /** Diastolic */
+            diastolic?: number | null;
+            /** Temperature C */
+            temperature_c?: number | null;
+            /** Respiratory Rate */
+            respiratory_rate?: number | null;
+            /** Activity State */
+            activity_state?: ("sleep" | "rest" | "work" | "exercise") | null;
+            /** Activity Met */
+            activity_met?: number | null;
+            /** Rhythm */
+            rhythm?: ("regular" | "irregular") | null;
         };
         /** SimulatedBlock */
         SimulatedBlock: {
@@ -5261,6 +7114,31 @@ export interface components {
             assessed: number;
             /** Missing */
             missing: string[];
+        };
+        /** SystemStatus */
+        SystemStatus: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "degraded" | "down";
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Version */
+            version: string;
+            /** Environment */
+            environment: string;
+            /** Uptime S */
+            uptime_s: number;
+            /** Components */
+            components: components["schemas"]["ComponentStatus"][];
+            /** Orchestrator */
+            orchestrator: {
+                [key: string]: unknown;
+            };
         };
         /** ThresholdInfo */
         ThresholdInfo: {
@@ -6006,6 +7884,36 @@ export interface components {
              */
             data_source: "simulated";
         };
+        /** WsMissionAlert */
+        WsMissionAlert: {
+            /**
+             * Type
+             * @default mission_alert
+             * @constant
+             */
+            type: "mission_alert";
+            /**
+             * Event
+             * @enum {string}
+             */
+            event: "opened" | "escalated" | "updated" | "acknowledged" | "resolved";
+            alert: components["schemas"]["MissionAlert"];
+        };
+        /** WsMissionEvent */
+        WsMissionEvent: {
+            /**
+             * Type
+             * @default mission_event
+             * @constant
+             */
+            type: "mission_event";
+            /**
+             * Event
+             * @enum {string}
+             */
+            event: "created" | "updated";
+            item: components["schemas"]["MissionEvent"];
+        };
         /** WsPong */
         WsPong: {
             /**
@@ -6019,6 +7927,16 @@ export interface components {
              * Format: date-time
              */
             server_time: string;
+        };
+        /** WsSimState */
+        WsSimState: {
+            /**
+             * Type
+             * @default sim_state
+             * @constant
+             */
+            type: "sim_state";
+            state: components["schemas"]["SimState"];
         };
         /** WsSimulation */
         WsSimulation: {
@@ -9348,6 +11266,1346 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MissionOverview"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    mission_control_overview_api_mission_control_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionControlOverview"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    crew_monitoring_api_crew_monitoring_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrewMonitoring"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_events_api_events_get: {
+        parameters: {
+            query?: {
+                category?: string[] | null;
+                source?: string[] | null;
+                severity?: string[] | null;
+                priority?: number[] | null;
+                astronaut_id?: string | null;
+                context?: ("operations" | "simulation") | null;
+                simulation_id?: string | null;
+                start?: string | null;
+                end?: string | null;
+                hours?: number;
+                q?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionEvent"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    event_counts_api_events_counts_get: {
+        parameters: {
+            query?: {
+                context?: "operations" | "simulation";
+                astronaut_id?: string | null;
+                start?: string | null;
+                end?: string | null;
+                hours?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventCounts"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    event_timeline_api_events_timeline_get: {
+        parameters: {
+            query?: {
+                category?: string[] | null;
+                astronaut_id?: string | null;
+                context?: "operations" | "simulation";
+                simulation_id?: string | null;
+                start?: string | null;
+                end?: string | null;
+                hours?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionTimeline"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_event_api_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionEvent"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    alert_center_list_api_alert_center_get: {
+        parameters: {
+            query?: {
+                status?: ("open" | "acknowledged" | "resolved")[] | null;
+                priority?: number[] | null;
+                source?: string[] | null;
+                category?: string[] | null;
+                classification?: string[] | null;
+                astronaut_id?: string | null;
+                context?: ("operations" | "simulation") | null;
+                simulation_id?: string | null;
+                hours?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionAlert"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    alert_center_summary_api_alert_center_summary_get: {
+        parameters: {
+            query?: {
+                context?: ("operations" | "simulation") | null;
+                simulation_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertCenterSummary"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    alert_center_get_api_alert_center__alert_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionAlertDetail"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    alert_center_acknowledge_api_alert_center__alert_id__acknowledge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AlertCenterAction"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionAlert"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    alert_center_resolve_api_alert_center__alert_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertCenterAction"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionAlert"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_catalogue_api_mission_sim_catalogue_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimCatalogue"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_state_api_mission_sim_state_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_runs_api_mission_sim_runs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimRun"][];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_start_api_mission_sim_runs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimStart"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_get_api_mission_sim_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimRun"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_pause_api_mission_sim_runs__run_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_resume_api_mission_sim_runs__run_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_stop_api_mission_sim_runs__run_id__stop_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_reset_api_mission_sim_runs__run_id__reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_speed_api_mission_sim_runs__run_id__speed_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimSpeed"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimState"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_inject_api_mission_sim_runs__run_id__inject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimInject"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_telemetry_api_mission_sim_runs__run_id__telemetry_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimTelemetryBatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimIngestResult"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_analyze_api_mission_sim_runs__run_id__analyze_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_playback_api_mission_sim_runs__run_id__playback_get: {
+        parameters: {
+            query?: {
+                max_points?: number;
+            };
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimPlayback"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_frame_api_mission_sim_runs__run_id__frame_get: {
+        parameters: {
+            query: {
+                at: string;
+            };
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimFrame"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sim_report_api_mission_sim_runs__run_id__report_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimReportBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentReport"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    analytics_summary_api_analytics_summary_get: {
+        parameters: {
+            query?: {
+                start?: string | null;
+                end?: string | null;
+                context?: "operations" | "simulation" | "all";
+                astronaut_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsSummary"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    analytics_export_api_analytics_export_get: {
+        parameters: {
+            query?: {
+                format?: "csv" | "json" | "md";
+                start?: string | null;
+                end?: string | null;
+                context?: "operations" | "simulation" | "all";
+                astronaut_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/csv": unknown;
+                    "text/markdown": unknown;
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    system_status_api_system_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemStatus"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    system_consistency_api_system_consistency_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsistencyReport"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    system_consistency_repair_api_system_consistency_repair_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsistencyReport"];
                 };
             };
             /** @description Resource not found */

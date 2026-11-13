@@ -46,6 +46,15 @@ class EmergencyService:
         self.twin = twin
         self.multisystem = multisystem
         self._overlays: dict[str, tuple[datetime, dict[str, Any]]] = {}  # astronaut -> (ends_at, overlay)
+        # Phase 6 change hooks: called with (kind, run, extra) after a run starts, is cancelled or analysed.
+        self.listeners: list = []
+
+    def _emit(self, kind: str, run: EmergencyRunRow, extra: dict[str, Any] | None = None) -> None:
+        for listener in self.listeners:
+            try:
+                listener(kind, run, extra or {})
+            except Exception:
+                logger.exception("emergency listener failed")
 
     # -------------------------------------------------------------- overlays ----
     def overlay_for(self, aid: str) -> dict[str, Any] | None:
@@ -110,6 +119,7 @@ class EmergencyService:
         if overlay.get("type") == "sleep" and astronaut_id:
             self._overlays[astronaut_id] = (run.ends_at, overlay)
         logger.info("emergency run %s (%s, %s) started by %s", run.id, key, severity, created_by)
+        self._emit("started", run)
         return run
 
     async def get(self, run_id: str) -> EmergencyRunRow:
@@ -142,6 +152,7 @@ class EmergencyService:
             await session.commit()
         if run.astronaut_id:
             self._overlays.pop(run.astronaut_id, None)
+        self._emit("cancelled", run)
         return run
 
     def targets(self, run: EmergencyRunRow) -> list[str]:
@@ -207,6 +218,8 @@ class EmergencyService:
             stored = await session.get(EmergencyRunRow, run_id)
             stored.analyses = [*(stored.analyses or []), _jsonable(snapshot)][-MAX_ANALYSES:]
             await session.commit()
+        self._emit("analyzed", run, {"escalations": {c["astronaut_id"]: c["escalation"].get("level") for c in per_astronaut},
+                                    "requested_by": requested_by})
         return snapshot
 
     # -------------------------------------------------------------- timeline ----

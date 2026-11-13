@@ -280,11 +280,78 @@ All need `health:read` unless noted. All crew data is simulated; see
 | GET | `/api/assistant/status` | `health:read` | `AssistantStatus`: mode, indexed passages per source, reference library entries |
 | POST | `/api/assistant/ask` | `assistant:use` | `AssistantAnswer`: `statements[]` (text, `citations`, `kind`), `sources[]` (`D#` records, `S#` passages with verbatim excerpts and links), `missing_information`, `declined`, `escalation`, `actions` (e.g. create a report), `understood`. Body: `question`, optional `astronaut_id` in focus |
 
+## Unified mission control (phase 6)
+
+Methods are in [MISSION_CONTROL.md](MISSION_CONTROL.md). All need `health:read` unless noted.
+Every event and alert says where it came from (`source`, `data_origin`: `simulated`, `sandbox`,
+`nasa`) and its `context` (`operations` for the crew stream, `simulation` for sandbox runs).
+
+### Command dashboard and crew monitoring
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/mission-control/overview` | `MissionControlOverview`: mission status plus independent sections (`available`, `reason`, `data`): crew, health monitoring, alerts, AI, space weather (needs `space:read`), environment, radiation timeline, incidents (reports need `reports:read`); component connectivity; sandbox state |
+| GET | `/api/crew/monitoring` | `CrewMonitoring`: per crew member the latest reading, live flag, deviations from the personal baseline, open rule and unified alerts, the latest AI risk sweep, a 7-day trend, active scenarios and mission dose |
+
+### Events and situational awareness
+
+| Method | Path | Query | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/events` | `category`, `source`, `severity`, `priority` (repeatable), `astronaut_id` (crew-wide events included), `context` (default `operations`), `simulation_id`, `start`, `end` or `hours` (default 24), `q`, `limit` | `MissionEvent[]`, newest first: source and received times, latency, clock skew, priority, occurrences |
+| GET | `/api/events/counts` | `context`, `astronaut_id`, `start`, `end`, `hours` | `EventCounts` by category, source, priority, origin and severity |
+| GET | `/api/events/timeline` | `category` (repeatable), `astronaut_id`, `context`, `simulation_id` (the run's whole clock range), `start`, `end`, `hours` | `MissionTimeline`: lanes per category, counts, notes |
+| GET | `/api/events/{event_id}` | | `MissionEvent` |
+
+### Alert centre
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/alert-center` | `health:read` | `MissionAlert[]`: unresolved first, then by priority and time. Filters: `status`, `priority`, `source`, `category`, `classification` (repeatable), `astronaut_id`, `context`, `simulation_id`, `hours` (closed alerts only; unresolved always show), `limit` |
+| GET | `/api/alert-center/summary` | `health:read` | `AlertCenterSummary`: open, acknowledged, unresolved by priority and source, experimental open, resolved in 24 h, mean time to acknowledge |
+| GET | `/api/alert-center/{alert_id}` | `health:read` | `MissionAlertDetail`: the alert, its originating event and the full action trail |
+| POST | `/api/alert-center/{alert_id}/acknowledge` | `alerts:manage` | `MissionAlert`. Body `{"note"}` optional. 409 if already acknowledged or resolved |
+| POST | `/api/alert-center/{alert_id}/resolve` | `alerts:manage` | `MissionAlert`. Body `{"note"}` **required** (resolution notes) |
+
+Rule alerts acknowledged or resolved here are updated in the phase 2 store too, and
+`/api/alerts/{id}/acknowledge|resolve` is mirrored into the alert centre with the operator's name.
+
+### Mission simulation sandbox
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/mission-sim/catalogue` | `health:read` | `SimCatalogue`: presets with their scripts, injection types, limits |
+| GET | `/api/mission-sim/state` | `health:read` | `SimState` of the active (or last) run; `status: idle` when none |
+| GET | `/api/mission-sim/runs` · `/runs/{run_id}` | `health:read` | `SimRun` (config, injections, AI analyses, stats) |
+| POST | `/api/mission-sim/runs` | `simulation:control` | `SimState` (201). Body: `preset`, `crew`, `speed`, `duration_minutes`, `seed`, `ai_every_minutes`, `name` (all optional). 409 if a run is active |
+| POST | `/runs/{run_id}/pause` · `/resume` · `/stop` · `/reset` | `simulation:control` | `SimState` |
+| POST | `/runs/{run_id}/speed` | `simulation:control` | `SimState`. Body `{"speed"}` |
+| POST | `/runs/{run_id}/inject` | `simulation:control` | The fired or scheduled injection. Body: `injection`, `astronaut_id` (health only), `intensity` 0.3–1.5, `duration_s`, `at_minute` (omit for now) |
+| POST | `/runs/{run_id}/telemetry` | `simulation:control` | `SimIngestResult`. Body: `readings[]` (`astronaut_id`, `ts` on the simulation clock, any of the six signals within physiological ranges, optional activity and rhythm), `source` |
+| POST | `/runs/{run_id}/analyze` | `simulation:control` | Per crew member: anomaly windows and detections, forecast horizons, risk |
+| GET | `/runs/{run_id}/playback?max_points=` | `health:read` | `SimPlayback`: bucketed series, injections, events, alerts |
+| GET | `/runs/{run_id}/frame?at=` | `health:read` | `SimFrame`: readings, active injections and alerts at one instant |
+| POST | `/runs/{run_id}/report` | `reports:write` | `IncidentReport` (201). Body `{"alert_id"}` or `{"astronaut_id"}` |
+
+### Analytics
+
+| Method | Path | Returns |
+| --- | --- | --- |
+| GET | `/api/analytics/summary?start=&end=&context=&astronaut_id=` | `AnalyticsSummary`: crew trends, anomalies per day, sleep, environment, radiation history, model performance (simulated test split), alert frequency, event distribution |
+| GET | `/api/analytics/export?format=csv|json|md&...` | The same range as a CSV daily table, full JSON or a Markdown summary (attachment) |
+
+### System (any signed-in user)
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/system/status` | signed in | `SystemStatus`: overall status, components with detail and metrics, orchestrator and collector health |
+| GET | `/api/system/consistency` | `audit:read` or `simulation:control` | `ConsistencyReport` (read-only) |
+| POST | `/api/system/consistency/repair` | `audit:read` or `simulation:control` | `ConsistencyReport` after safe repairs |
+
 ## WebSocket: `/ws/health-monitoring`
 
 One connection carries everything live. All messages are JSON with a `type` discriminator; the
-schemas (`WsHello`, `WsVitals`, `WsAlert`, `WsSimulation`, `WsPong`, `EcgSegment`) are in the
-OpenAPI document's components.
+schemas (`WsHello`, `WsVitals`, `WsAlert`, `WsSimulation`, `WsPong`, `EcgSegment`, and since phase 6
+`WsMissionEvent`, `WsMissionAlert`, `WsSimState`) are in the OpenAPI document's components.
 
 | Direction | `type` | Payload | When |
 | --- | --- | --- | --- |
@@ -293,6 +360,9 @@ OpenAPI document's components.
 | server → client | `alert` | `event` (`opened`, `escalated`, `cleared`, `recurred`, `acknowledged`, `resolved`), `alert` | On every lifecycle change |
 | server → client | `simulation` | `event` (`started`, `ended`, `cancelled`), `scenario` | When a test scenario changes |
 | server → client | `pong` | `server_time` | Reply to ping |
+| server → client | `mission_event` | `event` (`created`, `updated`), `item` (`MissionEvent`) | A new event, or a repeat that raised its severity |
+| server → client | `mission_alert` | `event` (`opened`, `escalated`, `updated`, `acknowledged`, `resolved`), `alert` (`MissionAlert`) | Every unified alert change |
+| server → client | `sim_state` | `state` (`SimState`) | Every sandbox tick and control change |
 | client → server | — | `{"action": "ping"}` | Optional keep-alive; other messages are ignored |
 
 Connections from browser origins not in `ASTRA_CORS_ORIGINS` are closed with code 1008. ECG

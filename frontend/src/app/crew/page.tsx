@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 
-import { CrewRoster } from "@/components/crew/crew-roster";
 import { PageHeader } from "@/components/data/panel";
+import { CrewMonitoringView } from "@/components/mission/crew-monitoring";
 
-export const metadata: Metadata = { title: "Crew health" };
+export const metadata: Metadata = { title: "Crew monitoring" };
 
 export default function CrewPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Crew health"
-        description="Fictional Helios-7 crew with their latest simulated readings. Open a profile for live vitals, ECG and history."
+        title="Crew monitoring"
+        description="Every crew member at a glance: current simulated measurements, deviation from their personal baseline, open anomalies, the experimental AI risk assessment and the last week. Open a crew member for their complete health profile."
       />
-      <CrewRoster />
+      <CrewMonitoringView />
     </div>
   );
 }

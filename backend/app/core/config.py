@@ -87,6 +87,23 @@ class Settings(BaseSettings):
     space_http_timeout_s: float = Field(default=45.0, gt=1, le=300)
     space_request_spacing_s: float = Field(default=1.0, ge=0, le=30)  # politeness gap per host
 
+    # Unified mission control (phase 6): event orchestration, alert centre and collectors.
+    mission_orchestrator_enabled: bool = True  # background collectors (AI sweep, space scan, environment)
+    mission_ai_sweep_seconds: float = Field(default=120.0, ge=10, le=3600)
+    mission_space_scan_seconds: float = Field(default=300.0, ge=30, le=86400)
+    mission_env_check_seconds: float = Field(default=10.0, ge=1, le=600)
+    mission_event_dedupe_minutes: float = Field(default=30.0, ge=1, le=1440)
+    mission_clock_skew_tolerance_s: float = Field(default=5.0, ge=0, le=600)
+    mission_space_alert_hours: int = Field(default=48, ge=1, le=720)  # DONKI events younger than this raise alerts
+    mission_consistency_on_start: bool = True
+
+    # Mission simulation sandbox (phase 6). Runs its own engine and clock and writes only to the
+    # mission_simulations / mission_sim_samples tables, never to the live crew history.
+    mission_sim_enabled: bool = True
+    mission_sim_tick_seconds: float = Field(default=1.0, gt=0.05, le=10)  # wall-clock loop interval
+    mission_sim_max_speed: float = Field(default=120.0, ge=1, le=600)
+    mission_sim_max_minutes: int = Field(default=24 * 60, ge=5, le=7 * 24 * 60)  # longest sandbox mission (sim time)
+
     @property
     def is_production(self) -> bool:
         return self.environment.strip().lower() in {"production", "prod"}

@@ -439,3 +439,158 @@ class IncidentReportRow(Base):
     content: Mapped[dict] = mapped_column(JSON)  # frozen snapshot of every section
     content_sha256: Mapped[str] = mapped_column(String(64))
     data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)
+
+
+# --------------------------------------------------------------------------------------------
+# Phase 6: unified mission control. One event store and one alert centre aggregate every module
+# (physiological monitoring, AI, NASA space weather, environment, emergency and mission
+# simulations). Each row records where it came from (source, data_origin) and its context:
+# "operations" for the continuous crew stream, "simulation" for sandbox mission runs.
+# --------------------------------------------------------------------------------------------
+
+
+class MissionEventRow(Base):
+    __tablename__ = "mission_events"
+    __table_args__ = (
+        Index("ix_mevents_occurred", "occurred_at"),
+        Index("ix_mevents_fingerprint", "fingerprint", "last_seen_at"),
+        Index("ix_mevents_context_sim", "context", "simulation_id", "occurred_at"),
+        Index("ix_mevents_astronaut", "astronaut_id", "occurred_at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    fingerprint: Mapped[str] = mapped_column(String(40))
+    source: Mapped[str] = mapped_column(String(32))
+    kind: Mapped[str] = mapped_column(String(48))
+    category: Mapped[str] = mapped_column(String(32))
+    severity: Mapped[str] = mapped_column(String(16))  # info | advisory | caution | critical
+    priority: Mapped[int] = mapped_column(Integer)  # 1 (critical) .. 4 (low)
+    priority_score: Mapped[float] = mapped_column(Float)
+    title: Mapped[str] = mapped_column(String(200))
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    astronaut_id: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    context: Mapped[str] = mapped_column(String(16), default="operations")
+    simulation_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    data_origin: Mapped[str] = mapped_column(String(16))  # simulated | sandbox | nasa | system
+    experimental: Mapped[bool] = mapped_column(Boolean, default=False)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    ref_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    ref_id: Mapped[str | None] = mapped_column(String(96), nullable=True)
+    occurred_at: Mapped[datetime] = mapped_column(UTCDateTime)  # source time (sandbox: simulation clock)
+    received_at: Mapped[datetime] = mapped_column(UTCDateTime)  # wall-clock time the pipeline took it in
+    last_seen_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    clock_skew_s: Mapped[float | None] = mapped_column(Float, nullable=True)
+    occurrences: Mapped[int] = mapped_column(Integer, default=1)
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class MissionAlertRow(Base):
+    __tablename__ = "mission_alerts"
+    __table_args__ = (
+        UniqueConstraint("source", "source_ref", name="uq_malert_source_ref"),
+        Index("ix_malerts_status_created", "status", "created_at"),
+        Index("ix_malerts_astronaut", "astronaut_id", "created_at"),
+        Index("ix_malerts_context_sim", "context", "simulation_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    source: Mapped[str] = mapped_column(String(32))
+    source_ref: Mapped[str] = mapped_column(String(96))
+    event_id: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    astronaut_id: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    context: Mapped[str] = mapped_column(String(16), default="operations")
+    simulation_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    data_origin: Mapped[str] = mapped_column(String(16))
+    category: Mapped[str] = mapped_column(String(32))
+    classification: Mapped[str] = mapped_column(String(32))
+    severity: Mapped[str] = mapped_column(String(16))
+    priority: Mapped[int] = mapped_column(Integer)
+    title: Mapped[str] = mapped_column(String(200))
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(16))  # open | acknowledged | resolved
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    received_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    measurements: Mapped[dict] = mapped_column(JSON, default=dict)
+    explanation: Mapped[dict] = mapped_column(JSON, default=dict)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    confidence_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    uncertainty: Mapped[list] = mapped_column(JSON, default=list)
+    correlations: Mapped[dict] = mapped_column(JSON, default=dict)
+    condition_cleared_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    acknowledged_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    acknowledged_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    ack_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolved_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    resolved_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    resolution_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    occurrences: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class MissionAlertActionRow(Base):
+    """Append-only lifecycle trail of a unified alert (system transitions and operator actions)."""
+
+    __tablename__ = "mission_alert_actions"
+    __table_args__ = (Index("ix_malert_actions_alert", "alert_id", "ts"),)
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    alert_id: Mapped[str] = mapped_column(String(20))
+    ts: Mapped[datetime] = mapped_column(UTCDateTime)
+    action: Mapped[str] = mapped_column(String(24))
+    from_status: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    to_status: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    actor: Mapped[str] = mapped_column(String(64))  # username, or "system"
+    actor_role: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    detail: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class MissionSimulationRow(Base):
+    """One sandbox mission run: its own engine, clock, crew selection and injected events."""
+
+    __tablename__ = "mission_simulations"
+    __table_args__ = (Index("ix_msim_started", "wall_started_at"),)
+
+    id: Mapped[str] = mapped_column(String(16), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    preset: Mapped[str | None] = mapped_column(String(48), nullable=True)
+    crew: Mapped[list] = mapped_column(JSON, default=list)
+    status: Mapped[str] = mapped_column(String(16))  # running | paused | completed | reset | failed | interrupted
+    speed: Mapped[float] = mapped_column(Float)
+    seed: Mapped[int] = mapped_column(Integer)
+    sim_start: Mapped[datetime] = mapped_column(UTCDateTime)
+    sim_time: Mapped[datetime] = mapped_column(UTCDateTime)
+    sim_end: Mapped[datetime] = mapped_column(UTCDateTime)
+    wall_started_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    wall_updated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    wall_ended_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    created_by: Mapped[str] = mapped_column(String(64))
+    config: Mapped[dict] = mapped_column(JSON, default=dict)
+    injections: Mapped[list] = mapped_column(JSON, default=list)
+    analyses: Mapped[dict] = mapped_column(JSON, default=dict)
+    stats: Mapped[dict] = mapped_column(JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)
+
+
+class MissionSimSampleRow(Base):
+    __tablename__ = "mission_sim_samples"
+    __table_args__ = (Index("ix_simsamples_run_ast_ts", "simulation_id", "astronaut_id", "ts"),)
+
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("mission_simulations.id", ondelete="CASCADE"))
+    astronaut_id: Mapped[str] = mapped_column(String(16))
+    ts: Mapped[datetime] = mapped_column(UTCDateTime)  # simulation clock
+    heart_rate: Mapped[float] = mapped_column(Float)
+    spo2: Mapped[float] = mapped_column(Float)
+    systolic: Mapped[float] = mapped_column(Float)
+    diastolic: Mapped[float] = mapped_column(Float)
+    temperature_c: Mapped[float] = mapped_column(Float)
+    respiratory_rate: Mapped[float] = mapped_column(Float)
+    activity_state: Mapped[str] = mapped_column(String(16))
+    activity_met: Mapped[float] = mapped_column(Float)
+    rhythm: Mapped[str] = mapped_column(String(16))
+    hrv_rmssd_ms: Mapped[float | None] = mapped_column(Float, nullable=True)
+    scenario: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    source: Mapped[str] = mapped_column(String(16), default="generator")  # generator | external
+    data_source: Mapped[str] = mapped_column(String(16), default=SIMULATED)

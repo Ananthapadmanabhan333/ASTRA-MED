@@ -2,12 +2,12 @@
 
 import { BrainCircuit, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 import { Panel } from "@/components/data/panel";
 import { ErrorState, LoadingState } from "@/components/data/states";
 import { Button } from "@/components/ui/button";
 import { useAiStatus, useCrewRisk, useRiskAssessment } from "@/lib/api/hooks";
+import { useParamState } from "@/components/medical/common";
 import { fmt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -90,7 +90,7 @@ function RiskDetail({ astronautId }: { astronautId: string }) {
 
 export function IntelligenceCenter() {
   const crew = useCrewRisk();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useParamState("astronaut");
   const active = selected ?? crew.data?.crew[0]?.astronaut_id ?? null;
   const activeName = crew.data?.crew.find((c) => c.astronaut_id === active)?.name ?? active ?? "";
 

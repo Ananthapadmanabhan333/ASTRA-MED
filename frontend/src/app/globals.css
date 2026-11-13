@@ -10,6 +10,7 @@
  *   hull     #0c1a2e  panels
  *   bulkhead #1b3050  borders / raised
  *   telemetry #3dd8ea accent, focus, live traces
+ *   sandbox  #e0a245 restrained amber, reserved for the mission simulation sandbox
  * Status colours are reserved for state and always ship with an icon + label.
  * Crew colours are validated as a categorical set on the hull surface.
  */
@@ -26,6 +27,8 @@
   --color-hull: var(--hull);
   --color-bulkhead: var(--bulkhead);
   --color-telemetry: var(--telemetry);
+  --color-sandbox: var(--sandbox);
+  --color-panel-2: var(--panel-2);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
 
@@ -84,6 +87,8 @@
   --hull: #0c1a2e;
   --bulkhead: #1b3050;
   --telemetry: #3dd8ea;
+  --sandbox: #e0a245;
+  --panel-2: #0f1f36;
   --ink-1: #e6eef7;
   --ink-2: #a9b9cf;
   --ink-3: #6f84a3;
@@ -163,6 +168,28 @@
 }
 
 @layer components {
+  /* The simulation sandbox is always edged with amber test-range tape, so a sandbox surface can never
+     be mistaken for the live crew stream or for real NASA data. */
+  .sandbox-tape {
+    background-image: repeating-linear-gradient(135deg, var(--sandbox) 0 6px, transparent 6px 12px);
+  }
+  .sandbox-edge {
+    position: relative;
+  }
+  .sandbox-edge::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    background-image: repeating-linear-gradient(180deg, var(--sandbox) 0 6px, transparent 6px 10px);
+  }
+  /* Quiet scrollbars on dark panels. */
+  .scroll-quiet {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bulkhead) transparent;
+  }
+
   /* Large instrument numerals: condensed, tabular, tight. */
   .readout {
     font-family: var(--font-barlow);

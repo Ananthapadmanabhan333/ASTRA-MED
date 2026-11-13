@@ -8,22 +8,12 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
-from app.ai.experiments.config import ExperimentConfig
-from app.ai.experiments.runner import run
 from app.core.config import Settings
 from app.core.timeutil import utcnow
 from app.main import create_app
 from app.simulator.engine import SimulationEngine
 from app.simulator.profiles import CREW, CREW_BY_ID
 from app.simulator.scenarios import ActiveScenario, Scenario
-
-
-@pytest.fixture(scope="session")
-def trained_artifacts(tmp_path_factory):
-    root = tmp_path_factory.mktemp("ai-artifacts")
-    results = run(ExperimentConfig().quick(), root)
-    assert results["version"]
-    return root
 
 
 def _settings(tmp_path, artifacts) -> Settings:

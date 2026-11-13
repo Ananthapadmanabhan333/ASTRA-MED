@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from sqlalchemy import text
 
 from app import __version__
@@ -33,7 +33,7 @@ from app.schemas.insights import Insight
 from app.schemas.mission import MissionStatus, SystemHealth
 from app.schemas.radiation import RadiationOverview
 from app.schemas.simulation import ScenarioInfo, SimulationEvent, SimulationEventCreate
-from app.security.deps import require
+from app.security.deps import CurrentUser, require
 from app.services import health as health_service
 from app.services import history as history_service
 from app.services import mappers
@@ -208,14 +208,21 @@ async def get_alert(alert_id: str, monitor: Monitor, session: Session) -> Alert:
 
 @router.post("/alerts/{alert_id}/acknowledge", response_model=Alert, tags=["alerts"],
              dependencies=[require("alerts:manage")])
-async def acknowledge_alert(alert_id: str, monitor: Monitor, body: AlertAction | None = None) -> Alert:
-    return await monitor.update_alert(alert_id, "acknowledge", body.note if body else None)
+async def acknowledge_alert(alert_id: str, request: Request, monitor: Monitor, principal: CurrentUser,
+                            body: AlertAction | None = None) -> Alert:
+    # Same path as the unified alert centre, so the decision is attributed there too.
+    return await request.app.state.alert_center.act_on_rule_alert(
+        alert_id, "acknowledge", actor=principal.username, role=principal.role, note=body.note if body else None,
+        monitor=monitor)
 
 
 @router.post("/alerts/{alert_id}/resolve", response_model=Alert, tags=["alerts"],
              dependencies=[require("alerts:manage")])
-async def resolve_alert(alert_id: str, monitor: Monitor, body: AlertAction | None = None) -> Alert:
-    return await monitor.update_alert(alert_id, "resolve", body.note if body else None)
+async def resolve_alert(alert_id: str, request: Request, monitor: Monitor, principal: CurrentUser,
+                        body: AlertAction | None = None) -> Alert:
+    return await request.app.state.alert_center.act_on_rule_alert(
+        alert_id, "resolve", actor=principal.username, role=principal.role, note=body.note if body else None,
+        monitor=monitor)
 
 
 # ---------------------------------------------------------------------- insights ----

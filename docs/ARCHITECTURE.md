@@ -47,6 +47,7 @@
 | `emergency/` | Phase 5 emergency simulator: scenario catalogue, grouped runs, sleep and habitat overlays, AI analysis snapshots, run timelines |
 | `reports/` | Phase 5 incident reports: frozen snapshots with SHA-256 integrity, review workflow, dependency-free PDF writer |
 | `assistant/` | Phase 5 medical data assistant: corpus (docs, NASA texts, approved references), TF-IDF retrieval, data tools, safety layer, optional Claude mode. See [MEDICAL_DECISION_SUPPORT.md](MEDICAL_DECISION_SUPPORT.md) |
+| `mission/` | Phase 6 unified mission control: event store (timestamps, priority, de-duplication), alert centre (lifecycle, mirroring, audit trail), orchestrator (producers, collectors, correlation), mission simulation sandbox, dashboard / crew / timeline read models, analytics, health and consistency checks. See [MISSION_CONTROL.md](MISSION_CONTROL.md) |
 
 ### Runtime loop
 
@@ -114,21 +115,45 @@ dataset, never the live database, so evaluation labels cannot leak into serving.
   data meet only on the timeline and in the correlation engine, where each series keeps its
   category.
 
+### Phase 6 at runtime
+
+`create_app` then builds the mission event store, the alert centre (with the monitor as delegate for
+rule alerts) and the orchestrator, attaches the orchestrator to the monitor, emergency and report
+change hooks **before** the monitor starts ticking, builds the simulation sandbox, runs the
+repairing consistency check, and only then starts the orchestrator (queue consumer plus AI, NASA
+and habitat collectors), the monitor and the twin. On shutdown an active sandbox run is marked
+interrupted and the event queue is drained.
+
+```
+ MonitoringService ── change hook ──┐
+ EmergencyService ─── change hook ──┼─► queue ─► consumer ─► MissionEventService.publish ─► mission_events
+ ReportService ────── change hook ──┘                     └─► AlertCenter ──────────────► mission_alerts (+ actions)
+ AI sweep · NASA scan · habitat check (collectors) ──────────┘
+ MissionSimulator (own engine, clock, evaluator) ── sandbox events and alerts ──┘   both broadcast on the hub
+```
+
+Rule alerts stay owned by the monitor; the alert centre mirrors them and delegates operator actions
+back, so the phase 2 `alerts` table and `mission_alerts` cannot disagree for long (the consistency
+check repairs drift). The sandbox never writes `vital_samples`, `alerts` or `simulation_events`.
+
 ## Frontend modules (`frontend/src`)
 
 | Path | Responsibility |
 | --- | --- |
-| `app/` | Routes: `/` mission control, `/crew`, `/crew/[id]`, `/vitals`, `/alerts`, `/anomalies`, `/radiation`, `/sleep`, `/insights`, `/intelligence`, `/space/*`; phase 5: `/overview`, `/twin`, `/medical`, `/assistant`, `/emergency`, `/reports`, `/admin`; `error.tsx`, `not-found.tsx` |
+| `app/` | Routes: `/` mission control, `/crew`, `/crew/[id]`, `/vitals`, `/alerts`, `/anomalies`, `/radiation`, `/sleep`, `/insights`, `/intelligence`, `/space/*`; phase 5: `/overview`, `/twin`, `/medical`, `/assistant`, `/emergency`, `/reports`, `/admin`; phase 6: `/` command dashboard, `/crew` crew monitoring, `/alerts` alert centre, `/timeline`, `/simulation`, `/analytics`, `/system`; `error.tsx`, `global-error.tsx`, `not-found.tsx` |
 | `lib/auth/` | Phase 5 session store (user, permissions, CSRF token in memory; the token itself stays in an HttpOnly cookie) and `useCan(permission)` |
 | `components/auth/` | `AuthGate` (sign-in screen at the requested URL; live socket only for roles with `health:read`), `RouteAccess` (notice for pages the role cannot use), `UserMenu` |
 | `components/medical/` | Phase 5 pages: twin, medical intelligence and decision packet, assistant, emergency simulator, reports, overview, admin; shared kind chips and status pills |
 | `lib/api/` | `schema.d.ts` (generated), typed client, error normalisation (`ApiError`), TanStack Query hooks and keys |
 | `lib/live/` | `LiveSocket` (reconnect with capped backoff, stale watchdog, ping), pure `reducer`, zustand `store`, mutable `ecg-buffer` |
 | `lib/` | Formatting (UTC mission time), metric metadata, crew identity encoding (validated colour + dash), threshold classifier, series merge |
-| `components/shell/` | App shell, navigation, mission strip, connection indicator, persistent "Simulated data" marker, `LiveBridge` (socket → store, cache invalidation, alert toasts) |
+| `components/shell/` | App shell with a collapsible sidebar (mobile drawer), mission header (MET clock, crew status, sandbox indicator, live-stream state, notification centre), persistent "Simulated data" marker, `LiveBridge` (socket → store, batched cache invalidation, alert toasts, refetch after reconnect) |
 | `components/vitals/`, `crew/`, `charts/` | ECG canvas sweep, readouts, sparklines, history small multiples, crew comparison, profile |
 | `components/alerts/`, `simulation/`, `radiation/`, `sleep/`, `insights/` | Feature views |
 | `components/data/` | `Panel`, `PageHeader`, `LoadingState`, `ErrorState`, `EmptyState`, `QueryView` |
+| `components/mc/` | Phase 6 kit: `DataCard`, `Stat`, `Meter`, `PriorityBadge`, `OriginChip`, `ExperimentalTag`, `SandboxTag`, `ErrorBoundary` |
+| `components/mission/` | Phase 6 pages: command dashboard, crew monitoring and profile navigation, alert centre, situational timeline, mission simulation, analytics, system status |
+| `lib/api/mission-hooks.ts` | Phase 6 queries and mutations; socket messages invalidate them in batches |
 
 Live data flows in through one WebSocket owned by `LiveBridge`. High-frequency ECG samples bypass React
 state entirely: the canvas reads the buffer each animation frame, positioning samples by timestamp
@@ -155,6 +180,11 @@ Cache Components requires.
 | `twin_daily` | astronaut_id + day (unique), mission day, stage, basis (stored / regenerated), complete, metrics, activity, sleep, radiation, events, coverage (JSON) |
 | `emergency_runs` | scenario, target, severity, intensity, duration, start / end / cancel, components (simulation events), overlay, analyses (JSON) |
 | `incident_reports` | title, astronaut, alert / run, occurred / created / updated, created by, review status and history, content (JSON snapshot), content SHA-256 |
+| `mission_events` | fingerprint, source, kind, category, severity, priority and score, title, astronaut, context, simulation, data origin, experimental, confidence, source reference, occurred / received / last seen, clock skew, occurrences, payload |
+| `mission_alerts` | (source, source_ref) unique, event, astronaut, context, simulation, data origin, category, classification, severity, priority, status, measurements, explanation, confidence, uncertainty, correlations, acknowledgement and resolution with notes |
+| `mission_alert_actions` | alert, ts, action, from / to status, actor and role, note (append-only trail) |
+| `mission_simulations` | sandbox run: crew, preset, status, speed, seed, simulation start / clock / end, wall times, config and script, injections, AI analyses, stats |
+| `mission_sim_samples` | sandbox telemetry per run and crew member on the simulation clock, generator or external |
 
 Schema creation uses `create_all` for the prototype (new tables are created on start-up); Alembic
 migrations are still planned.
