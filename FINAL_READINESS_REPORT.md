@@ -140,7 +140,7 @@ api.nasa.gov DONKI proxy returns 404 and the CCMC fallback works. See [docs/DATA
 | --- | --- | --- |
 | Space Apps FAQ forbids starting work before the event; the history starts 11 November | Eligibility | Ask the Local Lead or the organisers before submitting |
 | AI-generated code must be disclosed | Eligibility and judging | Use and edit the draft in [SUBMISSION.md §2.H](docs/competition/SUBMISSION.md) |
-| No LICENSE file | Apache-2.0 applies by default | Choose and add a licence |
+| No LICENSE file | Apache-2.0 applies by default | Added root [LICENSE](LICENSE) (Apache-2.0) |
 | Signed-in UI not visually verified after the latest frontend changes | Possible visual issues | Sign in once in the browser pane, or click through the pages yourself before recording |
 | Docker untested; not deployed | A public link would need more work | Submit the GitHub repository as the final project link |
 | Simulated data only | Validity scoring | State it plainly; it is a strength of the honesty, not something to hide |

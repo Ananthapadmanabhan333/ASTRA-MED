@@ -31,8 +31,8 @@ Re-check them before submitting; they can change during the event.
    my team's original work" and that all external resources are listed. Decide as a team whether you
    can confirm that, given items 1 and 2.
 4. **Licence.** The terms require original content to be open-source licensed (OSI). If none is
-   given, NASA distributes it under Apache-2.0. The repository has no `LICENSE` file yet; the team
-   should choose one (Apache-2.0 or MIT are common) and add it.
+   given, NASA distributes it under Apache-2.0. The repository includes an Apache-2.0 [LICENSE](../../LICENSE)
+   file in the root directory.
 5. **Challenge fit.** The challenge asks for a tool that helps astronauts *assess their own health*
    and gives guidance. ASTRA-MED is built for mission control and flight surgeons. See section 3 for
    the gap analysis.

@@ -69,6 +69,7 @@ There is no clinical validation ([details](docs/SCIENTIFIC_VALIDATION.md)).
 | User guide | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) |
 | Limitations | [docs/LIMITATIONS.md](docs/LIMITATIONS.md) |
 | Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Licence | [LICENSE](LICENSE) (Apache-2.0) |
 
 ### Use of AI in building ASTRA-MED
 

@@ -34,4 +34,4 @@ Updated 2026-11-14. Evidence links point at the file or run that shows each item
 | Docker engine does not start on the development machine | Images and Compose untested | Build on a machine with Docker |
 | No deployment target or domain chosen | Not deployed | Team decision, then the [pre-launch checklist](docs/DEPLOYMENT.md#8-pre-launch-checklist) |
 | Space Apps rule: no work before the event | Eligibility uncertain | Ask the Local Lead or the organisers |
-| No `LICENSE` file | Apache-2.0 applied by default under the terms | The team chooses a licence |
+| No `LICENSE` file | Resolved | Added root [LICENSE](LICENSE) (Apache-2.0) |
