@@ -1,6 +1,7 @@
 "use client";
 
-import { ExternalLink, KeyRound, RefreshCw, Search } from "lucide-react";
+import { ArrowRight, Database, ExternalLink, KeyRound, RefreshCw, Search, Sun, Thermometer } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -228,8 +229,154 @@ function StudyCatalogue() {
 export function DataExplorerView() {
   const q = useSpaceSources();
   const data = q.data;
+  const [searchText, setSearchText] = useState("");
+  const [pillFilter, setPillFilter] = useState<"all" | "osdr" | "donki" | "hrp" | "iss">("all");
+
+  const boardCatalog = [
+    {
+      id: "donki",
+      group: "donki" as const,
+      title: "DONKI - Space Weather Events",
+      desc: "Solar flares, CMEs, SEPs and geomagnetic storms.",
+      meta: "Source: NASA CCMC · Updated: Live",
+      icon: Sun,
+      iconColor: "text-[#f97316]",
+      href: "/space/datasets?dataset=donki",
+    },
+    {
+      id: "osdr",
+      group: "osdr" as const,
+      title: "NASA OSDR - Space Biology",
+      desc: "Spaceflight biological experiments and research datasets.",
+      meta: "Source: NASA OSDR · 240+ Studies",
+      icon: Database,
+      iconColor: "text-telemetry",
+      href: "/space/datasets?dataset=osdr",
+    },
+    {
+      id: "iss",
+      group: "iss" as const,
+      title: "ISS Environmental Data",
+      desc: "Cabin environment, CO₂, temperature and humidity.",
+      meta: "Source: NASA EDA · Telemetry Feed",
+      icon: Thermometer,
+      iconColor: "text-nominal",
+      href: "/space/datasets?dataset=eda",
+    },
+    {
+      id: "hrp",
+      group: "hrp" as const,
+      title: "NASA Human Research Program (HRP)",
+      desc: "Physiological adaptation benchmarks, radiation career limits, and clinical countermeasures.",
+      meta: "Source: NASA HRP · Reference Corpus",
+      icon: Database,
+      iconColor: "text-[#c084fc]",
+      href: "/space/datasets?dataset=hrp",
+    },
+  ];
+
+  const filteredCatalog = boardCatalog.filter((item) => {
+    if (pillFilter !== "all" && item.group !== pillFilter) return false;
+    if (searchText.trim()) {
+      const qLower = searchText.toLowerCase();
+      return (
+        item.title.toLowerCase().includes(qLower) ||
+        item.desc.toLowerCase().includes(qLower) ||
+        item.meta.toLowerCase().includes(qLower)
+      );
+    }
+    return true;
+  });
+
   return (
     <div className="space-y-5">
+      {/* Header matching Screen 13 */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            NASA Data Explorer
+          </h1>
+          <p className="text-sm text-ink-2">Access and explore NASA open datasets</p>
+        </div>
+        <Button asChild size="sm" variant="outline">
+          <Link href="/space/datasets">
+            Dataset Details & Schema Inspector <ArrowRight className="ml-1 size-3.5" aria-hidden />
+          </Link>
+        </Button>
+      </div>
+
+      {/* Search & Category Filter Bar matching Screen 13 */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-bulkhead bg-hull/80 p-3.5">
+        <div className="relative min-w-[240px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" aria-hidden />
+          <input
+            type="search"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search NASA datasets..."
+            className="h-9 w-full rounded-lg border border-bulkhead bg-[#091526] pl-9 pr-3 text-xs text-foreground placeholder:text-ink-3 outline-none focus:border-telemetry"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {(
+            [
+              ["all", "All"],
+              ["osdr", "OSDR"],
+              ["donki", "DONKI"],
+              ["hrp", "HRP"],
+              ["iss", "ISS Env."],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setPillFilter(key)}
+              className={cn(
+                "rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                pillFilter === key
+                  ? "bg-telemetry text-abyss shadow-[0_0_12px_rgba(61,216,234,0.3)]"
+                  : "bg-abyss/70 text-ink-2 hover:text-foreground",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Screen 13 Highlighted Dataset Cards */}
+      <div className="space-y-3">
+        {filteredCatalog.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={item.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-bulkhead bg-hull/80 p-4 transition-colors hover:border-telemetry/50"
+            >
+              <div className="flex items-start gap-3.5">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-bulkhead bg-abyss/80">
+                  <Icon className={cn("size-5", item.iconColor)} aria-hidden />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-foreground">{item.title}</h2>
+                  <p className="text-xs text-ink-2">{item.desc}</p>
+                  <p className="mt-1 text-[11px] text-ink-3">{item.meta}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="rounded-full border border-nominal/40 bg-nominal/15 px-3 py-1 text-xs font-semibold text-nominal">
+                  Active
+                </span>
+                <Button asChild size="sm" variant="outline">
+                  <Link href={item.href}>Inspect</Link>
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {data && Object.entries(data.categories).map(([key]) => <CategoryBadge key={key} category={key as keyof typeof CATEGORY} />)}

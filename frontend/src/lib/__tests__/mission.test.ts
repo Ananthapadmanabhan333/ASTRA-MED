@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { ALL_26_SCREENS } from "@/components/shell/breadcrumbs";
 import { routePermissions } from "@/components/shell/nav";
 import type { MissionAlert, MissionEvent, SimState } from "@/lib/api/types";
 import { applyMessage, EVENT_BUFFER, initialLive, SIM_TRAIL } from "@/lib/live/reducer";
@@ -94,5 +95,19 @@ describe("phase 6 routes", () => {
       expect(routePermissions(path)).toEqual(["health:read"]);
     }
     expect(routePermissions("/system")).toEqual(expect.arrayContaining(["health:read", "audit:read", "users:manage"]));
+  });
+
+  it("registers all 26 ASTRA-MED screens with unique numbers and valid routes", () => {
+    expect(ALL_26_SCREENS).toHaveLength(26);
+    const nums = ALL_26_SCREENS.map((s) => s.number);
+    expect(new Set(nums).size).toBe(26);
+    expect(Math.min(...nums)).toBe(1);
+    expect(Math.max(...nums)).toBe(26);
+    const hrefs = ALL_26_SCREENS.map((s) => s.href);
+    expect(new Set(hrefs).size).toBe(26);
+    for (const scr of ALL_26_SCREENS) {
+      expect(scr.href.startsWith("/")).toBe(true);
+      expect(scr.title.length).toBeGreaterThan(2);
+    }
   });
 });

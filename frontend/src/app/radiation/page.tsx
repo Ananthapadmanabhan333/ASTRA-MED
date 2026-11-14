@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 
-import { PageHeader } from "@/components/data/panel";
 import { RadiationView } from "@/components/radiation/radiation-view";
 import { RadiationIntelligence } from "@/components/space/radiation-intel";
 
-export const metadata: Metadata = { title: "Radiation intelligence" };
+export const metadata: Metadata = { title: "Radiation Intelligence — ASTRA-MED" };
 
 export default function RadiationPage() {
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Radiation exposure"
-        description="Simulated cumulative and daily dose for each crew member during interplanetary cruise, then radiation intelligence from NASA open data."
-      />
+      <div>
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Radiation Intelligence
+        </h1>
+        <p className="text-sm text-ink-2">Radiation events and mission exposure analysis</p>
+      </div>
       <RadiationView />
       <RadiationIntelligence />
     </div>

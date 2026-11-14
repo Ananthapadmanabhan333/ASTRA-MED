@@ -1,7 +1,19 @@
 "use client";
 
-import { Activity, BellRing, BrainCircuit, Fingerprint, FlaskConical, GanttChart } from "lucide-react";
+import {
+  Activity,
+  BellRing,
+  BrainCircuit,
+  Fingerprint,
+  FlaskConical,
+  GanttChart,
+  History,
+  LayoutGrid,
+  List,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ErrorState, LoadingState } from "@/components/data/states";
@@ -123,6 +135,7 @@ function CrewCard({ card }: { card: CrewMonitorCard }) {
       footer={
         <nav aria-label={`${card.name} views`} className="flex flex-wrap gap-x-4 gap-y-1">
           <Link className="inline-flex items-center gap-1 hover:text-telemetry" href={`/crew/${card.astronaut_id}`}><Activity className="size-3.5" aria-hidden />Full profile</Link>
+          <Link className="inline-flex items-center gap-1 hover:text-telemetry" href={`/crew/history?astronaut=${card.astronaut_id}`}><History className="size-3.5" aria-hidden />Health history</Link>
           <Link className="inline-flex items-center gap-1 hover:text-telemetry" href={`/twin?astronaut=${card.astronaut_id}`}><Fingerprint className="size-3.5" aria-hidden />Digital twin</Link>
           <Link className="inline-flex items-center gap-1 hover:text-telemetry" href={`/alerts?astronaut=${card.astronaut_id}`}><BellRing className="size-3.5" aria-hidden />Alerts</Link>
           <Link className="inline-flex items-center gap-1 hover:text-telemetry" href={`/timeline?astronaut=${card.astronaut_id}`}><GanttChart className="size-3.5" aria-hidden />Timeline</Link>
@@ -222,23 +235,168 @@ function CrewCard({ card }: { card: CrewMonitorCard }) {
 export function CrewMonitoringView() {
   const q = useCrewMonitoring();
   const now = useNow(30_000);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "nominal" | "monitor" | "critical">("all");
+
   if (q.isPending) return <LoadingState label="Loading crew" rows={6} />;
   if (q.error && !q.data) return <ErrorState error={q.error} onRetry={() => q.refetch()} />;
   const d = q.data!;
+
+  const filtered = d.crew.filter((c) => {
+    const matchesSearch =
+      !search.trim() ||
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.role.toLowerCase().includes(search.toLowerCase()) ||
+      c.astronaut_id.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all"
+        ? true
+        : statusFilter === "nominal"
+          ? c.status === "nominal"
+          : statusFilter === "critical"
+            ? c.status === "critical"
+            : c.status === "caution" || c.status === "advisory";
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="space-y-4">
+      {/* Header matching Screen 4 */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-3xl font-bold tracking-tight">Crew Monitoring</h1>
+          <p className="text-sm text-ink-2">Real-time health status of all astronauts</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-2.5 left-2.5 size-3.5 text-ink-3" aria-hidden />
+            <input
+              type="search"
+              placeholder="Search astronaut..."
+              aria-label="Search astronaut"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-8 w-48 rounded-md border border-input bg-abyss pr-3 pl-8 text-xs outline-none focus-visible:border-telemetry"
+            />
+          </div>
+
+          <div className="flex rounded-md border border-bulkhead bg-abyss p-0.5 text-xs">
+            {(
+              [
+                ["all", "All"],
+                ["nominal", "Stable"],
+                ["monitor", "Monitor"],
+                ["critical", "Critical"],
+              ] as const
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setStatusFilter(k)}
+                className={cn(
+                  "rounded px-2.5 py-1 font-medium transition-colors",
+                  statusFilter === k ? "bg-telemetry text-[#04131c]" : "text-ink-2 hover:text-foreground",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex rounded-md border border-bulkhead bg-abyss p-0.5 text-xs" role="group" aria-label="View mode">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded px-2.5 py-1 font-medium transition-colors",
+                viewMode === "grid" ? "bg-telemetry text-[#04131c]" : "text-ink-2 hover:text-foreground",
+              )}
+            >
+              <LayoutGrid className="size-3.5" aria-hidden /> Grid
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
+              className={cn(
+                "inline-flex items-center gap-1 rounded px-2.5 py-1 font-medium transition-colors",
+                viewMode === "list" ? "bg-telemetry text-[#04131c]" : "text-ink-2 hover:text-foreground",
+              )}
+            >
+              <List className="size-3.5" aria-hidden /> List
+            </button>
+          </div>
+
+          <Link
+            href="/crew/history"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-telemetry/40 bg-telemetry/10 px-3 text-xs font-medium text-telemetry hover:bg-telemetry/20"
+          >
+            <History className="size-3.5" aria-hidden /> Detailed Health History
+          </Link>
+        </div>
+      </div>
+
       <div className="flex flex-wrap items-center gap-3 text-xs text-ink-3">
-        <BrainCircuit className="size-4" aria-hidden />
+        <BrainCircuit className="size-4 text-telemetry" aria-hidden />
         <span>{d.ai_sweep_at && now ? `AI sweep ${relativeTime(d.ai_sweep_at, now)}` : "Waiting for the first AI sweep"}</span>
         <span>{d.notes.join(" ")}</span>
       </div>
-      <div className="grid gap-4 2xl:grid-cols-2">
-        {d.crew.map((c) => (
-          <ErrorBoundary key={c.astronaut_id} label={c.name}>
-            <CrewCard card={c} />
-          </ErrorBoundary>
-        ))}
-      </div>
+
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 2xl:grid-cols-2">
+          {filtered.map((c) => (
+            <ErrorBoundary key={c.astronaut_id} label={c.name}>
+              <CrewCard card={c} />
+            </ErrorBoundary>
+          ))}
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-bulkhead bg-hull">
+          <table className="w-full min-w-[780px] text-left text-sm">
+            <thead className="border-b border-bulkhead bg-abyss/60 text-xs text-ink-2">
+              <tr>
+                <th className="px-4 py-3 font-medium">Astronaut</th>
+                <th className="px-4 py-3 font-medium">Role</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">HR</th>
+                <th className="px-4 py-3 font-medium">SpO₂</th>
+                <th className="px-4 py-3 font-medium">Temp</th>
+                <th className="px-4 py-3 font-medium">BP</th>
+                <th className="px-4 py-3 font-medium">AI Risk</th>
+                <th className="px-4 py-3 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-bulkhead/50 tabular-nums">
+              {filtered.map((c) => (
+                <tr key={c.astronaut_id} className="hover:bg-panel-2/60">
+                  <td className="px-4 py-3 font-medium">
+                    <Link href={`/crew/${c.astronaut_id}`} className="flex items-center gap-2 hover:text-telemetry">
+                      <span className="size-2.5 rounded-full" style={{ background: crewColor(c.astronaut_id) }} />
+                      {c.name}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-ink-2">{c.role}</td>
+                  <td className="px-4 py-3"><StatusPill status={c.status} compact /></td>
+                  <td className="px-4 py-3 font-semibold text-telemetry">{fmt(c.latest?.heart_rate ?? null, 0)} bpm</td>
+                  <td className="px-4 py-3">{fmt(c.latest?.spo2 ?? null, 1)}%</td>
+                  <td className="px-4 py-3">{fmt(c.latest?.temperature_c ?? null, 1)}°C</td>
+                  <td className="px-4 py-3">{fmt(c.latest?.systolic ?? null, 0)}/{fmt(c.latest?.diastolic ?? null, 0)}</td>
+                  <td className="px-4 py-3">{c.ai.risk_score != null ? `${fmt(c.ai.risk_score, 0)}/100` : "—"}</td>
+                  <td className="px-4 py-3 text-xs">
+                    <div className="flex gap-2">
+                      <Link href={`/twin?astronaut=${c.astronaut_id}`} className="text-telemetry hover:underline">Twin</Link>
+                      <Link href={`/crew/history?astronaut=${c.astronaut_id}`} className="text-telemetry hover:underline">History</Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

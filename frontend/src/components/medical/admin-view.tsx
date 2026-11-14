@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowRight, ShieldCheck, Users as UsersIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -142,10 +144,37 @@ export function AdminView() {
   const canAudit = useCan("audit:read");
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-xs text-telemetry">
+            <UsersIcon className="size-4" aria-hidden />
+            <span>Mission Staff Directory &amp; Role-Based Access Control</span>
+          </div>
+          <h1 className="mt-1 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            User &amp; Role Management
+          </h1>
+          <p className="text-sm text-ink-2">
+            Provision mission staff accounts, assign Flight Surgeon / Operator / Analyst roles, and audit API permissions
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/security">
+              <ShieldCheck className="mr-1 size-3.5 text-telemetry" aria-hidden /> Security &amp; Audit Logs
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/settings">
+              Settings <ArrowRight className="ml-1 size-3.5" aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      </div>
+
       {canUsers && <Users />}
-      {canAudit && <Audit />}
       <Matrix />
-      {!canUsers && !canAudit && <EmptyState title="Administrator access required" />}
+      {canAudit && <Audit />}
+      {!canUsers && !canAudit && <EmptyState title="Administrator access required for account mutation" />}
     </div>
   );
 }

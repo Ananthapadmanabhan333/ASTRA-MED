@@ -2,6 +2,7 @@
 
 import { Orbit, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
 import { RouteAccess } from "@/components/auth/route-access";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+import { AppBreadcrumbs } from "./breadcrumbs";
 import { MissionHeader } from "./mission-header";
 import { Nav } from "./nav";
 import { useShell } from "./shell-store";
@@ -91,7 +93,20 @@ function MobileNav() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const hydrate = useShell((s) => s.hydrate);
+  const pathname = usePathname() ?? "/";
   useEffect(() => hydrate(), [hydrate]);
+
+  // Landing page (/landing) and Authentication (/login) have their own full-bleed layouts matching Screens 1 & 2
+  if (pathname === "/landing" || pathname === "/login") {
+    return (
+      <main id="main" className="min-h-dvh w-full">
+        <ErrorBoundary label="This page" className="mx-auto max-w-2xl">
+          {children}
+        </ErrorBoundary>
+      </main>
+    );
+  }
+
   return (
     <div className="flex min-h-dvh">
       <Sidebar />
@@ -99,6 +114,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <MissionHeader />
         <main id="main" className="mx-auto w-full max-w-[1680px] flex-1 px-3 py-4 sm:px-5 sm:py-5">
+          <AppBreadcrumbs />
           <ErrorBoundary label="This page" className="mx-auto max-w-2xl">
             <RouteAccess>{children}</RouteAccess>
           </ErrorBoundary>

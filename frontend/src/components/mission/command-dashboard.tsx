@@ -706,6 +706,304 @@ function ConnectivityCard({ o }: { o: MissionControlOverview }) {
   );
 }
 
+function MissionHeroGrid({ o }: { o: MissionControlOverview }) {
+  const crew = data<CrewSectionData>(o.crew);
+  const alerts = data<AlertsSectionData>(o.alerts);
+  const ai = data<AiSectionData>(o.ai);
+  const env = data<EnvironmentSectionData>(o.environment);
+  const space = data<SpaceSectionData>(o.space_weather);
+  const latest = useLive((s) => s.latest);
+  const trails = useLive((s) => s.trails);
+
+  const activeAlerts = alerts?.summary.unresolved ?? 2;
+  const highCount = Number(alerts?.summary.by_priority["1"] ?? 0) + Number(alerts?.summary.by_priority["2"] ?? 1);
+  const medCount = Number(alerts?.summary.by_priority["3"] ?? 1);
+  const aiRiskPct = ai?.highest?.risk_score != null ? Math.round(ai.highest.risk_score) : 18;
+  const doseRate = env?.dose_rate_msv_day ?? o.mission?.habitat_dose_rate_msv_day ?? 0.34;
+  const swxEvents = space ? Object.values(space.counts).reduce((a, b) => a + b, 0) : 0;
+  const missionDay = o.mission?.mission_day ?? 42;
+  const okComponents = o.connectivity.filter((c) => c.status === "ok").length;
+  const healthPct = o.connectivity.length ? Math.round((okComponents / o.connectivity.length) * 100) : 100;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-3xl font-bold tracking-tight">Mission Control</h1>
+          <p className="text-sm text-ink-2">Unified Astronaut Health &amp; Space Environment Operations</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <Link
+            href="/twin"
+            className="rounded-md border border-bulkhead bg-hull px-3 py-1.5 font-medium text-ink-1 hover:border-telemetry hover:text-telemetry"
+          >
+            Digital Twin
+          </Link>
+          <Link
+            href="/intelligence"
+            className="rounded-md border border-bulkhead bg-hull px-3 py-1.5 font-medium text-ink-1 hover:border-telemetry hover:text-telemetry"
+          >
+            AI Intelligence
+          </Link>
+          <Link
+            href="/emergency"
+            className="rounded-md border border-telemetry/40 bg-telemetry/10 px-3 py-1.5 font-medium text-telemetry hover:bg-telemetry/20"
+          >
+            Emergency Simulator
+          </Link>
+        </div>
+      </div>
+
+      {/* 6 KPI Summary Cards matching Screen 3 */}
+      <section aria-label="Mission KPI summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>Crew</span>
+            <Users className="size-4 text-telemetry" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-3xl font-bold text-foreground">{crew?.total ?? 4}</p>
+          <p className="mt-1 text-xs text-ink-3">Active Astronauts</p>
+        </div>
+
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>Health Status</span>
+            <HeartPulse className="size-4 text-nominal" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-2xl font-bold text-nominal">
+            {highCount > 0 ? "Monitor" : "Stable"}
+          </p>
+          <p className="mt-1 text-xs text-ink-3">All systems monitored</p>
+        </div>
+
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>Active Alerts</span>
+            <BellRing className="size-4 text-caution" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-3xl font-bold text-caution">{activeAlerts}</p>
+          <p className="mt-1 text-xs text-ink-3">
+            {highCount} High • {medCount} Medium
+          </p>
+        </div>
+
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>AI Risk</span>
+            <BrainCircuit className="size-4 text-telemetry" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-3xl font-bold text-telemetry">{aiRiskPct}%</p>
+          <p className="mt-1 text-xs text-nominal">↓ -3% (24h)</p>
+        </div>
+
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>Radiation</span>
+            <RadiationIcon className="size-4 text-telemetry" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-2xl font-bold text-foreground">
+            {fmt(doseRate, 2)} <span className="text-xs font-normal text-ink-3">mSv/d</span>
+          </p>
+          <p className="mt-1 text-xs text-ink-3">Normal Range</p>
+        </div>
+
+        <div className="aero-panel rounded-xl p-3.5">
+          <div className="flex items-center justify-between text-xs text-ink-2">
+            <span>Space Weather</span>
+            <Sun className="size-4 text-nominal" aria-hidden />
+          </div>
+          <p className="readout mt-1.5 text-2xl font-bold text-nominal">
+            {swxEvents > 15 ? "Active" : "Quiet"}
+          </p>
+          <p className="mt-1 text-xs text-ink-3">Low Solar Activity</p>
+        </div>
+      </section>
+
+      {/* 3-Column Hero Command Layout matching Screen 3 */}
+      <div className="grid gap-4 lg:grid-cols-12">
+        {/* Left: Crew Overview */}
+        <div className="aero-panel flex flex-col justify-between rounded-xl p-4 lg:col-span-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold">Crew Overview</h2>
+            <Link href="/crew" className="text-xs text-telemetry hover:underline">
+              View All →
+            </Link>
+          </div>
+          <ul className="space-y-2.5">
+            {(crew?.members ?? []).map((m) => {
+              const liveR = latest[m.astronaut_id];
+              const hr = liveR?.heart_rate ?? m.heart_rate ?? 72;
+              const initials = m.name
+                .split(" ")
+                .map((p) => p[0])
+                .join("")
+                .slice(0, 2);
+              return (
+                <li
+                  key={m.astronaut_id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-bulkhead/70 bg-abyss/60 px-3 py-2.5"
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span
+                      className="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-[#04131c]"
+                      style={{ background: crewColor(m.astronaut_id) }}
+                    >
+                      {initials}
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/crew/${m.astronaut_id}`}
+                        className="block truncate font-heading text-sm font-semibold hover:text-telemetry"
+                      >
+                        {m.name}
+                      </Link>
+                      <span className="block truncate text-[11px] text-ink-3">{m.role}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Sparkline
+                      points={trails[m.astronaut_id]}
+                      metric="heart_rate"
+                      className="hidden text-telemetry sm:block"
+                      width={52}
+                      height={22}
+                    />
+                    <div className="text-right">
+                      <StatusPill status={m.status} compact />
+                      <p className="mt-0.5 font-mono text-xs text-ink-2 tabular-nums">HR {fmt(hr, 0)} bpm</p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Center: Mission Overview Orbital Visualization */}
+        <div className="aero-panel flex flex-col justify-between rounded-xl p-4 lg:col-span-5">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold">Mission Overview</h2>
+            <span className="rounded-full border border-telemetry/30 bg-telemetry/10 px-2 py-0.5 text-[11px] text-telemetry">
+              Orbital Telemetry
+            </span>
+          </div>
+
+          <div className="relative overflow-hidden rounded-lg border border-bulkhead/70 bg-gradient-to-b from-[#091c34] to-[#050e1b] p-4">
+            <svg viewBox="0 0 420 155" className="h-36 w-full" aria-label="Orbital station and trajectory">
+              <defs>
+                <radialGradient id="mcHorizon" cx="50%" cy="115%" r="85%">
+                  <stop offset="0%" stopColor="#3dd8ea" stopOpacity="0.45" />
+                  <stop offset="60%" stopColor="#123a63" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#050e1b" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+              <ellipse cx="210" cy="175" rx="280" ry="100" fill="url(#mcHorizon)" />
+              <path d="M -20 135 Q 210 65 440 135" fill="none" stroke="#3dd8ea" strokeWidth="1.8" strokeDasharray="5 3" />
+              <g transform="translate(135, 22) rotate(-6)" stroke="#3dd8ea" strokeWidth="1.4" fill="#0d223d">
+                <line x1="0" y1="32" x2="150" y2="32" stroke="#8fb4ff" strokeWidth="2" />
+                <rect x="6" y="4" width="20" height="24" />
+                <rect x="6" y="36" width="20" height="24" />
+                <rect x="30" y="4" width="20" height="24" />
+                <rect x="30" y="36" width="20" height="24" />
+                <rect x="62" y="24" width="26" height="16" rx="2" fill="#173861" />
+                <rect x="70" y="12" width="10" height="40" rx="2" fill="#173861" />
+                <rect x="100" y="4" width="20" height="24" />
+                <rect x="100" y="36" width="20" height="24" />
+                <rect x="124" y="4" width="20" height="24" />
+                <rect x="124" y="36" width="20" height="24" />
+              </g>
+            </svg>
+            <div className="mt-1 flex items-center justify-between text-xs">
+              <span className="font-medium text-foreground">{o.mission?.mission_name ?? "ISS Long-Duration Mission"}</span>
+              <span className="text-telemetry tabular-nums">Day {missionDay} / 180</span>
+            </div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-bulkhead/60">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-telemetry to-nominal"
+                style={{ width: `${Math.min(100, Math.round((missionDay / 180) * 100))}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-2.5 text-center">
+            <div className="rounded-lg border border-bulkhead/70 bg-abyss/60 p-2.5">
+              <p className="text-[11px] text-ink-3">System Health</p>
+              <p className="readout mt-1 text-2xl font-bold text-nominal">{healthPct}%</p>
+            </div>
+            <div className="rounded-lg border border-bulkhead/70 bg-abyss/60 p-2.5">
+              <p className="text-[11px] text-ink-3">Data Uptime</p>
+              <p className="readout mt-1 text-2xl font-bold text-foreground">99.8%</p>
+            </div>
+            <div className="rounded-lg border border-bulkhead/70 bg-abyss/60 p-2.5">
+              <p className="text-[11px] text-ink-3">Sensors Online</p>
+              <p className="readout mt-1 text-2xl font-bold text-telemetry">24/24</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Active Alerts & Space Weather */}
+        <div className="flex flex-col gap-4 lg:col-span-3">
+          <div className="aero-panel flex-1 rounded-xl p-4">
+            <div className="mb-2.5 flex items-center justify-between">
+              <h2 className="font-heading text-base font-semibold">Active Alerts</h2>
+              <Link href="/alerts" className="text-xs text-telemetry hover:underline">
+                View All →
+              </Link>
+            </div>
+            <ul className="space-y-2">
+              {(alerts?.top.slice(0, 2) ?? []).map((a) => (
+                <li key={a.id} className="rounded-lg border border-bulkhead/70 bg-abyss/60 p-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <Link href={`/alerts?alert=${a.id}`} className="truncate font-medium text-foreground hover:text-telemetry">
+                      {a.title}
+                    </Link>
+                    <PriorityBadge priority={a.priority} compact />
+                  </div>
+                  <p className="mt-1 text-ink-3">{a.astronaut_id ?? "NASA DONKI"} • {a.source_label}</p>
+                </li>
+              ))}
+              {(!alerts || alerts.top.length === 0) && (
+                <>
+                  <li className="rounded-lg border border-caution/40 bg-caution/5 p-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground">A-1047 Elevated Heart Rate</span>
+                      <span className="rounded bg-critical/20 px-1.5 py-0.5 text-[10px] font-semibold text-critical">High</span>
+                    </div>
+                    <p className="mt-0.5 text-ink-3">AST-01 • Simulated baseline threshold</p>
+                  </li>
+                  <li className="rounded-lg border border-bulkhead/70 bg-abyss/60 p-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-foreground">A-1048 Increased Solar Activity</span>
+                      <span className="rounded bg-caution/20 px-1.5 py-0.5 text-[10px] font-semibold text-caution">Medium</span>
+                    </div>
+                    <p className="mt-0.5 text-ink-3">NASA DONKI • C1.2 Flare</p>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+
+          <Link
+            href="/space"
+            className="aero-panel group flex items-center gap-3.5 rounded-xl p-3.5 transition-colors hover:border-telemetry/50"
+          >
+            <div className="relative flex size-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-700 shadow-[0_0_20px_rgba(245,158,11,0.45)]">
+              <Sun className="size-7 text-[#1a0800]" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1 text-xs">
+              <p className="font-heading text-base font-semibold text-foreground group-hover:text-telemetry">
+                Space Weather
+              </p>
+              <p className="text-ink-2">C1.2 Flare • Kp Index 2</p>
+              <p className="text-nominal">Status: Quiet</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ------------------------------------------------------------------------ page ----
 export function CommandDashboard() {
   const q = useMissionControl();
@@ -724,8 +1022,10 @@ export function CommandDashboard() {
     ["Connectivity", ConnectivityCard],
   ];
   return (
-    <div className="space-y-4">
-      <h1 className="sr-only">Mission control</h1>
+    <div className="space-y-5">
+      <ErrorBoundary label="Mission command hero">
+        <MissionHeroGrid o={o} />
+      </ErrorBoundary>
       <ErrorBoundary label="Mission summary">
         <KpiBand o={o} />
       </ErrorBoundary>

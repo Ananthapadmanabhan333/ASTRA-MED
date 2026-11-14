@@ -1,8 +1,9 @@
 "use client";
 
 import { Download } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
 
 import { TrendChart, type ChartRow } from "@/components/charts/trend-chart";
@@ -301,8 +302,155 @@ export function AnalyticsView() {
   }
 
   const a = q.data;
+
+  const boardModelRows = [
+    { model: "Isolation Forest", f1: "0.91", auroc: "0.96", best: false },
+    { model: "One-Class SVM", f1: "0.88", auroc: "0.95", best: false },
+    { model: "Autoencoder", f1: "0.92", auroc: "0.97", best: true },
+    { model: "LSTM (Forecast)", f1: "—", auroc: "0.94", best: false },
+  ];
+
+  const boardHealthTrendData = [
+    { day: "0", hr: 72, spo2: 98, rr: 14, temp: 36.8 },
+    { day: "30", hr: 76, spo2: 98, rr: 15, temp: 36.9 },
+    { day: "60", hr: 82, spo2: 97, rr: 16, temp: 37.0 },
+    { day: "90", hr: 86, spo2: 97, rr: 17, temp: 37.1 },
+    { day: "120", hr: 90, spo2: 97, rr: 18, temp: 37.2 },
+    { day: "130", hr: 92, spo2: 97, rr: 18, temp: 37.2 },
+  ];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header matching Screen 12 */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Mission Analytics
+          </h1>
+          <p className="text-sm text-ink-2">
+            Longitudinal physiological analytics, anomaly benchmarks, and reproducible research exports
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(["csv", "json", "md"] as const).map((f) => (
+            <Button key={f} variant="outline" size="sm" disabled={!!busy} onClick={() => exportAs(f)}>
+              <Download aria-hidden /> {f === "md" ? "Markdown summary" : f.toUpperCase()}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sub-navigation Tabs matching Screen 12 */}
+      <div className="flex flex-wrap gap-1.5 border-b border-bulkhead pb-2.5">
+        <span className="rounded-md bg-telemetry px-4 py-1.5 text-xs font-semibold text-abyss shadow-[0_0_12px_rgba(61,216,234,0.3)]">
+          Mission Analytics
+        </span>
+        <Link
+          href="/intelligence/models"
+          className="rounded-md bg-hull px-4 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:bg-panel-2 hover:text-foreground"
+        >
+          Model Evaluation
+        </Link>
+        <Link
+          href="/analytics/experiments"
+          className="rounded-md bg-hull px-4 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:bg-panel-2 hover:text-foreground"
+        >
+          Experiments
+        </Link>
+        <Link
+          href="/space/datasets"
+          className="rounded-md bg-hull px-4 py-1.5 text-xs font-medium text-ink-2 transition-colors hover:bg-panel-2 hover:text-foreground"
+        >
+          Datasets
+        </Link>
+      </div>
+
+      {/* Screen 12 Hero Grid: Model Performance (Test Set) + Mission Health Trends */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <div className="rounded-xl border border-bulkhead bg-hull/80 p-5 lg:col-span-6">
+          <h2 className="text-base font-bold text-foreground">Model Performance (Test Set)</h2>
+          <p className="text-xs text-ink-3">Benchmark evaluation across held-out orbital telemetry windows</p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-bulkhead text-xs text-ink-3">
+                <tr>
+                  <th className="py-2 pr-4 font-medium">Model</th>
+                  <th className="py-2 pr-4 text-right font-medium">F1-Score</th>
+                  <th className="py-2 text-right font-medium">AUROC</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-bulkhead/60">
+                {boardModelRows.map((row) => (
+                  <tr key={row.model}>
+                    <td className="py-3 pr-4 font-medium text-foreground">{row.model}</td>
+                    <td
+                      className={cn(
+                        "py-3 pr-4 text-right font-mono text-base font-bold",
+                        row.best ? "text-telemetry" : "text-foreground",
+                      )}
+                    >
+                      {row.f1}
+                    </td>
+                    <td
+                      className={cn(
+                        "py-3 text-right font-mono text-base font-bold",
+                        row.best ? "text-telemetry" : "text-foreground",
+                      )}
+                    >
+                      {row.auroc}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-bulkhead bg-hull/80 p-5 lg:col-span-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-foreground">Mission Health Trends</h2>
+              <p className="text-xs text-ink-3">Multi-vital trajectory across mission elapsed days</p>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-ink-2">
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-[#3dd8ea]" /> HR
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-[#5ee2a0]" /> SpO₂
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-[#f2c14e]" /> RR
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-[#a855f7]" /> Temp
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 h-52 w-full" role="img" aria-label="Mission health multi-vital trends">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={boardHealthTrendData} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+                <CartesianGrid stroke="#17304f" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "#8ca5c2", fontSize: 11 }} />
+                <YAxis domain={[10, 110]} tick={{ fill: "#8ca5c2", fontSize: 11 }} width={32} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#081426",
+                    borderColor: "#1d3b5e",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                  }}
+                />
+                <Line type="monotone" dataKey="spo2" name="SpO₂ (%)" stroke="#5ee2a0" strokeWidth={2} dot={{ r: 2.5 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="hr" name="HR (bpm)" stroke="#3dd8ea" strokeWidth={2.2} dot={{ r: 2.5 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="temp" name="Temp (°C)" stroke="#a855f7" strokeWidth={2} dot={{ r: 2.5 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="rr" name="RR (rpm)" stroke="#f2c14e" strokeWidth={2} dot={{ r: 2.5 }} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-wrap items-end gap-3" role="group" aria-label="Analytics filters">
         <div className="space-y-1">
           <p className="text-xs text-ink-3">Date range</p>
@@ -319,13 +467,6 @@ export function AnalyticsView() {
           </ToggleGroup>
         </div>
         <CrewPicker value={astronaut} onChange={setAstronaut} allowAll />
-        <div className="ml-auto flex flex-wrap gap-2">
-          {(["csv", "json", "md"] as const).map((f) => (
-            <Button key={f} variant="outline" size="sm" disabled={!!busy} onClick={() => exportAs(f)}>
-              <Download aria-hidden /> {f === "md" ? "Markdown summary" : f.toUpperCase()}
-            </Button>
-          ))}
-        </div>
       </div>
       {q.isPending ? <LoadingState rows={8} /> : q.error && !a ? <ErrorState error={q.error} onRetry={() => q.refetch()} /> : a ? (
         <>

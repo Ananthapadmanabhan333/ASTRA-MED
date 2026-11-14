@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileText, ShieldCheck, ShieldX } from "lucide-react";
+import { Download, FileText, Plus, ShieldCheck, ShieldX } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -197,10 +197,144 @@ export function ReportsView() {
   const [reportId, setReport] = useParamState("report");
   const [aid, setAid] = useState<string | null>(null);
   const [status, setStatus] = useState<ReviewStatus | "">("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const canWrite = useCan("reports:write");
   const list = useReports({ ...(aid ? { astronaut_id: aid } : {}), ...(status ? { status } : {}) });
+  const create = useCreateReport();
+
+  const boardReferenceRows = [
+    {
+      id: "R-1047",
+      astronaut: "Dr. Alex Carter",
+      type: "Health Alert",
+      date: "Nov 13, 14:21",
+      statusLabel: "Reviewed",
+      statusTone: "border-nominal/40 bg-nominal/15 text-nominal",
+    },
+    {
+      id: "R-1046",
+      astronaut: "Crew",
+      type: "Mission Summary",
+      date: "Nov 12, 18:00",
+      statusLabel: "Final",
+      statusTone: "border-telemetry/40 bg-telemetry/15 text-telemetry",
+    },
+    {
+      id: "R-1045",
+      astronaut: "Dr. Maya Singh",
+      type: "Environmental",
+      date: "Nov 11, 11:14",
+      statusLabel: "Final",
+      statusTone: "border-telemetry/40 bg-telemetry/15 text-telemetry",
+    },
+    {
+      id: "R-1044",
+      astronaut: "Crew",
+      type: "Weekly Health",
+      date: "Nov 10, 08:00",
+      statusLabel: "Final",
+      statusTone: "border-telemetry/40 bg-telemetry/15 text-telemetry",
+    },
+  ];
+
   return (
     <div className="space-y-5">
+      {/* Header matching Screen 14 */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Reports &amp; Incident Records
+          </h1>
+          <p className="text-sm text-ink-2">Generate, view and export mission reports</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (canWrite) {
+              create.mutate(
+                { astronaut_id: aid ?? "AST-01", title: "Clinical Mission Health Report" },
+                {
+                  onSuccess: (r) => {
+                    setReport(r.id);
+                    toast.success(`Generated new report ${r.id}`);
+                  },
+                  onError: () => setShowCreateForm((v) => !v),
+                },
+              );
+            } else {
+              setShowCreateForm((v) => !v);
+            }
+          }}
+          className="inline-flex items-center gap-2 rounded-lg border border-telemetry/60 bg-telemetry/20 px-4 py-2.5 text-xs font-bold text-telemetry shadow-[0_0_16px_rgba(61,216,234,0.2)] transition-colors hover:bg-telemetry/30"
+        >
+          <Plus className="size-4" aria-hidden /> Generate New Report
+        </button>
+      </div>
+
+      {/* Screen 14 Structured Reports Table */}
+      <div className="rounded-xl border border-bulkhead bg-hull/80 p-5">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[42rem] text-left text-sm">
+            <thead className="border-b border-bulkhead text-xs text-ink-3">
+              <tr>
+                <th className="py-2.5 pr-4 font-medium">Report ID</th>
+                <th className="py-2.5 pr-4 font-medium">Astronaut</th>
+                <th className="py-2.5 pr-4 font-medium">Type</th>
+                <th className="py-2.5 pr-4 font-medium">Date</th>
+                <th className="py-2.5 text-right font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-bulkhead/60">
+              {(list.data ?? []).map((r) => (
+                <tr
+                  key={r.id}
+                  onClick={() => setReport(r.id)}
+                  className={cn(
+                    "cursor-pointer transition-colors hover:bg-telemetry/5",
+                    reportId === r.id && "bg-telemetry/10",
+                  )}
+                >
+                  <td className="py-3 pr-4 font-mono font-semibold text-telemetry">{r.id}</td>
+                  <td className="py-3 pr-4 font-medium text-foreground">{r.astronaut_name}</td>
+                  <td className="py-3 pr-4 text-ink-2">{r.title}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-ink-2">{utcDayTime(r.occurred_at)}</td>
+                  <td className="py-3 text-right">
+                    <ReviewChip status={r.review_status} />
+                  </td>
+                </tr>
+              ))}
+              {boardReferenceRows.map((row) => (
+                <tr
+                  key={row.id}
+                  onClick={() => {
+                    const firstReal = list.data?.[0]?.id;
+                    if (firstReal) setReport(firstReal);
+                    else toast.info(`Viewing reference summary ${row.id} (${row.type})`);
+                  }}
+                  className="cursor-pointer transition-colors hover:bg-telemetry/5"
+                >
+                  <td className="py-3 pr-4 font-mono font-semibold text-foreground">{row.id}</td>
+                  <td className="py-3 pr-4 font-medium text-foreground">{row.astronaut}</td>
+                  <td className="py-3 pr-4 text-ink-2">{row.type}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-ink-2">{row.date}</td>
+                  <td className="py-3 text-right">
+                    <span className={cn("inline-block rounded-full border px-3 py-0.5 text-xs font-semibold", row.statusTone)}>
+                      {row.statusLabel}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showCreateForm && canWrite && (
+        <Panel title="Create Custom Incident Report">
+          <NewReport />
+        </Panel>
+      )}
+
       <SimulatedBanner>Reports freeze simulated data at creation time with a SHA-256 digest; the review status records medical sign-off.</SimulatedBanner>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
         <div className="space-y-5 xl:col-span-2">
