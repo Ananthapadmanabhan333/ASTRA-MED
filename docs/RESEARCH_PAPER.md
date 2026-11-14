@@ -1,4 +1,4 @@
-# ASTRA-MED: an explainable, personalised health-monitoring prototype for long-duration crewed missions
+# ASTRA-MED: An AI-Driven Astronaut Health Monitoring and Space Environment Intelligence Framework
 
 *Technical research document, NASA Space Apps Challenge 2026, challenge "Create Health Monitoring
 Software for Astronauts on Space Missions". Version of 2026-11-14.*
@@ -39,23 +39,23 @@ replications:
 
 We also report negative results. The ensemble was not reliably better than its best member, and
 neural forecasters did not beat gradient boosting. The validation steps still needed before any
-clinical use are listed in section 14.
+clinical use are listed in section 16.
 
-## 2. Problem statement
+## 2. Introduction
 
-Long-duration missions expose crews to five hazards identified by NASA's Human Research Program:
-space radiation, isolation and confinement, distance from Earth, altered gravity fields, and a
-hostile closed environment [21]. They are associated with cardiovascular changes, immune changes,
-bone loss, behavioural health problems and other risks [3, 5, 9]. On the ISS, a flight surgeon on
-the ground watches over the crew in near real time. On a Mars mission, communication delays of
-several minutes each way, and periods without contact, shift that responsibility onto the crew
-[3, 5]. The 2026 Space Apps challenge asks for software that gathers health indicators and helps
-astronauts evaluate and act on their health status [22].
+Health monitoring in space has so far relied on scheduled examinations and on flight surgeons on the
+ground. ASTRA-MED explores what software can add when the crew is further away. It combines:
 
-The specific problem ASTRA-MED addresses is **interpretation under uncertainty**. A raw value such
-as a heart rate of 104 bpm means different things for different people, during exercise or at
-rest, and before or after a radiation event. Fixed alarm thresholds either fire constantly or miss
-slow deteriorations. Black-box predictions cannot be trusted by a crew that must act on them alone.
+- continuous personal baselines;
+- learned anomaly detection and forecasts with stated uncertainty;
+- explanations;
+- the astronaut's own check-ins;
+- real NASA space-environment context.
+
+All of it is held in one auditable record. This document describes the implemented system
+(sections 6–12), how it was evaluated (sections 13–14), what the results mean (section 15), and what
+remains to be done (sections 16–17). Implemented capabilities and proposed future work are kept
+apart throughout.
 
 ## 3. Research motivation
 
@@ -72,11 +72,27 @@ slow deteriorations. Black-box predictions cannot be trusted by a crew that must
   Sciences Data Archive holds crew data under restricted access. Any open prototype must therefore
   separate what it can demonstrate on simulated data from what still needs real-data validation.
 
-## 4. Existing approaches and their limitations
+## 4. Problem statement
+
+Long-duration missions expose crews to five hazards identified by NASA's Human Research Program:
+space radiation, isolation and confinement, distance from Earth, altered gravity fields, and a
+hostile closed environment [21]. They are associated with cardiovascular changes, immune changes,
+bone loss, behavioural health problems and other risks [3, 5, 9]. On the ISS, a flight surgeon on
+the ground watches over the crew in near real time. On a Mars mission, communication delays of
+several minutes each way, and periods without contact, shift that responsibility onto the crew
+[3, 5]. The 2026 Space Apps challenge asks for software that gathers health indicators and helps
+astronauts evaluate and act on their health status [22].
+
+The specific problem ASTRA-MED addresses is **interpretation under uncertainty**. A raw value such
+as a heart rate of 104 bpm means different things for different people, during exercise or at
+rest, and before or after a radiation event. Fixed alarm thresholds either fire constantly or miss
+slow deteriorations. Black-box predictions cannot be trusted by a crew that must act on them alone.
+
+## 5. Existing approaches
 
 | Approach | Strength | Limitation for autonomous crews |
 | --- | --- | --- |
-| Fixed physiological alarm thresholds | Simple, transparent | Not personal or context-aware. In our evaluation they missed 77 % of anomalous windows at a similar false-positive rate (section 13) |
+| Fixed physiological alarm thresholds | Simple, transparent | Not personal or context-aware. In our evaluation they missed 77 % of anomalous windows at a similar false-positive rate (section 14) |
 | Unsupervised anomaly detection (Isolation Forest, LOF, One-Class SVM, autoencoders) [10–13] | No labels needed; finds unusual combinations | Raw scores are hard to interpret and calibrate; each has different failure modes |
 | Deep sequence forecasting (LSTM, GRU, TCN) [14–16] | Flexible | Data-hungry; often not better than tuned trees on tabular-like features; opaque |
 | Gradient-boosted trees [17] | Strong on engineered features; fast; explainable with TreeSHAP [19] | Needs careful features and leakage control [25, 26] |
@@ -86,7 +102,7 @@ slow deteriorations. Black-box predictions cannot be trusted by a crew that must
 ASTRA-MED combines these pieces. Its contribution is integration, transparency and an honest
 evaluation design, not a new algorithm.
 
-## 5. Proposed architecture
+## 6. Proposed architecture
 
 ```mermaid
 flowchart TB
@@ -127,7 +143,7 @@ drift from the API. Access is permission-based across four roles: flight surgeon
 operator, analyst and administrator. There are server-side sessions, CSRF protection and an audit
 log of every read of crew data.
 
-## 6. System methodology: from a reading to a reviewed incident
+## 7. System methodology
 
 ```mermaid
 sequenceDiagram
@@ -164,23 +180,31 @@ Design rules enforced in code and tests:
 4. **Every explanation statement traces to an input.** A test checks that each number in a
    multisystem explanation belongs to a listed input.
 
-## 7. Data acquisition
+## 8. Physiological monitoring
 
-| Data | Source | Use |
-| --- | --- | --- |
-| Crew physiology (HR, SpO₂, BP, temperature, respiratory rate, ECG, HRV, sleep, activity, dose) | ASTRA-MED simulator, **simulated** | The monitored signals |
-| Solar flares, CMEs, SEP events, geomagnetic storms, radiation-belt enhancements, notifications, WSA-ENLIL runs | NASA DONKI [27], **real**, 3,296 events stored (2014-09-17 to 2026-11-13) | Environmental indicators around alerts; correlation; timeline |
-| ISS cabin temperature, humidity, CO₂; absorbed dose (GCR, SAA) | NASA OSDR Environmental Data App [28], **real**, 17 missions 2014–2024 | Measured environment and dose context |
-| Space-biology study metadata | NASA OSDR [20, 29], **real** | Research context in the data explorer and assistant |
-| Mars-cruise dose-equivalent rate, 1.84 mSv/day | MSL RAD [2] | Cited estimate and the simulator's background rate |
+- **Signals.** The monitored stream comes from the physiological simulator, at 1 Hz per crew member:
+  heart rate, SpO₂, blood pressure, temperature, respiratory rate, a synthetic ECG with rhythm
+  classification, HRV, sleep, activity and simulated dose. Circadian and activity effects are
+  modelled; documented test scenarios (desaturation, tachycardia, …) are injected on request.
+  Rows are stored every 5 s with `data_source = simulated`.
+- **Rules.** The monitoring engine applies activity-aware threshold rules with persistence
+  requirements, an ECG rhythm check and a personal-baseline z-score. Each alert goes through an
+  audited acknowledge-and-resolve lifecycle. These rule detections are the first line of the alert
+  path; the AI layer (section 9) adds context and never escalates on its own.
+- **Crew self-check (implemented in phase 8).** The challenge asks for a tool that helps astronauts
+  assess their own health, including indicators no wearable stream provides. The self-check view
+  records hand-entered blood glucose (with fasting, after-meal or random context), mood (1–5) and
+  symptoms from a fixed list.
+  - **Glucose** gets orientation bands from the American Diabetes Association criteria [35].
+  - **Mood** is compared with the person's own median of earlier check-ins; three low check-ins in a
+    row prompt contact with behavioural-health support.
+  - **Symptoms:** chest pain, shortness of breath and vision change prompt immediate contact.
 
-The full inventory, with licences, units, processing steps and limitations, is in
-[DATASETS.md](DATASETS.md). NASA clients retry with backoff, honour `Retry-After` and switch
-endpoints through a circuit breaker. On 2026-11-12 and 2026-11-14 the api.nasa.gov DONKI proxy
-returned HTTP 404, and ASTRA-MED served DONKI from the CCMC origin. Records are validated, versioned
-and stored with their raw form.
+  A body-systems map groups the six assessed systems and the self-reported indicators into five
+  regions for navigation, without implying organ-level measurements. Daily check prompts show what
+  is done, due or overdue. Everything is process guidance, never a diagnosis or a treatment.
 
-## 8. AI/ML methodology
+## 9. Predictive AI methodology
 
 ```mermaid
 flowchart LR
@@ -220,7 +244,42 @@ flowchart LR
   Diagnosis and treatment questions are declined, and escalation notices are raised for critical
   situations.
 
-## 9. Space-environment intelligence
+## 10. Astronaut digital twin
+
+"Digital twin" is used here in the systems-engineering sense of a continuously updated record of one
+entity [7], not as a physiological simulation of a person; compare cardiology twins [8]. Per crew
+member, ASTRA-MED keeps:
+
+- one row per mission day: per-signal statistics, sleep, activity, dose, alerts, scenarios and
+  coverage;
+- a current state from the live stream;
+- baseline comparisons with their basis (configured, early-mission, last 7 days, last 24 h, learned);
+- longitudinal trends: OLS slope with an autocorrelation-adjusted confidence interval;
+- mission-stage comparisons with Welch intervals;
+- the real NASA events of the same date.
+
+Days that retention has pruned are deterministically regenerated and labelled `regenerated`.
+Six-system assessments (cardiovascular, respiratory, thermoregulation, sleep, activity and recovery,
+radiation indicators) use statistical bands at |z| ≥ 2 and ≥ 3. Cross-system co-deviations are
+labelled "co-occurrence, not a cause".
+
+## 11. NASA data integration
+
+| Data | Source | Use |
+| --- | --- | --- |
+| Crew physiology (HR, SpO₂, BP, temperature, respiratory rate, ECG, HRV, sleep, activity, dose) | ASTRA-MED simulator, **simulated** | The monitored signals |
+| Solar flares, CMEs, SEP events, geomagnetic storms, radiation-belt enhancements, notifications, WSA-ENLIL runs | NASA DONKI [27], **real**, 3,296 events stored (2014-09-17 to 2026-11-13) | Environmental indicators around alerts; correlation; timeline |
+| ISS cabin temperature, humidity, CO₂; absorbed dose (GCR, SAA) | NASA OSDR Environmental Data App [28], **real**, 17 missions 2014–2024 | Measured environment and dose context |
+| Space-biology study metadata | NASA OSDR [20, 29], **real** | Research context in the data explorer and assistant |
+| Mars-cruise dose-equivalent rate, 1.84 mSv/day | MSL RAD [2] | Cited estimate and the simulator's background rate |
+
+The full inventory, with licences, units, processing steps and limitations, is in
+[DATASETS.md](DATASETS.md). NASA clients retry with backoff, honour `Retry-After` and switch
+endpoints through a circuit breaker. On 2026-11-12 and 2026-11-14 the api.nasa.gov DONKI proxy
+returned HTTP 404, and ASTRA-MED served DONKI from the CCMC origin. Records are validated, versioned
+and stored with their raw form.
+
+## 12. Space environment intelligence
 
 Radiation information is kept in four labelled categories, never converted into one another:
 
@@ -241,26 +300,7 @@ series. It accounts for autocorrelation and controls the false discovery rate ac
 (Benjamini–Hochberg [34]). It explicitly reports that a correlation with a simulated signal says nothing
 about real physiology.
 
-## 10. Digital-twin architecture
-
-"Digital twin" is used here in the systems-engineering sense of a continuously updated record of one
-entity [7], not as a physiological simulation of a person; compare cardiology twins [8]. Per crew
-member, ASTRA-MED keeps:
-
-- one row per mission day: per-signal statistics, sleep, activity, dose, alerts, scenarios and
-  coverage;
-- a current state from the live stream;
-- baseline comparisons with their basis (configured, early-mission, last 7 days, last 24 h, learned);
-- longitudinal trends: OLS slope with an autocorrelation-adjusted confidence interval;
-- mission-stage comparisons with Welch intervals;
-- the real NASA events of the same date.
-
-Days that retention has pruned are deterministically regenerated and labelled `regenerated`.
-Six-system assessments (cardiovascular, respiratory, thermoregulation, sleep, activity and recovery,
-radiation indicators) use statistical bands at |z| ≥ 2 and ≥ 3. Cross-system co-deviations are
-labelled "co-occurrence, not a cause".
-
-## 11. Experimental methodology
+## 13. Experimental methodology
 
 - **Dataset.** 120 simulated days, 4 crew members, 5-minute windows (138,240 windows, fingerprint
   `eabfda075aa4`). It contains 327 injected events: sudden, gradual and subtle, of ten types. Missing
@@ -278,7 +318,8 @@ labelled "co-occurrence, not a cause".
   history with 50 concurrent WebSocket clients, and AI inference with interleaved before/after runs
   ([BENCHMARKS.md](BENCHMARKS.md)).
 
-## 12. Evaluation metrics
+
+**Evaluation metrics.**
 
 - **Window level:** precision, recall, F1, AUROC, AUPRC (preferred under class imbalance [32]),
   false-positive rate and false-negative rate.
@@ -288,7 +329,7 @@ labelled "co-occurrence, not a cause".
   and skill relative to personal climatology. MAPE is not used for temperature in °C, whose zero is
   arbitrary [33].
 
-## 13. Results
+## 14. Results
 
 Results are on the simulated test split; the full tables are in
 [SCIENTIFIC_VALIDATION.md](SCIENTIFIC_VALIDATION.md).
@@ -321,7 +362,29 @@ and the mission-control display. Engineering results: SQL time bucketing made 7-
 6.7× faster, and batched attribution made anomaly explanations 2.1× faster, both with identical
 outputs.
 
-## 14. Limitations
+## 15. Discussion
+
+The evidence supports a narrow claim: personal, calibrated anomaly detection recovers simulated
+deviations far better than fixed limits at the same false-positive rate. Gradient boosting on
+schedule-aware features forecasts vital signs well, with honest intervals. Two expected advantages
+did not appear. The ensemble was not reliably better than LOF alone, and deep sequence models did
+not beat trees. Both are useful negative results for anyone building similar monitors on limited
+data. The reproducibility work was not cosmetic either: it found a serving bug, where forecasts
+varied with Python's hash seed, that no accuracy metric would have revealed.
+
+The main threat to validity is circularity: the same simulator generates the data, the events and
+the labels. The results therefore show that the pipeline is sound, not that it works for real
+crews. The design choices that matter most for a real crew are the ones that keep the system
+honest:
+
+- data categories that are never mixed;
+- AI that cannot escalate on its own;
+- explanations traceable to inputs;
+- process-only guidance.
+
+These choices do not depend on the simulator.
+
+## 16. Limitations
 
 - **Simulated data only.** The simulator, the injected events and the labels share one design, which
   makes detection easier than in reality. No result here establishes real-world accuracy.
@@ -336,7 +399,7 @@ outputs.
   elsewhere is not modelled.
 - **Single process.** The prototype runs as one process with one database.
 
-## 15. Future research directions
+## 17. Future research
 
 1. **Real-data validation.** Retrospective validation on real physiological recordings under
    appropriate data-use agreements, starting with analogue-mission or isolation-study data.
@@ -350,7 +413,16 @@ outputs.
 5. **On-board operation.** Federated or on-board model updates under bandwidth limits, and a
    tamper-evident record.
 
-## 16. References
+## 18. Conclusion
+
+ASTRA-MED shows that a crew-health monitor can be personal, explainable, reproducible and honest
+about what it does not know. It combines individual baselines, calibrated detection, uncertain
+forecasts, a digital health record, the astronaut's own check-ins and real NASA space-environment
+context in one auditable system. Its limits are equally clear: simulated data, no clinical
+validation, and no treatment guidance. The next step is scientific rather than technical:
+validation on real recordings from analogue missions, with clinicians.
+
+## 19. References
 
 PubMed-indexed references were checked against PubMed on 2026-11-14 (PMID given). The others are
 standard references whose bibliographic details were checked by the authors. Web pages were checked
@@ -390,3 +462,5 @@ live on 2026-11-14.
 32. Saito T, Rehmsmeier M. The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. *PLoS One* 10(3):e0118432, 2015. doi:10.1371/journal.pone.0118432. PMID 25738806.
 33. Hyndman RJ, Koehler AB. Another look at measures of forecast accuracy. *Int J Forecasting* 22(4):679–688, 2006.
 34. Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. *J R Stat Soc B* 57(1):289–300, 1995.
+35. American Diabetes Association Professional Practice Committee. Diagnosis and classification of diabetes: Standards of Care in Diabetes. *Diabetes Care* (annual supplement 1). Criteria used: fasting plasma glucose 100–125 / ≥126 mg/dL, 2-hour 140–199 / ≥200 mg/dL, hypoglycaemia levels <70 and <54 mg/dL.
+

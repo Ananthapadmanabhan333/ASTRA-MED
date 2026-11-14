@@ -1923,6 +1923,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/crew/{astronaut_id}/self-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Self Check
+         * @description The crew member's self-check: hand-entered glucose, mood and symptoms with plain-language status,
+         *     check-in prompts (due / done / overdue) and recent entries. Orientation and process guidance only.
+         */
+        get: operations["self_check_api_crew__astronaut_id__self_check_get"];
+        put?: never;
+        /**
+         * Add Self Report
+         * @description Record a self-check entry (any combination of glucose, mood, symptoms and a note).
+         */
+        post: operations["add_self_report_api_crew__astronaut_id__self_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/system/status": {
         parameters: {
             query?: never;
@@ -5866,6 +5891,151 @@ export interface components {
             /** Affected Metrics */
             affected_metrics: string[];
         };
+        /** SelfCheckSummary */
+        SelfCheckSummary: {
+            /** Astronaut Id */
+            astronaut_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Indicators */
+            indicators: components["schemas"]["SelfIndicator"][];
+            /** Prompts */
+            prompts: components["schemas"]["SelfPrompt"][];
+            /** Reports */
+            reports: components["schemas"]["SelfReport"][];
+            /** Symptom Catalogue */
+            symptom_catalogue: components["schemas"]["SymptomInfo"][];
+            /** Notes */
+            notes: string[];
+        };
+        /** SelfIndicator */
+        SelfIndicator: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * System
+             * @description Body-system group used by the body map: metabolic, behavioural, general
+             */
+            system: string;
+            /** Value */
+            value: number | null;
+            /** Unit */
+            unit: string;
+            /** Context */
+            context: string | null;
+            /** At */
+            at: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "no_data" | "normal" | "attention" | "contact";
+            /** Status Label */
+            status_label: string;
+            /**
+             * Guidance
+             * @description Process guidance (what to do next), never a diagnosis or a treatment
+             */
+            guidance: string;
+            /** Source */
+            source: string;
+            /** Reference */
+            reference: string | null;
+        };
+        /** SelfPrompt */
+        SelfPrompt: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** How */
+            how: string;
+            /** Automatic */
+            automatic: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "done" | "due" | "overdue";
+            /** Last At */
+            last_at: string | null;
+            /** Due At */
+            due_at: string | null;
+            /** Detail */
+            detail?: string | null;
+        };
+        /** SelfReport */
+        SelfReport: {
+            /** Id */
+            id: string;
+            /** Astronaut Id */
+            astronaut_id: string;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+            /** Glucose Mg Dl */
+            glucose_mg_dl: number | null;
+            /** Glucose Context */
+            glucose_context: string | null;
+            /** Glucose Status */
+            glucose_status: ("no_data" | "normal" | "attention" | "contact") | null;
+            /** Mood */
+            mood: number | null;
+            /** Symptoms Checked */
+            symptoms_checked: boolean;
+            /** Symptoms */
+            symptoms: string[];
+            /** Note */
+            note: string | null;
+            /**
+             * Data Source
+             * @default self_reported
+             */
+            data_source: string;
+        };
+        /** SelfReportCreate */
+        SelfReportCreate: {
+            /**
+             * Recorded At
+             * @description When the check was taken (default: now; never in the future)
+             */
+            recorded_at?: string | null;
+            /**
+             * Glucose Mg Dl
+             * @description Blood glucose, mg/dL
+             */
+            glucose_mg_dl?: number | null;
+            /** Glucose Context */
+            glucose_context?: ("fasting" | "after_meal" | "random") | null;
+            /**
+             * Mood
+             * @description 1 very low … 5 very good
+             */
+            mood?: number | null;
+            /**
+             * Symptoms
+             * @description Symptom keys; an empty list records 'no symptoms', null means not checked
+             */
+            symptoms?: string[] | null;
+            /** Note */
+            note?: string | null;
+        };
         /** SeriesMeta */
         SeriesMeta: {
             /** Id */
@@ -6980,6 +7150,18 @@ export interface components {
             kind: "data" | "derived" | "model" | "nasa";
             /** Text */
             text: string;
+        };
+        /** SymptomInfo */
+        SymptomInfo: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "attention" | "contact";
         };
         /** SyncRequest */
         SyncRequest: {
@@ -12548,6 +12730,90 @@ export interface operations {
                     "application/json": unknown;
                     "text/csv": unknown;
                     "text/markdown": unknown;
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    self_check_api_crew__astronaut_id__self_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SelfCheckSummary"];
+                };
+            };
+            /** @description Resource not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Invalid request parameters */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    add_self_report_api_crew__astronaut_id__self_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                astronaut_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SelfReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SelfReport"];
                 };
             };
             /** @description Resource not found */

@@ -30,6 +30,7 @@ PERMISSIONS: dict[str, str] = {
     "space:sync": "Trigger NASA data synchronisation",
     "models:manage": "Reload AI model versions",
     "system:maintain": "Run database consistency repairs",
+    "selfcheck:write": "Record a crew member's self-check (glucose, mood, symptoms)",
     "audit:read": "Read the audit log",
     "users:manage": "Create, change and deactivate user accounts",
 }
@@ -51,11 +52,11 @@ ROLE_DESCRIPTIONS: dict[Role, str] = {
 ROLE_PERMISSIONS: dict[Role, frozenset[str]] = {
     Role.FLIGHT_SURGEON: frozenset({
         "health:read", "space:read", "alerts:manage", "reports:read", "reports:write",
-        "reports:review", "assistant:use",
+        "reports:review", "assistant:use", "selfcheck:write",
     }),
     Role.MISSION_OPERATOR: frozenset({
         "health:read", "space:read", "alerts:manage", "simulation:control", "reports:read",
-        "reports:write", "assistant:use", "space:sync", "system:maintain",
+        "reports:write", "assistant:use", "space:sync", "system:maintain", "selfcheck:write",
     }),
     Role.ANALYST: frozenset({"health:read", "space:read", "assistant:use"}),
     Role.ADMIN: frozenset({"space:read", "space:sync", "models:manage", "audit:read", "users:manage",

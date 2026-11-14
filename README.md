@@ -30,7 +30,9 @@ mission analytics and platform health checks.
 
 **Challenge:** [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/).
 
-ASTRA-MED learns each crew member's own normal, flags unusual patterns, forecasts the next 24 hours
+ASTRA-MED gives each astronaut a self-check (body-systems map, glucose, mood and symptom check-ins,
+daily check prompts, when to involve the flight surgeon). It also learns each crew member's own
+normal, flags unusual patterns, forecasts the next 24 hours
 with honest uncertainty, explains every alert, and places it in its space-environment context using
 real NASA DONKI and OSDR data. Results on simulated data, over three independent datasets:
 
@@ -50,6 +52,23 @@ There is no clinical validation ([details](docs/SCIENTIFIC_VALIDATION.md)).
 | [Dataset inventory](docs/DATASETS.md) | Every dataset with source, licence, units, processing, limitations |
 | [Demo script](docs/competition/DEMO_SCRIPT.md) · [presentation](docs/competition/PRESENTATION.md) · [30 s video storyboard](docs/competition/VIDEO_STORYBOARD.md) | The ten-step scenario and the pitch |
 | [Deployment guide](docs/DEPLOYMENT.md) · [benchmarks](docs/BENCHMARKS.md) · [technical audit](docs/PHASE7_AUDIT.md) · [readiness report](docs/PHASE7_REPORT.md) | Production readiness |
+| [Final readiness report](FINAL_READINESS_REPORT.md) · [completion tracker](MASTER_COMPLETION_TRACKER.md) · [master audit](MASTER_PROJECT_AUDIT.md) | Current status of every requirement |
+
+**Documentation set:**
+
+| Document | File |
+| --- | --- |
+| System architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| API documentation | [docs/API.md](docs/API.md) (and `/docs` on a running API) |
+| Database schema | [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) |
+| AI methodology | [docs/AI_ENGINE.md](docs/AI_ENGINE.md) |
+| NASA data sources | [docs/NASA_DATA_SOURCES.md](docs/NASA_DATA_SOURCES.md), [docs/DATASETS.md](docs/DATASETS.md) |
+| Scientific validation | [docs/SCIENTIFIC_VALIDATION.md](docs/SCIENTIFIC_VALIDATION.md) |
+| Security | [docs/SECURITY.md](docs/SECURITY.md) |
+| Deployment guide | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| User guide | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) |
+| Limitations | [docs/LIMITATIONS.md](docs/LIMITATIONS.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 ### Use of AI in building ASTRA-MED
 

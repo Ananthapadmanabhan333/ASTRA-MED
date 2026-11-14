@@ -51,6 +51,7 @@ Access is checked by permission, never by role name (`app/security/rbac.py`; `GE
 | `space:sync` | | ✓ | | ✓ |
 | `models:manage` reload models | | | | ✓ |
 | `system:maintain` consistency repair *(phase 7)* | | ✓ | | ✓ |
+| `selfcheck:write` record crew self-checks *(phase 8)* | ✓ | ✓ | | |
 | `audit:read` | | | | ✓ |
 | `users:manage` | | | | ✓ |
 

@@ -40,7 +40,11 @@ class Clock:
 
 @pytest.fixture
 def clock(monkeypatch) -> Clock:
-    c = Clock(datetime.now(UTC).replace(microsecond=0))
+    # The most recent 11:00 UTC: every crew member is awake and not exercising (as tests/conftest.T0).
+    # Starting at the real time made results depend on the crew schedule at the hour the suite ran.
+    now = datetime.now(UTC).replace(microsecond=0)
+    start = now.replace(hour=11, minute=0, second=0)
+    c = Clock(start if start <= now else start - timedelta(days=1))
     for name in CLOCK_MODULES:
         monkeypatch.setattr(importlib.import_module(name), "utcnow", c)
     return c

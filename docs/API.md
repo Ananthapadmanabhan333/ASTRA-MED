@@ -352,6 +352,13 @@ Rule alerts acknowledged or resolved here are updated in the phase 2 store too, 
 | GET | `/api/system/consistency` | `audit:read` or `simulation:control` | `ConsistencyReport` (read-only) |
 | POST | `/api/system/consistency/repair` | `system:maintain` *(phase 7)* | `ConsistencyReport` after safe repairs |
 
+## Crew self-check (phase 8)
+
+| Method | Path | Permission | Returns |
+| --- | --- | --- | --- |
+| GET | `/api/crew/{astronaut_id}/self-check` | `health:read` | `SelfCheckSummary`: indicators (glucose, mood, symptoms) with status (`normal`, `attention`, `contact`, `no_data`), plain-language guidance and reference, today's check prompts (`done`, `due`, `overdue`), the last 60 days of entries, the symptom catalogue |
+| POST | `/api/crew/{astronaut_id}/self-check` | `selfcheck:write` | `SelfReport` (201). Body: any of `glucose_mg_dl` (20–600, needs `glucose_context`: `fasting`, `after_meal` or `random`), `mood` (1–5), `symptoms` (catalogue keys; `[]` records "none"), `note` (≤ 500 characters), optional `recorded_at`. An empty body returns 422 |
+
 ## WebSocket: `/ws/health-monitoring`
 
 One connection carries everything live. All messages are JSON with a `type` discriminator; the

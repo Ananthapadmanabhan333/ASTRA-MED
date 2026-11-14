@@ -29,6 +29,7 @@ from app.api import (
     overview_routes,
     report_routes,
     routes,
+    selfcheck_routes,
     space_routes,
     twin_routes,
     ws,
@@ -60,6 +61,7 @@ from app.security.audit import (
 )
 from app.security.deps import require
 from app.security.service import AuthService
+from app.selfcheck.service import SelfCheckService
 from app.services.monitoring import MonitoringService
 from app.space.service import SpaceDataService
 from app.twin.service import TwinService
@@ -174,6 +176,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.orchestrator = MissionOrchestrator(settings, factory, monitor, app.state.ai, app.state.space,
                                                      app.state.mission_events, app.state.alert_center)
         app.state.orchestrator.attach(app.state.emergency, app.state.reports)  # before the monitor starts ticking
+        app.state.selfcheck = SelfCheckService(factory, monitor)
         app.state.sandbox = MissionSimulator(settings, factory, monitor.hub, app.state.ai, app.state.mission_events,
                                              app.state.alert_center, app.state.orchestrator, app.state.reports)
         if settings.mission_consistency_on_start:
@@ -297,6 +300,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(assistant_routes.router, dependencies=[require("health:read")])
     app.include_router(overview_routes.router, dependencies=[require("health:read")])
     app.include_router(mission_routes.router, dependencies=[require("health:read")])
+    app.include_router(selfcheck_routes.router, dependencies=[require("health:read")])
     app.include_router(mission_routes.system_router)
     app.include_router(ws.router)
 

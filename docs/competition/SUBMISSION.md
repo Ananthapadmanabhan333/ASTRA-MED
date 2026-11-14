@@ -79,7 +79,9 @@ ASTRA-MED is an open-source health-monitoring prototype for crews on long missio
 - learns each crew member's own normal ranges for every activity and time of day;
 - flags unusual patterns with an ensemble of five detectors;
 - forecasts vital signs up to 24 hours ahead with honest uncertainty ranges;
-- explains every alert with the measurements, the personal baseline and the signals that drove it.
+- explains every alert with the measurements, the personal baseline and the signals that drove it;
+- gives each crew member a self-check: a body-systems map, glucose, mood and symptom check-ins, daily
+  check prompts and plain-language guidance on when to involve the flight surgeon.
 
 It places each alert in its space-environment context using real NASA DONKI space-weather records
 and ISS environment data from NASA's OSDR. A digital record ("twin") of each crew member, a cited
@@ -131,7 +133,7 @@ can validate on real analogue-mission data.
 
 ### E. Technical architecture
 
-The diagrams are in [RESEARCH_PAPER.md §5–8](../RESEARCH_PAPER.md#5-proposed-architecture) and
+The diagrams are in [RESEARCH_PAPER.md §6–9](../RESEARCH_PAPER.md#6-proposed-architecture) and
 [ARCHITECTURE.md](../ARCHITECTURE.md). In short:
 
 - the simulator feeds a monitoring engine;
@@ -165,7 +167,7 @@ The diagrams are in [RESEARCH_PAPER.md §5–8](../RESEARCH_PAPER.md#5-proposed-
   as background on radiation monitoring.
 - **NOAA:** Space Weather Scales (https://www.swpc.noaa.gov/noaa-scales-explanation) for flare and
   storm severity.
-- **Scientific references:** the 34 references in [RESEARCH_PAPER.md §16](../RESEARCH_PAPER.md#16-references).
+- **Scientific references:** the 35 references in [RESEARCH_PAPER.md §19](../RESEARCH_PAPER.md#19-references).
 - **Software:** every direct dependency and its licence in [THIRD_PARTY.md](../THIRD_PARTY.md);
   fonts Barlow Semi Condensed and IBM Plex Sans (SIL OFL); Lucide icons (ISC).
 - **Images:** no third-party images are used in the application.
@@ -198,8 +200,8 @@ The diagrams are in [RESEARCH_PAPER.md §5–8](../RESEARCH_PAPER.md#5-proposed-
 **Limitations**
 
 - Crew data are simulated; there is no real-data or clinical validation.
-- Blood glucose and mood, two indicators the challenge names, are not modelled.
-- The interface is built mainly for mission control, not for an astronaut's self-check.
+- Glucose, mood and symptoms are entered by hand; there is no device or camera input yet.
+- Self-check guidance is process guidance only, with no treatment advice.
 - DONKI is observed from near Earth.
 
 **Next steps**
@@ -223,17 +225,17 @@ What the challenge statement asks for, against what ASTRA-MED provides today:
 
 | Challenge asks for | ASTRA-MED today | Gap |
 | --- | --- | --- |
-| A visual tool that helps **astronauts assess their own health** | Dashboards for mission control and flight surgeons; per-crew profile and twin views | **Yes:** no crew-facing self-check mode |
+| A visual tool that helps **astronauts assess their own health** | **Crew self-check** (`/self-check`, added after phase 7): body-systems map, plain-language status per indicator, today's checks, when to involve the flight surgeon; plus the mission-control views | Covered (first version) |
 | Guidance on treatments and health improvements | Process-only review workflow; the assistant deliberately declines diagnosis and treatment questions | **Partly, by design:** guidance must come from approved procedures, which the prototype does not have |
-| Indicators such as blood pressure, heart rate, **blood sugar**, body temperature, sleep hours, **mood** | BP, HR, temperature, sleep, plus SpO₂, respiratory rate, ECG rhythm, HRV, activity, dose | **Yes:** blood glucose and mood are absent |
-| Input by keyboard, mouse or camera | Readings arrive from the simulator stream; the sandbox accepts typed telemetry | Partly |
+| Indicators such as blood pressure, heart rate, **blood sugar**, body temperature, sleep hours, **mood** | BP, HR, temperature, sleep, SpO₂, respiratory rate, ECG rhythm, HRV, activity, dose (simulated); **glucose and mood entered in the self-check** | Covered |
+| Input by keyboard, mouse or camera | Self-check form (glucose, mood, symptoms, note); typed sandbox telemetry; no camera input | Mostly covered |
 | Use NASA HRP resources to choose indicators and understand hazards | Hazards framing; radiation categories; DONKI and EDA data | Covered |
 | When a result warrants crew or flight-surgeon attention | Severity, priority, escalation levels, explanations | Covered |
-| Optional: prompts to take measurements, gamification, dynamic charts, colour coding, a clickable human figure, simple instructions | Dynamic charts and colour coding with text labels; explanations in plain language | Prompts, gamification and body figure absent |
+| Optional: prompts to take measurements, gamification, dynamic charts, colour coding, a clickable human figure, simple instructions | Daily check prompts (done, due, overdue); clickable body-systems map; dynamic charts; colour coding always with text; plain-language guidance | Gamification absent |
 
-The strongest framing for judges is **"crew-side and ground-side decision support built on personal
-baselines"**, with the self-check mode as clearly stated future work. Adding a small crew self-check
-view would raise *Relevance*, but it is a product decision for the team (see the readiness report).
+Frame it for judges as **"crew-side self-check and ground-side decision support built on personal
+baselines"**. Open the demo with the Crew self-check page: it answers the challenge statement most
+directly.
 
 ## 4. Demo and presentation
 

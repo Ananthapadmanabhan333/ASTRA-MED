@@ -3,10 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useCan } from "@/lib/auth/store";
+import { useLive } from "@/lib/live/store";
 
 import { api, unwrap } from "./client";
 import { sameSubject } from "./placeholder";
-import type { AlertCenterStatus, MissionContext, SimInject, SimStart, SimTelemetryReading } from "./types";
+import type { AlertCenterStatus, MissionContext, SimInject, SimStart, SimState, SimTelemetryReading } from "./types";
 
 /** Query keys for phase 6 data, invalidated by mission_event / mission_alert / sim_state socket messages. */
 export const mcKeys = {
@@ -187,6 +188,31 @@ export function useSimStateQuery() {
     queryKey: mcKeys.simState,
     queryFn: () => unwrap(api.GET("/api/mission-sim/state")),
     refetchInterval: 5_000,
+  });
+}
+
+/**
+ * The sandbox state: the socket's sim_state messages while connected, the REST state (every 5 s)
+ * otherwise. `query` carries the REST loading and error status.
+ */
+export function useSandboxState(): { state: SimState | undefined; query: ReturnType<typeof useSimStateQuery> } {
+  const live = useLive((s) => s.sim);
+  const connection = useLive((s) => s.connection);
+  const query = useSimStateQuery();
+  const state = connection === "live" && live ? live : query.data ?? live ?? undefined;
+  return { state, query };
+}
+
+/** Incident reports created from one sandbox run (GET /api/reports, filtered by simulation_id). */
+export function useSimReports(simulationId: string | null, enabled = true) {
+  return useQuery({
+    queryKey: ["reports", { simulation_id: simulationId }] as const,
+    queryFn: async () =>
+      (await unwrap(api.GET("/api/reports", { params: { query: { limit: 100 } } }))).filter(
+        (r) => r.simulation_id === simulationId,
+      ),
+    enabled: enabled && !!simulationId,
+    refetchInterval: 20_000,
   });
 }
 

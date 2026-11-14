@@ -7236,6 +7236,120 @@
         }
       }
     },
+    "/api/crew/{astronaut_id}/self-check": {
+      "get": {
+        "tags": [
+          "crew self-check"
+        ],
+        "summary": "Self Check",
+        "description": "The crew member's self-check: hand-entered glucose, mood and symptoms with plain-language status,\ncheck-in prompts (due / done / overdue) and recent entries. Orientation and process guidance only.",
+        "operationId": "self_check_api_crew__astronaut_id__self_check_get",
+        "parameters": [
+          {
+            "name": "astronaut_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelfCheckSummary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "crew self-check"
+        ],
+        "summary": "Add Self Report",
+        "description": "Record a self-check entry (any combination of glucose, mood, symptoms and a note).",
+        "operationId": "add_self_report_api_crew__astronaut_id__self_check_post",
+        "parameters": [
+          {
+            "name": "astronaut_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Astronaut Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelfReportCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelfReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/system/status": {
       "get": {
         "tags": [
@@ -17711,6 +17825,460 @@
         ],
         "title": "ScenarioInfo"
       },
+      "SelfCheckSummary": {
+        "properties": {
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "indicators": {
+            "items": {
+              "$ref": "#/components/schemas/SelfIndicator"
+            },
+            "type": "array",
+            "title": "Indicators"
+          },
+          "prompts": {
+            "items": {
+              "$ref": "#/components/schemas/SelfPrompt"
+            },
+            "type": "array",
+            "title": "Prompts"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/SelfReport"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "symptom_catalogue": {
+            "items": {
+              "$ref": "#/components/schemas/SymptomInfo"
+            },
+            "type": "array",
+            "title": "Symptom Catalogue"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "astronaut_id",
+          "name",
+          "generated_at",
+          "indicators",
+          "prompts",
+          "reports",
+          "symptom_catalogue",
+          "notes"
+        ],
+        "title": "SelfCheckSummary"
+      },
+      "SelfIndicator": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "system": {
+            "type": "string",
+            "title": "System",
+            "description": "Body-system group used by the body map: metabolic, behavioural, general"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "no_data",
+              "normal",
+              "attention",
+              "contact"
+            ],
+            "title": "Status"
+          },
+          "status_label": {
+            "type": "string",
+            "title": "Status Label"
+          },
+          "guidance": {
+            "type": "string",
+            "title": "Guidance",
+            "description": "Process guidance (what to do next), never a diagnosis or a treatment"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "system",
+          "value",
+          "unit",
+          "context",
+          "at",
+          "status",
+          "status_label",
+          "guidance",
+          "source",
+          "reference"
+        ],
+        "title": "SelfIndicator"
+      },
+      "SelfPrompt": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "how": {
+            "type": "string",
+            "title": "How"
+          },
+          "automatic": {
+            "type": "boolean",
+            "title": "Automatic"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "done",
+              "due",
+              "overdue"
+            ],
+            "title": "Status"
+          },
+          "last_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last At"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "how",
+          "automatic",
+          "status",
+          "last_at",
+          "due_at"
+        ],
+        "title": "SelfPrompt"
+      },
+      "SelfReport": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "astronaut_id": {
+            "type": "string",
+            "title": "Astronaut Id"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "glucose_mg_dl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Glucose Mg Dl"
+          },
+          "glucose_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Glucose Context"
+          },
+          "glucose_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "no_data",
+                  "normal",
+                  "attention",
+                  "contact"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Glucose Status"
+          },
+          "mood": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mood"
+          },
+          "symptoms_checked": {
+            "type": "boolean",
+            "title": "Symptoms Checked"
+          },
+          "symptoms": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Symptoms"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "data_source": {
+            "type": "string",
+            "title": "Data Source",
+            "default": "self_reported"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "astronaut_id",
+          "recorded_at",
+          "created_at",
+          "created_by",
+          "glucose_mg_dl",
+          "glucose_context",
+          "glucose_status",
+          "mood",
+          "symptoms_checked",
+          "symptoms",
+          "note"
+        ],
+        "title": "SelfReport"
+      },
+      "SelfReportCreate": {
+        "properties": {
+          "recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At",
+            "description": "When the check was taken (default: now; never in the future)"
+          },
+          "glucose_mg_dl": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 600.0,
+                "minimum": 20.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Glucose Mg Dl",
+            "description": "Blood glucose, mg/dL"
+          },
+          "glucose_context": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fasting",
+                  "after_meal",
+                  "random"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Glucose Context"
+          },
+          "mood": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mood",
+            "description": "1 very low \u2026 5 very good"
+          },
+          "symptoms": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symptoms",
+            "description": "Symptom keys; an empty list records 'no symptoms', null means not checked"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "title": "SelfReportCreate"
+      },
       "SeriesMeta": {
         "properties": {
           "id": {
@@ -20827,6 +21395,33 @@
           "text"
         ],
         "title": "SummaryStatement"
+      },
+      "SymptomInfo": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "attention",
+              "contact"
+            ],
+            "title": "Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "level"
+        ],
+        "title": "SymptomInfo"
       },
       "SyncRequest": {
         "properties": {

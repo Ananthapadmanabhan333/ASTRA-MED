@@ -2,8 +2,9 @@
 
 Databases from phases 1-6 were created by ``create_all`` and have no ``alembic_version`` table.
 This script compares such a database with the models. If they match, ``--stamp`` records the
-baseline revision so later ``alembic upgrade head`` runs work; if they differ it prints the
-differences and changes nothing.
+newest revision (the schema is already complete). If the only differences are tables added by later
+revisions, it records the baseline so ``alembic upgrade head`` adds them. Anything else is printed
+and nothing changes.
 
     python scripts/db_adopt.py                 # compare only (reads ASTRA_DATABASE_URL)
     python scripts/db_adopt.py --stamp         # compare, then stamp the baseline if identical
@@ -29,6 +30,19 @@ from app.db.migrations import alembic_config  # noqa: E402
 from app.db.models import Base  # noqa: E402
 
 BASELINE = "0001"
+# Tables created by revisions after the baseline (a phase 1-6 database simply lacks them).
+LATER_TABLES = {"crew_self_reports"}
+
+
+def _only_later_tables(changes: list) -> bool:
+    for c in changes:
+        op = c[0] if isinstance(c, tuple) else None
+        if op == "add_table" and c[1].name in LATER_TABLES:
+            continue
+        if op == "add_index" and c[1].table.name in LATER_TABLES:
+            continue
+        return False
+    return True
 
 
 async def diff(url: str) -> tuple[list, str | None]:
@@ -55,19 +69,21 @@ def main() -> int:
     if current:
         print(f"Database is already under Alembic control (revision {current}). Use: alembic upgrade head")
         return 0
-    if changes:
+    if changes and not _only_later_tables(changes):
         print(f"The database differs from the models in {len(changes)} place(s); not stamping:")
         for c in changes:
             print("  ", c)
         return 1
-    print("The database matches the models exactly.")
+    target = BASELINE if changes else "head"
+    print("The database matches the baseline schema; later tables are missing." if changes
+          else "The database matches the models exactly.")
     if args.stamp:
         cfg = alembic_config()
         cfg.cmd_opts = argparse.Namespace(x=[f"url={url}"])
-        command.stamp(cfg, BASELINE)
-        print(f"Stamped baseline revision {BASELINE}. Future deploys: alembic upgrade head")
+        command.stamp(cfg, target)
+        print(f"Stamped revision {target}. Next: alembic upgrade head")
     else:
-        print(f"Re-run with --stamp to record revision {BASELINE}.")
+        print(f"Re-run with --stamp to record revision {target}.")
     return 0
 
 
