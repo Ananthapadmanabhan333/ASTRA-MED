@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -36,6 +37,8 @@ from app.assistant.service import AssistantService
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
+from app.db.migrations import assert_migrated
+from app.db.retention import prune_once
 from app.db.session import create_engine, create_schema, create_session_factory
 from app.emergency.service import EmergencyService
 from app.medical.multisystem import MultisystemEngine
@@ -100,6 +103,24 @@ async def wait_for_database(engine: AsyncEngine, attempts: int = 15, delay_s: fl
             await asyncio.sleep(delay_s)
 
 
+_REQUEST_ID = re.compile(r"[A-Za-z0-9._-]{1,64}")
+
+
+async def _retention_loop(settings: Settings, factory) -> None:
+    """Prune rows older than the retention window every few hours (start-up pruning runs in seeding)."""
+    interval = settings.retention_interval_hours * 3600
+    while True:
+        await asyncio.sleep(interval)
+        try:
+            removed = await prune_once(settings, factory)
+            if any(removed.values()):
+                logger.info("retention: removed %s", ", ".join(f"{k}={v}" for k, v in removed.items() if v))
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("retention pass failed")
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     configure_logging(settings.log_level)
@@ -109,12 +130,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logger.warning("AUTHENTICATION IS DISABLED: every caller has every permission. Development only.")
     if "*" in settings.cors_origin_list:
         raise RuntimeError("ASTRA_CORS_ORIGINS must list explicit origins (credentials are allowed).")
+    if settings.is_production:
+        problems = settings.production_problems()
+        if problems:
+            raise RuntimeError("Unsafe production configuration: " + "; ".join(problems) + ".")
+        if any("localhost" in o or "127.0.0.1" in o for o in settings.cors_origin_list):
+            logger.warning("ASTRA_CORS_ORIGINS still lists a localhost origin in production")
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        app.state.ready = False
         db_engine = create_engine(settings.database_url)
         await wait_for_database(db_engine)
-        await create_schema(db_engine)
+        if settings.db_schema_mode == "migrate":
+            await assert_migrated(db_engine)  # Alembic owns the schema; refuse to run on an old one
+        else:
+            await create_schema(db_engine)
         factory = create_session_factory(db_engine)
         app.state.auth = AuthService(settings, factory)
         app.state.audit = AuditLog(factory, settings.audit_read_dedupe_seconds)
@@ -157,10 +188,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             monitor.start()
         if settings.twin_background:
             app.state.twin.start()
+        retention = asyncio.create_task(_retention_loop(settings, factory), name="astra-retention") \
+            if settings.retention_interval_hours > 0 else None
+        app.state.ready = True
         logger.info("ASTRA-MED API ready (%s, db=%s)", settings.environment, db_engine.dialect.name)
         try:
             yield
         finally:
+            app.state.ready = False
+            if retention is not None:
+                retention.cancel()
             if settings.ai_enabled and not preload.done():
                 preload.cancel()
             run = app.state.sandbox.run
@@ -185,12 +222,36 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=__version__,
         description=DESCRIPTION,
         lifespan=lifespan,
+        docs_url="/docs" if settings.docs_enabled else None,
+        redoc_url="/redoc" if settings.docs_enabled else None,
+        openapi_url="/openapi.json" if settings.docs_enabled else None,
     )
     app.state.settings = settings
+    app.state.ready = False
+
+    # Probes for container platforms and load balancers. Public and data-free.
+    @app.get("/livez", include_in_schema=False)
+    async def livez() -> dict:
+        """Liveness: the process is up and serving requests (no dependencies checked)."""
+        return {"status": "alive"}
+
+    @app.get("/readyz", include_in_schema=False)
+    async def readyz(request: Request) -> JSONResponse:
+        """Readiness: start-up finished and the database answers. 503 otherwise, so traffic waits."""
+        if not getattr(request.app.state, "ready", False):
+            return JSONResponse(status_code=503, content={"status": "starting"})
+        try:
+            async with request.app.state.db_engine.connect() as conn:
+                await asyncio.wait_for(conn.execute(text("SELECT 1")), timeout=3)
+        except Exception:
+            return JSONResponse(status_code=503, content={"status": "database_unavailable"})
+        return JSONResponse({"status": "ready"})
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):
-        request_id = (request.headers.get("x-request-id") or uuid.uuid4().hex[:12])[:32]
+        supplied = request.headers.get("x-request-id") or ""
+        # Accept a caller's ID only if it is a plain token, so it cannot inject text into logs.
+        request_id = supplied if _REQUEST_ID.fullmatch(supplied) else uuid.uuid4().hex[:12]
         request.state.request_id = request_id
         started = time.perf_counter()
         try:
@@ -227,6 +288,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(auth_routes.admin_router)
     app.include_router(routes.router, dependencies=[require("health:read")])
     app.include_router(ai_routes.router, dependencies=[require("health:read")])
+    app.include_router(ai_routes.admin_router)
     app.include_router(space_routes.router, dependencies=[require("space:read")])
     app.include_router(twin_routes.router, dependencies=[require("health:read")])
     app.include_router(medical_routes.router, dependencies=[require("health:read")])

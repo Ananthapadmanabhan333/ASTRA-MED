@@ -56,8 +56,11 @@ def render_report(r: dict[str, Any]) -> str:
         f"applied once to {an['test_windows']:,} test windows (anomalous rate {_pct(an['test_label_rate'])}; "
         f"{an['ambiguous_test_windows_excluded']} ramp-edge windows below the label level are excluded).",
         "",
-        "| Model | Precision | Recall | F1 | AUROC | AUPRC | False-alarm rate | Events detected | Sudden | Gradual | Subtle | Median delay |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "Window-level metrics. False-alarm rate = false-positive rate (FP / (FP + TN)); "
+        "false-negative rate = FN / (FN + TP) = 1 - recall.",
+        "",
+        "| Model | Precision | Recall | F1 | AUROC | AUPRC | False-positive rate | False-negative rate | Events detected | Sudden | Gradual | Subtle | Median delay |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     rows = {**{k: v for k, v in an["models"].items() if "test" in v}, "ensemble": an["ensemble"], "fixed_thresholds": an["fixed_thresholds"]}
     for m in rows.values():
@@ -65,7 +68,8 @@ def render_report(r: dict[str, Any]) -> str:
         kinds = e.get("by_kind", {})
         lines.append(
             f"| {m['label']} | {_f(t['precision'])} | {_f(t['recall'])} | {_f(t['f1'])} | {_f(t['auroc'])} | "
-            f"{_f(t['auprc'])} | {_f(t['false_alarm_rate'], 4)} | {_pct(e['event_recall'])} | "
+            f"{_f(t['auprc'])} | {_f(t['false_alarm_rate'], 4)} | "
+            f"{_f(t.get('false_negative_rate', 1 - t['recall']), 3)} | {_pct(e['event_recall'])} | "
             f"{_pct(kinds.get('sudden', {}).get('recall'))} | {_pct(kinds.get('gradual', {}).get('recall'))} | "
             f"{_pct(m['events_by_intensity'].get('subtle', {}).get('recall'))} | {_f(e['median_delay_min'], 0)} min |"
         )
@@ -130,6 +134,19 @@ def render_report(r: dict[str, Any]) -> str:
             skill = m.get("skill_vs_climatology", {}).get(sig, {})
             lines.append(f"| {m['label']} | {cells} | {_f(skill.get('1h'), 2)} / {_f(skill.get('24h'), 2)} |")
         lines.append("")
+        if any("mape_pct" in m.get("by_signal", {}).get(sig, {}).get("1h", {}) for m in fc["models"].values()):
+            lines += [f"MAPE (%) for {sig.replace('_', ' ')}:", "",
+                      "| Model | " + " | ".join(f"MAPE {h}h" for h in fc["horizons_hours"]) + " |",
+                      "| --- | " + " | ".join("---" for _ in fc["horizons_hours"]) + " |"]
+            for m in fc["models"].values():
+                if "by_signal" in m:
+                    s_ = m["by_signal"][sig]
+                    lines.append(f"| {m['label']} | " + " | ".join(_f(s_[f'{h}h'].get('mape_pct'), 2)
+                                                                for h in fc["horizons_hours"]) + " |")
+            lines.append("")
+        elif sig == "temperature_c":
+            lines += ["MAPE is not reported for temperature: degrees Celsius have an arbitrary zero, so a "
+                      "percentage error is not meaningful (MAE and RMSE above are in °C).", ""]
 
     if fc.get("ablations"):
         lines += ["### Ablation: XGBoost feature groups (MAE)", "",
@@ -152,5 +169,27 @@ def render_report(r: dict[str, Any]) -> str:
             lines.append(f"| {group} | {_pct(shap['1h'].get(group))} | {_pct(shap.get('24h', {}).get(group))} |")
         lines.append("")
 
+    lines += _hyperparameter_section(an, fc)
+    libs = r["environment"].get("libraries")
+    if libs:
+        lines += ["## Software versions", "", "| Library | Version |", "| --- | --- |"]
+        lines += [f"| {k} | {v or 'not installed'} |" for k, v in libs.items()] + [""]
     lines += ["## Limitations", ""] + [f"- {x}" for x in r["limitations"]] + [""]
     return "\n".join(lines)
+
+
+def _hp_text(hp: dict[str, Any]) -> str:
+    return "; ".join(f"{k} = {v}" for k, v in hp.items())
+
+
+def _hyperparameter_section(an: dict[str, Any], fc: dict[str, Any]) -> list[str]:
+    rows = [(m["label"], m["hyperparameters"]) for m in an["models"].values() if m.get("hyperparameters")]
+    rows += [(m["label"], m["hyperparameters"]) for m in fc["models"].values() if m.get("hyperparameters")]
+    if not rows:
+        return []
+    out = ["## Hyperparameters", "",
+           "Fixed before the run (no search on the test split). Learned detectors pick one feature set on "
+           "validation AUPRC; neural models and XGBoost stop early on the separate early-stopping split.", "",
+           "| Model | Settings |", "| --- | --- |"]
+    out += [f"| {label} | {_hp_text(hp)} |" for label, hp in rows]
+    return out + [""]

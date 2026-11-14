@@ -18,7 +18,7 @@ from app.core.errors import ApiError
 from app.core.timeutil import utcnow
 from app.db.models import EmergencyRunRow, IncidentReportRow, RadiationDoseRow
 from app.mission.alerts import alert_view
-from app.mission.events import event_view
+from app.mission.events import event_view, hidden_sources
 from app.mission.taxonomy import CATEGORIES, CATEGORY_LABELS
 from app.repositories import sleep_radiation as sr_repo
 from app.services import mappers
@@ -232,7 +232,8 @@ async def overview(state, principal, now: datetime | None = None) -> dict[str, A
 
     async def incidents():
         recent = await state.mission_events.list(context="operations", priorities=[1, 2, 3],
-                                                 start=now - timedelta(hours=24), limit=12)
+                                                 start=now - timedelta(hours=24), limit=12,
+                                                 exclude_sources=hidden_sources(principal))
         reports = []
         async with state.session_factory() as session:
             if principal.can("reports:read"):
@@ -273,9 +274,11 @@ LANE_ORDER = ("crew_physiology", "ai_prediction", "environment", "radiation", "s
 
 
 async def timeline(events_service, *, start: datetime, end: datetime, astronaut_id: str | None, context: str,
-                   simulation_id: str | None, categories: list[str] | None, limit: int = 1000) -> dict[str, Any]:
+                   simulation_id: str | None, categories: list[str] | None, limit: int = 1000,
+                   exclude_sources: frozenset[str] = frozenset()) -> dict[str, Any]:
     rows = await events_service.list(categories=categories, astronaut_id=astronaut_id, context=context,
-                                     simulation_id=simulation_id, start=start, end=end, limit=limit)
+                                     simulation_id=simulation_id, start=start, end=end, limit=limit,
+                                     exclude_sources=exclude_sources)
     lanes = {c: {"key": c, "label": CATEGORY_LABELS[c], "items": []} for c in LANE_ORDER if c in CATEGORIES}
     for r in reversed(rows):
         lanes.setdefault(r.category, {"key": r.category, "label": CATEGORY_LABELS.get(r.category, r.category),

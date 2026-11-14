@@ -1,6 +1,6 @@
 "use client";
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api, unwrap } from "./client";
 import type { EmergencyRunCreate, ReportCreate, ReviewStatus, RoleKey } from "./types";
@@ -32,7 +32,12 @@ const id = (astronaut_id: string) => ({ params: { path: { astronaut_id } } });
 
 // ------------------------------------------------------------------- twin ----
 export function useTwin(aid: string) {
-  return useQuery({ queryKey: medKeys.twin(aid), queryFn: () => unwrap(api.GET("/api/twin/{astronaut_id}", id(aid))), refetchInterval: 15_000 });
+  return useQuery({
+    queryKey: medKeys.twin(aid),
+    queryFn: () => unwrap(api.GET("/api/twin/{astronaut_id}", id(aid))),
+    refetchInterval: 15_000,
+    enabled: !!aid,
+  });
 }
 
 export function useTwinTimeline(aid: string, days: number) {
@@ -40,7 +45,8 @@ export function useTwinTimeline(aid: string, days: number) {
     queryKey: medKeys.twinTimeline(aid, days),
     queryFn: () => unwrap(api.GET("/api/twin/{astronaut_id}/timeline", { params: { path: { astronaut_id: aid }, query: { days } } })),
     refetchInterval: 60_000,
-    placeholderData: keepPreviousData,
+    // A longer or shorter window for the same crew member may stand in; another crew member's may not.
+    placeholderData: (prev, prevQuery) => (prevQuery?.queryKey[1] === aid ? prev : undefined),
   });
 }
 
@@ -52,7 +58,7 @@ export function useTwinTrend(aid: string, metric: string, statistic: string) {
         params: { path: { astronaut_id: aid }, query: { metric: metric as never, statistic: statistic as never } },
       })),
     refetchInterval: 120_000,
-    placeholderData: keepPreviousData,
+    // Every key part (crew member, signal, statistic) changes what the chart means, so no placeholder.
   });
 }
 
@@ -104,7 +110,7 @@ export function useRunTimeline(runId: string | null, astronautId: string | null,
       })),
     enabled: !!runId,
     refetchInterval: live ? 5_000 : false,
-    placeholderData: keepPreviousData,
+    // Run and crew member are the whole key: no placeholder, so one run's timeline never shows under another.
   });
 }
 
@@ -194,7 +200,7 @@ export function useOverview(period: "24h" | "7d" | "30d", astronautId: string | 
     queryKey: medKeys.overview(period, astronautId),
     queryFn: () => unwrap(api.GET("/api/overview", { params: { query: { period, ...(astronautId ? { astronaut_id: astronautId } : {}) } } })),
     refetchInterval: 30_000,
-    placeholderData: keepPreviousData,
+    placeholderData: (prev, prevQuery) => (prevQuery?.queryKey[2] === astronautId ? prev : undefined),
   });
 }
 

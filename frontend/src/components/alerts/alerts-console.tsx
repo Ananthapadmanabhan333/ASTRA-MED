@@ -108,7 +108,11 @@ export function AlertsConsole() {
             </EmptyState>
           }
         >
-          {(data) => <AlertList alerts={data} crew={crew.data} />}
+          {(data) => (
+            <div className={alerts.isPlaceholderData ? "opacity-60" : undefined}>
+              <AlertList alerts={data} crew={crew.data} />
+            </div>
+          )}
         </QueryView>
       </Panel>
     </div>

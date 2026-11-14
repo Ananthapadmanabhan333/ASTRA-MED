@@ -180,7 +180,15 @@ export function MedicalCenter() {
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
         <Panel raised className="xl:col-span-3" title="Multisystem assessment" description="Inputs, status, model outputs and an explanation built only from those inputs."
           actions={<CrewPicker value={aid} onChange={(v) => setAid(v)} />}>
-          {aid ? <Systems aid={aid} /> : <LoadingState rows={5} />}
+          {aid ? (
+            <Systems aid={aid} />
+          ) : crew.error ? (
+            <ErrorState title="Couldn't load the crew list" error={crew.error} onRetry={() => crew.refetch()} />
+          ) : crew.data ? (
+            <EmptyState title="No crew members">The multisystem assessment appears once the backend lists a crew member.</EmptyState>
+          ) : (
+            <LoadingState rows={5} />
+          )}
         </Panel>
         <div className="space-y-5 xl:col-span-2">
           <Queue selected={alertId} onSelect={setAlert} />

@@ -50,6 +50,9 @@ def main(argv: list[str] | None = None) -> int:
         version_dir = Path(root) / results["version"]
         shutil.copy(version_dir / "results.json", out / "latest-results.json")
         shutil.copy(version_dir / "report.md", out / "latest-report.md")
+        from app.ai.experiments.tracking import write_index
+
+        write_index(Path(root), out)
     print(f"registered {results['version']} ({results['runtime_seconds']} s)")
     return 0
 

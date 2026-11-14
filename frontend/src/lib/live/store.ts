@@ -14,6 +14,8 @@ interface LiveStore extends LiveData {
   receive: (msg: WsServerMessage, at: number) => void;
   setConnection: (state: ConnectionState, attempts?: number) => void;
   markRead: () => void;
+  /** Back to the initial state: no readings, alerts, events or sandbox data kept in memory. */
+  reset: () => void;
 }
 
 export const useLive = create<LiveStore>((set) => ({
@@ -24,4 +26,5 @@ export const useLive = create<LiveStore>((set) => ({
   setConnection: (connection, attempts) =>
     set((s) => ({ connection, attempts: attempts ?? s.attempts })),
   markRead: () => set({ unread: 0 }),
+  reset: () => set({ ...initialLive(), connection: "connecting", attempts: 0 }),
 }));

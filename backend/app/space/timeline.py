@@ -20,7 +20,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories import alerts as alerts_repo
 from app.repositories import events as sim_repo
 from app.repositories import vitals as vitals_repo
-from app.services.history import bucket_rows
 from app.space import donki
 from app.space import repository as repo
 from app.space.intel import VANTAGE_NOTE, alert_for
@@ -86,8 +85,8 @@ async def mission_timeline(session: AsyncSession, ai_service, start: datetime, e
     series: list[dict[str, Any]] = []
     notes: list[str] = []
     if astronaut_id:
-        rows = await vitals_repo.fetch_range(session, astronaut_id, start, end, ("heart_rate", "spo2", "respiratory_rate"))
-        buckets = bucket_rows(rows, start, 3600, 3)
+        buckets = await vitals_repo.bucket_means(session, astronaut_id, start, end, 3600,
+                                                 ("heart_rate", "spo2", "respiratory_rate"))
         for i, (key, label, unit) in enumerate((("heart_rate", "Heart rate", "bpm"), ("spo2", "SpO₂", "%"),
                                                  ("respiratory_rate", "Respiratory rate", "breaths/min"))):
             series.append({"key": key, "label": label, "unit": unit, "category": "simulated",

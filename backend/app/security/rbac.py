@@ -29,6 +29,7 @@ PERMISSIONS: dict[str, str] = {
     "assistant:use": "Ask the medical data assistant",
     "space:sync": "Trigger NASA data synchronisation",
     "models:manage": "Reload AI model versions",
+    "system:maintain": "Run database consistency repairs",
     "audit:read": "Read the audit log",
     "users:manage": "Create, change and deactivate user accounts",
 }
@@ -54,10 +55,11 @@ ROLE_PERMISSIONS: dict[Role, frozenset[str]] = {
     }),
     Role.MISSION_OPERATOR: frozenset({
         "health:read", "space:read", "alerts:manage", "simulation:control", "reports:read",
-        "reports:write", "assistant:use", "space:sync",
+        "reports:write", "assistant:use", "space:sync", "system:maintain",
     }),
     Role.ANALYST: frozenset({"health:read", "space:read", "assistant:use"}),
-    Role.ADMIN: frozenset({"space:read", "space:sync", "models:manage", "audit:read", "users:manage"}),
+    Role.ADMIN: frozenset({"space:read", "space:sync", "models:manage", "audit:read", "users:manage",
+                           "system:maintain"}),
 }
 
 assert all(p in PERMISSIONS for perms in ROLE_PERMISSIONS.values() for p in perms)

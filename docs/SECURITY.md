@@ -1,4 +1,7 @@
-# Security: authentication, access control and audit (phase 5)
+# Security: authentication, access control and audit (phases 5 and 7)
+
+Phase 7 changes are marked *(phase 7)*. The full audit, with open items, is in
+[PHASE7_AUDIT.md](PHASE7_AUDIT.md).
 
 ## Authentication
 
@@ -19,12 +22,17 @@
   - a wrong username and a wrong password give the same error;
   - more than `ASTRA_AUTH_LOGIN_ATTEMPTS_PER_MINUTE` attempts from one client address get HTTP 429
     with `Retry-After`;
-  - an account locks for 15 minutes after 5 failed sign-ins.
+  - an account locks for 15 minutes after 5 failed sign-ins. *(phase 7)* A locked account now gets the
+    same message and the same scrypt work as a wrong password, so a lockout does not confirm that a
+    username exists. The audit log keeps the real reason.
 - **WebSocket:** `/ws/health-monitoring` needs an allowed Origin and a session with `health:read`
   before it accepts (else close code 1008). The session is re-checked every 60 s.
 - **Disabled auth:** `ASTRA_AUTH_ENABLED=false` grants every permission to every caller and logs a
   warning. It is refused when `ASTRA_ENVIRONMENT=production`. A wildcard CORS origin is always
   refused (credentials are allowed).
+- **Production profile** *(phase 7)*: with `ASTRA_ENVIRONMENT=production` the API refuses to start
+  unless authentication is on, cookies are `Secure`, the database is PostgreSQL and the schema is
+  Alembic-managed (`ASTRA_DB_SCHEMA_MODE=migrate`). The interactive docs are off by default.
 
 ## Roles and permissions
 
@@ -42,6 +50,7 @@ Access is checked by permission, never by role name (`app/security/rbac.py`; `GE
 | `assistant:use` | ✓ | ✓ | ✓ | |
 | `space:sync` | | ✓ | | ✓ |
 | `models:manage` reload models | | | | ✓ |
+| `system:maintain` consistency repair *(phase 7)* | | ✓ | | ✓ |
 | `audit:read` | | | | ✓ |
 | `users:manage` | | | | ✓ |
 
@@ -53,6 +62,11 @@ Access is checked by permission, never by role name (`app/security/rbac.py`; `GE
 - **Space routes:** the ones that expose crew data (radiation intelligence, mission timeline,
   correlation) also need `health:read`.
 - **Assistant:** lists reports only for roles with `reports:read`.
+- **Incident-report events** *(phase 7)*: the unified event history, timeline, counts, overview and
+  live stream hide `incident_reports` events from roles without `reports:read`. The WebSocket hub
+  records each connection's permissions and sends such events only to permitted sockets.
+- **Model reload** *(phase 7)*: `POST /api/ai/models/reload` is mounted outside the `health:read`
+  router, so administrators (who have `models:manage` but no crew access) can actually use it.
 
 ## Audit log
 
@@ -111,4 +125,9 @@ cd backend
   limited to its own records would need filtering in every endpoint and in the WebSocket fan-out.
 - **Audit log:** stored in the application database, with no tamper-evidence (hash chain or WORM
   storage). The read de-duplication is in memory.
-- **Schema:** created with `create_all` (new tables only); Alembic migrations are still to come.
+- **Schema** *(phase 7)*: Alembic migrations (`backend/migrations`, baseline `0001`); production runs
+  `alembic upgrade head` before deploying and the API refuses an out-of-date schema.
+- **Hard lockout:** 5 failures lock an account for 15 minutes, so someone who knows a username can
+  keep that account locked. Progressive backoff is the open fix.
+- **Logs** *(phase 7)*: bound SQL parameters are never logged (`hide_parameters`); client-supplied
+  `X-Request-ID` values are accepted only as plain tokens.

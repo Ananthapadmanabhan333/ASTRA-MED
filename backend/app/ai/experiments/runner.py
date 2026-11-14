@@ -44,7 +44,8 @@ from app.ai.forecasting.models import (
     XGBoostForecaster,
     xgb_feature_group,
 )
-from app.ai.metrics import classification, event_detection, regression
+from app.ai.metrics import RATIO_SCALE_SIGNALS, classification, event_detection, regression
+from app.ai.monitoring import library_versions
 from app.ai.pipeline import PreparedData, prepare
 from app.ai.registry import ModelRegistry, config_hash, git_commit
 from app.ai.signals import FORECAST_SIGNALS, WINDOW_MINUTES
@@ -210,6 +211,7 @@ def run_anomaly(cfg: ExperimentConfig, P: PreparedData, subtle: dict[str, bool])
         results[name] = {
             "label": det.label,
             "description": det.description,
+            "hyperparameters": detector_hyperparameters(det),
             "selected_features": cand,
             "n_features": len(det.feature_names),
             "fit_seconds": round(fit_s, 2),
@@ -267,6 +269,44 @@ def run_anomaly(cfg: ExperimentConfig, P: PreparedData, subtle: dict[str, bool])
     return summary, detectors, ensemble
 
 
+def detector_hyperparameters(det: Detector) -> dict[str, Any]:
+    """The settings each detector was trained with (recorded in results.json and the report)."""
+    hp: dict[str, Any] = {"seed": det.seed, "n_features": len(det.feature_names)}
+    model = getattr(det, "model", None)
+    if det.name == "statistical":
+        hp["sustained_weight"] = det.SUSTAINED_WEIGHT
+    elif det.name == "isolation_forest":
+        hp.update({k: model.get_params()[k] for k in ("n_estimators", "max_samples", "contamination")})
+    elif det.name == "lof":
+        hp.update({k: model.get_params()[k] for k in ("n_neighbors", "metric", "novelty")})
+        hp.update(max_train_windows=det.MAX_TRAIN, scaling="standard")
+    elif det.name == "one_class_svm":
+        hp.update({k: model.get_params()[k] for k in ("kernel", "gamma", "nu")})
+        hp.update(max_train_windows=det.MAX_TRAIN, scaling="standard")
+    elif det.name == "autoencoder":
+        hp.update(architecture="d-64-16-64-d, ReLU", optimizer="Adam", epochs=det.epochs,
+                  batch_size=det.batch_size, learning_rate=det.lr, loss="mean squared reconstruction error",
+                  scaling="standard")
+    hp["threshold_rule"] = "quantile of validation-normal scores at 1 - target false-alarm rate"
+    return clean_json(hp)
+
+
+def forecaster_hyperparameters(model: Any) -> dict[str, Any]:
+    if isinstance(model, XGBoostForecaster):
+        return clean_json({**model.params, "max_boost_rounds": model.n_estimators, "early_stopping_rounds": 40,
+                           "best_iterations": dict(model.best_iterations),
+                           "one_model_per": "signal (all horizons share one model; horizon is a feature)"})
+    if isinstance(model, SequenceForecaster):
+        arch = {"lstm": "1-layer LSTM, hidden 64", "gru": "1-layer GRU, hidden 64",
+                "tcn": "5 causal residual blocks, 32 channels, kernel 3, dilations 1-16"}[model.arch]
+        return clean_json({"encoder": arch, "head": "MLP 256, ReLU, dropout 0.1, predicts residual to climatology",
+                           "optimizer": "Adam", "learning_rate": model.lr, "weight_decay": 1e-5,
+                           "batch_size": model.batch_size, "max_epochs": model.epochs,
+                           "early_stopping_patience": model.patience, "epochs_run": len(model.history),
+                           "seed": model.seed})
+    return {"parameters": "none (baseline)"}
+
+
 # -------------------------------------------------------------------- forecast ----
 def _forecast_sets(P: PreparedData):
     split = P.split
@@ -293,8 +333,13 @@ def _forecast_metrics(pred: np.ndarray, q: np.ndarray, s) -> dict[str, dict[str,
         for h_hours, step in zip(REPORT_HORIZONS_H, REPORT_STEPS):
             k = step - 1
             scale = s.scale[:, j]
+            # Back to physical units (targets are normalised per crew member); MAE, RMSE and coverage
+            # do not depend on the centre, but MAPE needs absolute values.
+            center = s.center[:, j] if s.center is not None else 0.0
             out[sig][f"{h_hours}h"] = regression(
-                s.target[:, k, j] * scale, pred[:, k, j] * scale, lo[:, k, j] * scale, hi[:, k, j] * scale
+                s.target[:, k, j] * scale + center, pred[:, k, j] * scale + center,
+                lo[:, k, j] * scale + center, hi[:, k, j] * scale + center,
+                mape=sig in RATIO_SCALE_SIGNALS,
             )
     return out
 
@@ -331,6 +376,7 @@ def run_forecast(cfg: ExperimentConfig, P: PreparedData) -> tuple[dict, dict[str
         results[name] = {
             "label": model.label,
             "family": model.family,
+            "hyperparameters": forecaster_hyperparameters(model),
             "fit_seconds": round(fit_s, 2),
             "by_signal": _forecast_metrics(pred, q, test),
         }
@@ -420,7 +466,8 @@ def run(cfg: ExperimentConfig, artifacts_root: Path, register: bool = True) -> d
         "created_at": datetime.now(UTC).isoformat(),
         "git_commit": git_commit(Path(__file__).resolve().parent),
         "runtime_seconds": round(time.perf_counter() - started, 1),
-        "environment": {"python": platform.python_version(), "platform": platform.platform()},
+        "environment": {"python": platform.python_version(), "platform": platform.platform(),
+                        "libraries": library_versions()},
         "config": cfg_dict,
         "dataset": dataset_summary(data, events, split, cfg),
         "anomaly": anomaly,
@@ -441,6 +488,7 @@ def run(cfg: ExperimentConfig, artifacts_root: Path, register: bool = True) -> d
             "detectors": list(detectors),
             "forecasters": list(forecasters),
             "serving_forecaster": cfg.serving_forecaster,
+            "libraries": results["environment"]["libraries"],
         })
     logger.info("experiment %s finished in %.0fs", version, results["runtime_seconds"])
     return results

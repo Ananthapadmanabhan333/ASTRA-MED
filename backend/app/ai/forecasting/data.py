@@ -140,13 +140,14 @@ class SampleSet:
     origin_ts: list[pd.Timestamp]
     astronaut: list[str]
     scale: np.ndarray  # (N, 4) per-sample signal scale, to report errors in physical units
+    center: np.ndarray | None = None  # (N, 4) per-sample signal centre: absolute value = target * scale + center
 
     def __len__(self) -> int:
         return len(self.past)
 
 
 def build_samples(series_list: list[SeriesArrays], masks: dict[str, np.ndarray], stride: int = 1) -> SampleSet:
-    past, fut, tgt, clim, ts, who, scale = [], [], [], [], [], [], []
+    past, fut, tgt, clim, ts, who, scale, center = [], [], [], [], [], [], [], []
     for s in series_list:
         for t in origins(s, masks[s.astronaut_id], stride):
             past.append(s.past(t))
@@ -156,7 +157,8 @@ def build_samples(series_list: list[SeriesArrays], masks: dict[str, np.ndarray],
             ts.append(s.index[t])
             who.append(s.astronaut_id)
             scale.append([s.norm.scale[x] for x in FORECAST_SIGNALS])
+            center.append([s.norm.center[x] for x in FORECAST_SIGNALS])
     return SampleSet(
         np.asarray(past, np.float32), np.asarray(fut, np.float32), np.asarray(tgt, np.float32),
-        np.asarray(clim, np.float32), ts, who, np.asarray(scale, np.float32),
+        np.asarray(clim, np.float32), ts, who, np.asarray(scale, np.float32), np.asarray(center, np.float32),
     )

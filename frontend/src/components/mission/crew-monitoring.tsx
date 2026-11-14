@@ -12,7 +12,8 @@ import { StatusPill } from "@/components/status/status";
 import { useCrewMonitoring } from "@/lib/api/mission-hooks";
 import type { CrewMonitorCard, Deviation } from "@/lib/api/types";
 import { crewColor } from "@/lib/crew";
-import { fmt, relativeTime, utcDay } from "@/lib/format";
+import { fmt, relativeTime, utcDay, utcTime } from "@/lib/format";
+import { pickReading } from "@/lib/live/freshness";
 import { liveStatus } from "@/lib/live/reducer";
 import { useLive } from "@/lib/live/store";
 import { ACTIVITY_LABEL } from "@/lib/metrics";
@@ -92,7 +93,9 @@ function CrewCard({ card }: { card: CrewMonitorCard }) {
   const connection = useLive((s) => s.connection);
   const openAlerts = useLive((s) => s.openAlerts);
   const now = useNow(10_000);
-  const r = live ?? card.latest ?? null;
+  // The REST reading wins whenever the stream is not live or has nothing newer.
+  const picked = pickReading(live, card.latest, connection);
+  const r = picked.reading;
   const status = connection === "live" ? liveStatus(Object.values(openAlerts).filter((a) => a.astronaut_id === card.astronaut_id)) : card.status;
   const ai = card.ai;
   const aiAlerts = card.open_alerts.filter((a) => a.source !== "physiological_monitoring");
@@ -109,10 +112,10 @@ function CrewCard({ card }: { card: CrewMonitorCard }) {
       }
       meta={
         <span className="flex items-center gap-2">
-          {card.live && connection === "live" ? (
+          {picked.live ? (
             <span className="inline-flex items-center gap-1.5 text-telemetry"><LivePulse /> live</span>
-          ) : card.last_reading_age_s != null ? (
-            <span>reading {fmt(card.last_reading_age_s, 0)} s old</span>
+          ) : r ? (
+            <span>last reading {now ? relativeTime(r.ts, now) : `${utcTime(r.ts)} UTC`}</span>
           ) : null}
           <StatusPill status={status} />
         </span>

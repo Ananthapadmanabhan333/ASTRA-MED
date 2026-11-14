@@ -8,6 +8,7 @@ import { LiveBridge } from "@/components/shell/live-bridge";
 import { Button } from "@/components/ui/button";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { useAuth } from "@/lib/auth/store";
+import { clearEcg } from "@/lib/live/ecg-buffer";
 import { useLive } from "@/lib/live/store";
 
 async function loadSession() {
@@ -38,8 +39,13 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Never keep health records in memory once the session has ended.
-    if (status === "signed_out") qc.clear();
+    // Never keep health records in memory once the session has ended: REST caches, the live
+    // store (readings, trails, alerts, events, sandbox state) and the ECG sample buffer.
+    if (status === "signed_out") {
+      qc.clear();
+      useLive.getState().reset();
+      clearEcg();
+    }
   }, [status, qc]);
 
   if (status === "loading") {
@@ -138,9 +144,13 @@ function SignIn() {
           </form>
         </div>
         <p className="text-xs leading-relaxed text-ink-3">
-          Research prototype with simulated crew data. Not a medical device. For local demo accounts run{" "}
-          <code className="text-ink-2">python scripts/create_users.py dev</code> in the backend; the credentials are
-          written to <code className="text-ink-2">backend/.dev-users.json</code>.
+          Research prototype with simulated crew data. Not a medical device.
+          {process.env.NODE_ENV === "development" && (
+            <>
+              {" "}For local demo accounts run <code className="text-ink-2">python scripts/create_users.py dev</code> in
+              the backend; the credentials are written to <code className="text-ink-2">backend/.dev-users.json</code>.
+            </>
+          )}
         </p>
       </div>
     </main>

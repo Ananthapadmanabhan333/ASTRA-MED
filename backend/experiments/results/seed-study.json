@@ -1,0 +1,3228 @@
+{
+  "created_at": "2026-11-14T12:05:47.196038+00:00",
+  "git_commit": "8fae33c",
+  "config_name": "default",
+  "quick": false,
+  "seeds": [
+    7,
+    11,
+    23
+  ],
+  "runtime_seconds": {
+    "7": 256.5,
+    "11": 249.8,
+    "23": 279.2
+  },
+  "anomaly_models": [
+    "statistical",
+    "isolation_forest",
+    "lof",
+    "one_class_svm",
+    "autoencoder",
+    "ensemble",
+    "fixed_thresholds"
+  ],
+  "forecast_models": [
+    "persistence",
+    "seasonal_naive",
+    "climatology",
+    "xgboost",
+    "lstm",
+    "gru",
+    "tcn"
+  ],
+  "summary": {
+    "anomaly.autoencoder.auprc": {
+      "mean": 0.764,
+      "sd": 0.0521,
+      "min": 0.7193,
+      "max": 0.8212,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8212,
+        "11": 0.7514,
+        "23": 0.7193
+      }
+    },
+    "anomaly.autoencoder.auroc": {
+      "mean": 0.9225,
+      "sd": 0.0172,
+      "min": 0.91,
+      "max": 0.9422,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9154,
+        "11": 0.9422,
+        "23": 0.91
+      }
+    },
+    "anomaly.autoencoder.event_recall": {
+      "mean": 0.9042,
+      "sd": 0.0494,
+      "min": 0.8571,
+      "max": 0.9556,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8571,
+        "11": 0.9556,
+        "23": 0.9
+      }
+    },
+    "anomaly.autoencoder.f1": {
+      "mean": 0.6882,
+      "sd": 0.0302,
+      "min": 0.6662,
+      "max": 0.7226,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7226,
+        "11": 0.6662,
+        "23": 0.6759
+      }
+    },
+    "anomaly.autoencoder.false_alarm_rate": {
+      "mean": 0.0074,
+      "sd": 0.0018,
+      "min": 0.0059,
+      "max": 0.0094,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00588,
+        "11": 0.00942,
+        "23": 0.0069
+      }
+    },
+    "anomaly.autoencoder.false_negative_rate": {
+      "mean": 0.4373,
+      "sd": 0.0194,
+      "min": 0.4155,
+      "max": 0.4527,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4155,
+        "11": 0.4527,
+        "23": 0.4436
+      }
+    },
+    "anomaly.autoencoder.precision": {
+      "mean": 0.886,
+      "sd": 0.0524,
+      "min": 0.8509,
+      "max": 0.9462,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9462,
+        "11": 0.8509,
+        "23": 0.8608
+      }
+    },
+    "anomaly.autoencoder.recall": {
+      "mean": 0.5627,
+      "sd": 0.0194,
+      "min": 0.5473,
+      "max": 0.5845,
+      "n": 3,
+      "by_seed": {
+        "7": 0.5845,
+        "11": 0.5473,
+        "23": 0.5564
+      }
+    },
+    "anomaly.ensemble.auprc": {
+      "mean": 0.8626,
+      "sd": 0.0453,
+      "min": 0.8104,
+      "max": 0.8912,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8912,
+        "11": 0.8862,
+        "23": 0.8104
+      }
+    },
+    "anomaly.ensemble.auroc": {
+      "mean": 0.9621,
+      "sd": 0.0114,
+      "min": 0.9528,
+      "max": 0.9748,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9528,
+        "11": 0.9748,
+        "23": 0.9588
+      }
+    },
+    "anomaly.ensemble.event_recall": {
+      "mean": 0.945,
+      "sd": 0.0403,
+      "min": 0.9,
+      "max": 0.9778,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9571,
+        "11": 0.9778,
+        "23": 0.9
+      }
+    },
+    "anomaly.ensemble.f1": {
+      "mean": 0.8004,
+      "sd": 0.0523,
+      "min": 0.7402,
+      "max": 0.8345,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8264,
+        "11": 0.8345,
+        "23": 0.7402
+      }
+    },
+    "anomaly.ensemble.false_alarm_rate": {
+      "mean": 0.0094,
+      "sd": 0.0012,
+      "min": 0.0087,
+      "max": 0.0107,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00866,
+        "11": 0.0088,
+        "23": 0.01073
+      }
+    },
+    "anomaly.ensemble.false_negative_rate": {
+      "mean": 0.2705,
+      "sd": 0.0558,
+      "min": 0.2198,
+      "max": 0.3302,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2614,
+        "11": 0.2198,
+        "23": 0.3302
+      }
+    },
+    "anomaly.ensemble.precision": {
+      "mean": 0.8873,
+      "sd": 0.0559,
+      "min": 0.8272,
+      "max": 0.9378,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9378,
+        "11": 0.897,
+        "23": 0.8272
+      }
+    },
+    "anomaly.ensemble.recall": {
+      "mean": 0.7295,
+      "sd": 0.0558,
+      "min": 0.6698,
+      "max": 0.7802,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7386,
+        "11": 0.7802,
+        "23": 0.6698
+      }
+    },
+    "anomaly.fixed_thresholds.auprc": {
+      "mean": 0.4865,
+      "sd": 0.0401,
+      "min": 0.4446,
+      "max": 0.5246,
+      "n": 3,
+      "by_seed": {
+        "7": 0.5246,
+        "11": 0.4446,
+        "23": 0.4902
+      }
+    },
+    "anomaly.fixed_thresholds.auroc": {
+      "mean": 0.7744,
+      "sd": 0.0205,
+      "min": 0.7598,
+      "max": 0.7978,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7656,
+        "11": 0.7598,
+        "23": 0.7978
+      }
+    },
+    "anomaly.fixed_thresholds.event_recall": {
+      "mean": 0.5814,
+      "sd": 0.0694,
+      "min": 0.5286,
+      "max": 0.66,
+      "n": 3,
+      "by_seed": {
+        "7": 0.5286,
+        "11": 0.5556,
+        "23": 0.66
+      }
+    },
+    "anomaly.fixed_thresholds.f1": {
+      "mean": 0.3569,
+      "sd": 0.0804,
+      "min": 0.2974,
+      "max": 0.4484,
+      "n": 3,
+      "by_seed": {
+        "7": 0.3248,
+        "11": 0.2974,
+        "23": 0.4484
+      }
+    },
+    "anomaly.fixed_thresholds.false_alarm_rate": {
+      "mean": 0.0063,
+      "sd": 0.0031,
+      "min": 0.003,
+      "max": 0.0093,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00929,
+        "11": 0.00303,
+        "23": 0.00666
+      }
+    },
+    "anomaly.fixed_thresholds.false_negative_rate": {
+      "mean": 0.7672,
+      "sd": 0.0715,
+      "min": 0.6859,
+      "max": 0.8199,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7959,
+        "11": 0.8199,
+        "23": 0.6859
+      }
+    },
+    "anomaly.fixed_thresholds.precision": {
+      "mean": 0.8108,
+      "sd": 0.0376,
+      "min": 0.7834,
+      "max": 0.8537,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7953,
+        "11": 0.8537,
+        "23": 0.7834
+      }
+    },
+    "anomaly.fixed_thresholds.recall": {
+      "mean": 0.2328,
+      "sd": 0.0715,
+      "min": 0.1801,
+      "max": 0.3141,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2041,
+        "11": 0.1801,
+        "23": 0.3141
+      }
+    },
+    "anomaly.isolation_forest.auprc": {
+      "mean": 0.728,
+      "sd": 0.0665,
+      "min": 0.6633,
+      "max": 0.7961,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7961,
+        "11": 0.7246,
+        "23": 0.6633
+      }
+    },
+    "anomaly.isolation_forest.auroc": {
+      "mean": 0.9411,
+      "sd": 0.0076,
+      "min": 0.9324,
+      "max": 0.9462,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9324,
+        "11": 0.9462,
+        "23": 0.9448
+      }
+    },
+    "anomaly.isolation_forest.event_recall": {
+      "mean": 0.8818,
+      "sd": 0.0535,
+      "min": 0.82,
+      "max": 0.9143,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9143,
+        "11": 0.9111,
+        "23": 0.82
+      }
+    },
+    "anomaly.isolation_forest.f1": {
+      "mean": 0.6159,
+      "sd": 0.0471,
+      "min": 0.577,
+      "max": 0.6683,
+      "n": 3,
+      "by_seed": {
+        "7": 0.6683,
+        "11": 0.6023,
+        "23": 0.577
+      }
+    },
+    "anomaly.isolation_forest.false_alarm_rate": {
+      "mean": 0.0097,
+      "sd": 0.0015,
+      "min": 0.0081,
+      "max": 0.011,
+      "n": 3,
+      "by_seed": {
+        "7": 0.01099,
+        "11": 0.00814,
+        "23": 0.01005
+      }
+    },
+    "anomaly.isolation_forest.false_negative_rate": {
+      "mean": 0.5139,
+      "sd": 0.0408,
+      "min": 0.467,
+      "max": 0.5413,
+      "n": 3,
+      "by_seed": {
+        "7": 0.467,
+        "11": 0.5334,
+        "23": 0.5413
+      }
+    },
+    "anomaly.isolation_forest.precision": {
+      "mean": 0.8408,
+      "sd": 0.0593,
+      "min": 0.7778,
+      "max": 0.8955,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8955,
+        "11": 0.8492,
+        "23": 0.7778
+      }
+    },
+    "anomaly.isolation_forest.recall": {
+      "mean": 0.4861,
+      "sd": 0.0408,
+      "min": 0.4587,
+      "max": 0.533,
+      "n": 3,
+      "by_seed": {
+        "7": 0.533,
+        "11": 0.4666,
+        "23": 0.4587
+      }
+    },
+    "anomaly.lof.auprc": {
+      "mean": 0.8748,
+      "sd": 0.0249,
+      "min": 0.846,
+      "max": 0.8896,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8888,
+        "11": 0.8896,
+        "23": 0.846
+      }
+    },
+    "anomaly.lof.auroc": {
+      "mean": 0.9596,
+      "sd": 0.0068,
+      "min": 0.9518,
+      "max": 0.9636,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9518,
+        "11": 0.9634,
+        "23": 0.9636
+      }
+    },
+    "anomaly.lof.event_recall": {
+      "mean": 0.9336,
+      "sd": 0.0496,
+      "min": 0.88,
+      "max": 0.9778,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9429,
+        "11": 0.9778,
+        "23": 0.88
+      }
+    },
+    "anomaly.lof.f1": {
+      "mean": 0.8107,
+      "sd": 0.0294,
+      "min": 0.7771,
+      "max": 0.8317,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8233,
+        "11": 0.8317,
+        "23": 0.7771
+      }
+    },
+    "anomaly.lof.false_alarm_rate": {
+      "mean": 0.0075,
+      "sd": 0.0007,
+      "min": 0.0068,
+      "max": 0.008,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00798,
+        "11": 0.00784,
+        "23": 0.00678
+      }
+    },
+    "anomaly.lof.false_negative_rate": {
+      "mean": 0.2695,
+      "sd": 0.0386,
+      "min": 0.2312,
+      "max": 0.3084,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2688,
+        "11": 0.2312,
+        "23": 0.3084
+      }
+    },
+    "anomaly.lof.precision": {
+      "mean": 0.9115,
+      "sd": 0.028,
+      "min": 0.8867,
+      "max": 0.9418,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9418,
+        "11": 0.9059,
+        "23": 0.8867
+      }
+    },
+    "anomaly.lof.recall": {
+      "mean": 0.7305,
+      "sd": 0.0386,
+      "min": 0.6916,
+      "max": 0.7688,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7312,
+        "11": 0.7688,
+        "23": 0.6916
+      }
+    },
+    "anomaly.one_class_svm.auprc": {
+      "mean": 0.8569,
+      "sd": 0.0406,
+      "min": 0.8117,
+      "max": 0.8905,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8684,
+        "11": 0.8905,
+        "23": 0.8117
+      }
+    },
+    "anomaly.one_class_svm.auroc": {
+      "mean": 0.9545,
+      "sd": 0.0157,
+      "min": 0.9387,
+      "max": 0.9701,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9387,
+        "11": 0.9701,
+        "23": 0.9546
+      }
+    },
+    "anomaly.one_class_svm.event_recall": {
+      "mean": 0.945,
+      "sd": 0.0403,
+      "min": 0.9,
+      "max": 0.9778,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9571,
+        "11": 0.9778,
+        "23": 0.9
+      }
+    },
+    "anomaly.one_class_svm.f1": {
+      "mean": 0.7895,
+      "sd": 0.0414,
+      "min": 0.7431,
+      "max": 0.8226,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8028,
+        "11": 0.8226,
+        "23": 0.7431
+      }
+    },
+    "anomaly.one_class_svm.false_alarm_rate": {
+      "mean": 0.0105,
+      "sd": 0.0024,
+      "min": 0.0084,
+      "max": 0.0132,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00982,
+        "11": 0.00843,
+        "23": 0.01316
+      }
+    },
+    "anomaly.one_class_svm.false_negative_rate": {
+      "mean": 0.2802,
+      "sd": 0.0346,
+      "min": 0.2413,
+      "max": 0.3073,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2921,
+        "11": 0.2413,
+        "23": 0.3073
+      }
+    },
+    "anomaly.one_class_svm.precision": {
+      "mean": 0.8757,
+      "sd": 0.0659,
+      "min": 0.8014,
+      "max": 0.9272,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9272,
+        "11": 0.8984,
+        "23": 0.8014
+      }
+    },
+    "anomaly.one_class_svm.recall": {
+      "mean": 0.7198,
+      "sd": 0.0346,
+      "min": 0.6927,
+      "max": 0.7587,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7079,
+        "11": 0.7587,
+        "23": 0.6927
+      }
+    },
+    "anomaly.statistical.auprc": {
+      "mean": 0.7726,
+      "sd": 0.0723,
+      "min": 0.6891,
+      "max": 0.8173,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8173,
+        "11": 0.8113,
+        "23": 0.6891
+      }
+    },
+    "anomaly.statistical.auroc": {
+      "mean": 0.9684,
+      "sd": 0.014,
+      "min": 0.9569,
+      "max": 0.9839,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9569,
+        "11": 0.9839,
+        "23": 0.9643
+      }
+    },
+    "anomaly.statistical.event_recall": {
+      "mean": 0.6285,
+      "sd": 0.1021,
+      "min": 0.5143,
+      "max": 0.7111,
+      "n": 3,
+      "by_seed": {
+        "7": 0.5143,
+        "11": 0.7111,
+        "23": 0.66
+      }
+    },
+    "anomaly.statistical.f1": {
+      "mean": 0.5275,
+      "sd": 0.0801,
+      "min": 0.4351,
+      "max": 0.5771,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4351,
+        "11": 0.5771,
+        "23": 0.5702
+      }
+    },
+    "anomaly.statistical.false_alarm_rate": {
+      "mean": 0.0088,
+      "sd": 0.0032,
+      "min": 0.0064,
+      "max": 0.0124,
+      "n": 3,
+      "by_seed": {
+        "7": 0.00637,
+        "11": 0.00751,
+        "23": 0.0124
+      }
+    },
+    "anomaly.statistical.false_negative_rate": {
+      "mean": 0.604,
+      "sd": 0.0944,
+      "min": 0.5367,
+      "max": 0.7119,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7119,
+        "11": 0.5634,
+        "23": 0.5367
+      }
+    },
+    "anomaly.statistical.precision": {
+      "mean": 0.827,
+      "sd": 0.0766,
+      "min": 0.7413,
+      "max": 0.8888,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8888,
+        "11": 0.8509,
+        "23": 0.7413
+      }
+    },
+    "anomaly.statistical.recall": {
+      "mean": 0.396,
+      "sd": 0.0944,
+      "min": 0.2881,
+      "max": 0.4633,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2881,
+        "11": 0.4366,
+        "23": 0.4633
+      }
+    },
+    "forecast.climatology.heart_rate.1h.coverage": {
+      "mean": 0.8923,
+      "sd": 0.0149,
+      "min": 0.8802,
+      "max": 0.9089,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8802,
+        "11": 0.8879,
+        "23": 0.9089
+      }
+    },
+    "forecast.climatology.heart_rate.1h.mae": {
+      "mean": 3.8535,
+      "sd": 0.2747,
+      "min": 3.6857,
+      "max": 4.1705,
+      "n": 3,
+      "by_seed": {
+        "7": 4.1705,
+        "11": 3.6857,
+        "23": 3.7044
+      }
+    },
+    "forecast.climatology.heart_rate.1h.mape_pct": {
+      "mean": 5.8217,
+      "sd": 0.3493,
+      "min": 5.614,
+      "max": 6.225,
+      "n": 3,
+      "by_seed": {
+        "7": 6.225,
+        "11": 5.614,
+        "23": 5.626
+      }
+    },
+    "forecast.climatology.heart_rate.1h.rmse": {
+      "mean": 6.0325,
+      "sd": 0.6509,
+      "min": 5.3801,
+      "max": 6.6819,
+      "n": 3,
+      "by_seed": {
+        "7": 6.6819,
+        "11": 5.3801,
+        "23": 6.0355
+      }
+    },
+    "forecast.climatology.heart_rate.24h.coverage": {
+      "mean": 0.8997,
+      "sd": 0.0161,
+      "min": 0.8895,
+      "max": 0.9183,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8914,
+        "11": 0.8895,
+        "23": 0.9183
+      }
+    },
+    "forecast.climatology.heart_rate.24h.mae": {
+      "mean": 3.8466,
+      "sd": 0.2769,
+      "min": 3.6792,
+      "max": 4.1662,
+      "n": 3,
+      "by_seed": {
+        "7": 4.1662,
+        "11": 3.6792,
+        "23": 3.6945
+      }
+    },
+    "forecast.climatology.heart_rate.24h.mape_pct": {
+      "mean": 5.8083,
+      "sd": 0.3461,
+      "min": 5.606,
+      "max": 6.208,
+      "n": 3,
+      "by_seed": {
+        "7": 6.208,
+        "11": 5.611,
+        "23": 5.606
+      }
+    },
+    "forecast.climatology.heart_rate.24h.rmse": {
+      "mean": 6.0196,
+      "sd": 0.6626,
+      "min": 5.3579,
+      "max": 6.6831,
+      "n": 3,
+      "by_seed": {
+        "7": 6.6831,
+        "11": 5.3579,
+        "23": 6.0178
+      }
+    },
+    "forecast.climatology.respiratory_rate.1h.coverage": {
+      "mean": 0.9075,
+      "sd": 0.0139,
+      "min": 0.8952,
+      "max": 0.9225,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8952,
+        "11": 0.9047,
+        "23": 0.9225
+      }
+    },
+    "forecast.climatology.respiratory_rate.1h.mae": {
+      "mean": 0.8164,
+      "sd": 0.0621,
+      "min": 0.7684,
+      "max": 0.8866,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8866,
+        "11": 0.7684,
+        "23": 0.7942
+      }
+    },
+    "forecast.climatology.respiratory_rate.1h.mape_pct": {
+      "mean": 5.4613,
+      "sd": 0.4271,
+      "min": 5.14,
+      "max": 5.946,
+      "n": 3,
+      "by_seed": {
+        "7": 5.946,
+        "11": 5.14,
+        "23": 5.298
+      }
+    },
+    "forecast.climatology.respiratory_rate.1h.rmse": {
+      "mean": 1.3835,
+      "sd": 0.0182,
+      "min": 1.37,
+      "max": 1.4042,
+      "n": 3,
+      "by_seed": {
+        "7": 1.37,
+        "11": 1.3764,
+        "23": 1.4042
+      }
+    },
+    "forecast.climatology.respiratory_rate.24h.coverage": {
+      "mean": 0.9079,
+      "sd": 0.0198,
+      "min": 0.8905,
+      "max": 0.9295,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8905,
+        "11": 0.9038,
+        "23": 0.9295
+      }
+    },
+    "forecast.climatology.respiratory_rate.24h.mae": {
+      "mean": 0.8163,
+      "sd": 0.0648,
+      "min": 0.7698,
+      "max": 0.8903,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8903,
+        "11": 0.7698,
+        "23": 0.7889
+      }
+    },
+    "forecast.climatology.respiratory_rate.24h.mape_pct": {
+      "mean": 5.4623,
+      "sd": 0.4308,
+      "min": 5.151,
+      "max": 5.954,
+      "n": 3,
+      "by_seed": {
+        "7": 5.954,
+        "11": 5.151,
+        "23": 5.282
+      }
+    },
+    "forecast.climatology.respiratory_rate.24h.rmse": {
+      "mean": 1.3888,
+      "sd": 0.0109,
+      "min": 1.3766,
+      "max": 1.3976,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3923,
+        "11": 1.3766,
+        "23": 1.3976
+      }
+    },
+    "forecast.climatology.spo2.1h.coverage": {
+      "mean": 0.8966,
+      "sd": 0.0338,
+      "min": 0.8764,
+      "max": 0.9356,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8764,
+        "11": 0.8779,
+        "23": 0.9356
+      }
+    },
+    "forecast.climatology.spo2.1h.mae": {
+      "mean": 0.3862,
+      "sd": 0.0773,
+      "min": 0.3148,
+      "max": 0.4683,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4683,
+        "11": 0.3148,
+        "23": 0.3754
+      }
+    },
+    "forecast.climatology.spo2.1h.mape_pct": {
+      "mean": 0.4027,
+      "sd": 0.0835,
+      "min": 0.325,
+      "max": 0.491,
+      "n": 3,
+      "by_seed": {
+        "7": 0.491,
+        "11": 0.325,
+        "23": 0.392
+      }
+    },
+    "forecast.climatology.spo2.1h.rmse": {
+      "mean": 0.8513,
+      "sd": 0.2347,
+      "min": 0.6004,
+      "max": 1.0656,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0656,
+        "11": 0.6004,
+        "23": 0.8878
+      }
+    },
+    "forecast.climatology.spo2.24h.coverage": {
+      "mean": 0.8993,
+      "sd": 0.0376,
+      "min": 0.8741,
+      "max": 0.9426,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8741,
+        "11": 0.8813,
+        "23": 0.9426
+      }
+    },
+    "forecast.climatology.spo2.24h.mae": {
+      "mean": 0.3837,
+      "sd": 0.0773,
+      "min": 0.3136,
+      "max": 0.4666,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4666,
+        "11": 0.3136,
+        "23": 0.3708
+      }
+    },
+    "forecast.climatology.spo2.24h.mape_pct": {
+      "mean": 0.4,
+      "sd": 0.0833,
+      "min": 0.324,
+      "max": 0.489,
+      "n": 3,
+      "by_seed": {
+        "7": 0.489,
+        "11": 0.324,
+        "23": 0.387
+      }
+    },
+    "forecast.climatology.spo2.24h.rmse": {
+      "mean": 0.8503,
+      "sd": 0.2347,
+      "min": 0.5998,
+      "max": 1.0652,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0652,
+        "11": 0.5998,
+        "23": 0.8859
+      }
+    },
+    "forecast.climatology.temperature_c.1h.coverage": {
+      "mean": 0.8877,
+      "sd": 0.0333,
+      "min": 0.8604,
+      "max": 0.9248,
+      "n": 3,
+      "by_seed": {
+        "7": 0.878,
+        "11": 0.8604,
+        "23": 0.9248
+      }
+    },
+    "forecast.climatology.temperature_c.1h.mae": {
+      "mean": 0.1088,
+      "sd": 0.0097,
+      "min": 0.0976,
+      "max": 0.115,
+      "n": 3,
+      "by_seed": {
+        "7": 0.115,
+        "11": 0.1139,
+        "23": 0.0976
+      }
+    },
+    "forecast.climatology.temperature_c.1h.rmse": {
+      "mean": 0.1802,
+      "sd": 0.0178,
+      "min": 0.1597,
+      "max": 0.192,
+      "n": 3,
+      "by_seed": {
+        "7": 0.192,
+        "11": 0.1888,
+        "23": 0.1597
+      }
+    },
+    "forecast.climatology.temperature_c.24h.coverage": {
+      "mean": 0.9002,
+      "sd": 0.0331,
+      "min": 0.8784,
+      "max": 0.9383,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8784,
+        "11": 0.8838,
+        "23": 0.9383
+      }
+    },
+    "forecast.climatology.temperature_c.24h.mae": {
+      "mean": 0.1092,
+      "sd": 0.0102,
+      "min": 0.0974,
+      "max": 0.1153,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1153,
+        "11": 0.1148,
+        "23": 0.0974
+      }
+    },
+    "forecast.climatology.temperature_c.24h.rmse": {
+      "mean": 0.1816,
+      "sd": 0.019,
+      "min": 0.1597,
+      "max": 0.1934,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1934,
+        "11": 0.1917,
+        "23": 0.1597
+      }
+    },
+    "forecast.gru.heart_rate.1h.coverage": {
+      "mean": 0.908,
+      "sd": 0.0127,
+      "min": 0.8933,
+      "max": 0.9157,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9157,
+        "11": 0.8933,
+        "23": 0.915
+      }
+    },
+    "forecast.gru.heart_rate.1h.mae": {
+      "mean": 2.9746,
+      "sd": 0.0663,
+      "min": 2.9202,
+      "max": 3.0485,
+      "n": 3,
+      "by_seed": {
+        "7": 3.0485,
+        "11": 2.9202,
+        "23": 2.9551
+      }
+    },
+    "forecast.gru.heart_rate.1h.mape_pct": {
+      "mean": 4.4887,
+      "sd": 0.056,
+      "min": 4.433,
+      "max": 4.545,
+      "n": 3,
+      "by_seed": {
+        "7": 4.545,
+        "11": 4.488,
+        "23": 4.433
+      }
+    },
+    "forecast.gru.heart_rate.1h.rmse": {
+      "mean": 5.1086,
+      "sd": 0.5185,
+      "min": 4.5384,
+      "max": 5.5518,
+      "n": 3,
+      "by_seed": {
+        "7": 5.5518,
+        "11": 4.5384,
+        "23": 5.2355
+      }
+    },
+    "forecast.gru.heart_rate.24h.coverage": {
+      "mean": 0.902,
+      "sd": 0.0065,
+      "min": 0.8959,
+      "max": 0.9088,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8959,
+        "11": 0.9013,
+        "23": 0.9088
+      }
+    },
+    "forecast.gru.heart_rate.24h.mae": {
+      "mean": 3.6772,
+      "sd": 0.2195,
+      "min": 3.4814,
+      "max": 3.9145,
+      "n": 3,
+      "by_seed": {
+        "7": 3.9145,
+        "11": 3.4814,
+        "23": 3.6356
+      }
+    },
+    "forecast.gru.heart_rate.24h.mape_pct": {
+      "mean": 5.627,
+      "sd": 0.2684,
+      "min": 5.372,
+      "max": 5.907,
+      "n": 3,
+      "by_seed": {
+        "7": 5.907,
+        "11": 5.372,
+        "23": 5.602
+      }
+    },
+    "forecast.gru.heart_rate.24h.rmse": {
+      "mean": 5.8332,
+      "sd": 0.6559,
+      "min": 5.1399,
+      "max": 6.4438,
+      "n": 3,
+      "by_seed": {
+        "7": 6.4438,
+        "11": 5.1399,
+        "23": 5.9158
+      }
+    },
+    "forecast.gru.respiratory_rate.1h.coverage": {
+      "mean": 0.9112,
+      "sd": 0.0143,
+      "min": 0.8947,
+      "max": 0.9196,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9193,
+        "11": 0.8947,
+        "23": 0.9196
+      }
+    },
+    "forecast.gru.respiratory_rate.1h.mae": {
+      "mean": 0.6413,
+      "sd": 0.0095,
+      "min": 0.6304,
+      "max": 0.6477,
+      "n": 3,
+      "by_seed": {
+        "7": 0.6457,
+        "11": 0.6304,
+        "23": 0.6477
+      }
+    },
+    "forecast.gru.respiratory_rate.1h.mape_pct": {
+      "mean": 4.3107,
+      "sd": 0.0928,
+      "min": 4.206,
+      "max": 4.383,
+      "n": 3,
+      "by_seed": {
+        "7": 4.383,
+        "11": 4.206,
+        "23": 4.343
+      }
+    },
+    "forecast.gru.respiratory_rate.1h.rmse": {
+      "mean": 1.1612,
+      "sd": 0.0894,
+      "min": 1.0592,
+      "max": 1.2257,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0592,
+        "11": 1.2257,
+        "23": 1.1988
+      }
+    },
+    "forecast.gru.respiratory_rate.24h.coverage": {
+      "mean": 0.9058,
+      "sd": 0.0227,
+      "min": 0.8823,
+      "max": 0.9276,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8823,
+        "11": 0.9074,
+        "23": 0.9276
+      }
+    },
+    "forecast.gru.respiratory_rate.24h.mae": {
+      "mean": 0.8005,
+      "sd": 0.0672,
+      "min": 0.7466,
+      "max": 0.8758,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8758,
+        "11": 0.7466,
+        "23": 0.779
+      }
+    },
+    "forecast.gru.respiratory_rate.24h.mape_pct": {
+      "mean": 5.4347,
+      "sd": 0.4665,
+      "min": 5.051,
+      "max": 5.954,
+      "n": 3,
+      "by_seed": {
+        "7": 5.954,
+        "11": 5.051,
+        "23": 5.299
+      }
+    },
+    "forecast.gru.respiratory_rate.24h.rmse": {
+      "mean": 1.3576,
+      "sd": 0.0104,
+      "min": 1.3499,
+      "max": 1.3694,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3534,
+        "11": 1.3499,
+        "23": 1.3694
+      }
+    },
+    "forecast.gru.spo2.1h.coverage": {
+      "mean": 0.8998,
+      "sd": 0.0171,
+      "min": 0.8893,
+      "max": 0.9196,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8893,
+        "11": 0.8906,
+        "23": 0.9196
+      }
+    },
+    "forecast.gru.spo2.1h.mae": {
+      "mean": 0.2679,
+      "sd": 0.0288,
+      "min": 0.2382,
+      "max": 0.2957,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2957,
+        "11": 0.2382,
+        "23": 0.2699
+      }
+    },
+    "forecast.gru.spo2.1h.mape_pct": {
+      "mean": 0.2783,
+      "sd": 0.0311,
+      "min": 0.246,
+      "max": 0.308,
+      "n": 3,
+      "by_seed": {
+        "7": 0.308,
+        "11": 0.246,
+        "23": 0.281
+      }
+    },
+    "forecast.gru.spo2.1h.rmse": {
+      "mean": 0.5724,
+      "sd": 0.1175,
+      "min": 0.4393,
+      "max": 0.6616,
+      "n": 3,
+      "by_seed": {
+        "7": 0.6162,
+        "11": 0.4393,
+        "23": 0.6616
+      }
+    },
+    "forecast.gru.spo2.24h.coverage": {
+      "mean": 0.8979,
+      "sd": 0.0462,
+      "min": 0.8518,
+      "max": 0.9442,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8518,
+        "11": 0.8977,
+        "23": 0.9442
+      }
+    },
+    "forecast.gru.spo2.24h.mae": {
+      "mean": 0.3995,
+      "sd": 0.0924,
+      "min": 0.3156,
+      "max": 0.4985,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4985,
+        "11": 0.3156,
+        "23": 0.3845
+      }
+    },
+    "forecast.gru.spo2.24h.mape_pct": {
+      "mean": 0.416,
+      "sd": 0.0984,
+      "min": 0.326,
+      "max": 0.521,
+      "n": 3,
+      "by_seed": {
+        "7": 0.521,
+        "11": 0.326,
+        "23": 0.401
+      }
+    },
+    "forecast.gru.spo2.24h.rmse": {
+      "mean": 0.851,
+      "sd": 0.237,
+      "min": 0.5996,
+      "max": 1.0703,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0703,
+        "11": 0.5996,
+        "23": 0.883
+      }
+    },
+    "forecast.gru.temperature_c.1h.coverage": {
+      "mean": 0.885,
+      "sd": 0.0119,
+      "min": 0.8743,
+      "max": 0.8978,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8743,
+        "11": 0.8829,
+        "23": 0.8978
+      }
+    },
+    "forecast.gru.temperature_c.1h.mae": {
+      "mean": 0.0772,
+      "sd": 0.0056,
+      "min": 0.0717,
+      "max": 0.0828,
+      "n": 3,
+      "by_seed": {
+        "7": 0.0828,
+        "11": 0.0772,
+        "23": 0.0717
+      }
+    },
+    "forecast.gru.temperature_c.1h.rmse": {
+      "mean": 0.1264,
+      "sd": 0.0076,
+      "min": 0.1188,
+      "max": 0.1339,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1339,
+        "11": 0.1188,
+        "23": 0.1265
+      }
+    },
+    "forecast.gru.temperature_c.24h.coverage": {
+      "mean": 0.8961,
+      "sd": 0.0396,
+      "min": 0.869,
+      "max": 0.9415,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8777,
+        "11": 0.869,
+        "23": 0.9415
+      }
+    },
+    "forecast.gru.temperature_c.24h.mae": {
+      "mean": 0.1088,
+      "sd": 0.0074,
+      "min": 0.101,
+      "max": 0.1156,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1098,
+        "11": 0.1156,
+        "23": 0.101
+      }
+    },
+    "forecast.gru.temperature_c.24h.rmse": {
+      "mean": 0.1788,
+      "sd": 0.0154,
+      "min": 0.1611,
+      "max": 0.1893,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1859,
+        "11": 0.1893,
+        "23": 0.1611
+      }
+    },
+    "forecast.lstm.heart_rate.1h.coverage": {
+      "mean": 0.9088,
+      "sd": 0.0101,
+      "min": 0.9011,
+      "max": 0.9202,
+      "n": 3,
+      "by_seed": {
+        "7": 0.905,
+        "11": 0.9011,
+        "23": 0.9202
+      }
+    },
+    "forecast.lstm.heart_rate.1h.mae": {
+      "mean": 3.0465,
+      "sd": 0.1785,
+      "min": 2.8873,
+      "max": 3.2395,
+      "n": 3,
+      "by_seed": {
+        "7": 3.2395,
+        "11": 2.8873,
+        "23": 3.0126
+      }
+    },
+    "forecast.lstm.heart_rate.1h.mape_pct": {
+      "mean": 4.6087,
+      "sd": 0.231,
+      "min": 4.425,
+      "max": 4.868,
+      "n": 3,
+      "by_seed": {
+        "7": 4.868,
+        "11": 4.425,
+        "23": 4.533
+      }
+    },
+    "forecast.lstm.heart_rate.1h.rmse": {
+      "mean": 5.1579,
+      "sd": 0.5934,
+      "min": 4.5175,
+      "max": 5.6892,
+      "n": 3,
+      "by_seed": {
+        "7": 5.6892,
+        "11": 4.5175,
+        "23": 5.2671
+      }
+    },
+    "forecast.lstm.heart_rate.24h.coverage": {
+      "mean": 0.9079,
+      "sd": 0.0067,
+      "min": 0.9004,
+      "max": 0.9134,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9098,
+        "11": 0.9004,
+        "23": 0.9134
+      }
+    },
+    "forecast.lstm.heart_rate.24h.mae": {
+      "mean": 3.6565,
+      "sd": 0.2182,
+      "min": 3.4391,
+      "max": 3.8754,
+      "n": 3,
+      "by_seed": {
+        "7": 3.8754,
+        "11": 3.4391,
+        "23": 3.6551
+      }
+    },
+    "forecast.lstm.heart_rate.24h.mape_pct": {
+      "mean": 5.5913,
+      "sd": 0.2612,
+      "min": 5.32,
+      "max": 5.841,
+      "n": 3,
+      "by_seed": {
+        "7": 5.841,
+        "11": 5.32,
+        "23": 5.613
+      }
+    },
+    "forecast.lstm.heart_rate.24h.rmse": {
+      "mean": 5.8131,
+      "sd": 0.6613,
+      "min": 5.1004,
+      "max": 6.4069,
+      "n": 3,
+      "by_seed": {
+        "7": 6.4069,
+        "11": 5.1004,
+        "23": 5.9319
+      }
+    },
+    "forecast.lstm.respiratory_rate.1h.coverage": {
+      "mean": 0.9022,
+      "sd": 0.0131,
+      "min": 0.8939,
+      "max": 0.9173,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8939,
+        "11": 0.8954,
+        "23": 0.9173
+      }
+    },
+    "forecast.lstm.respiratory_rate.1h.mae": {
+      "mean": 0.6571,
+      "sd": 0.0276,
+      "min": 0.6303,
+      "max": 0.6855,
+      "n": 3,
+      "by_seed": {
+        "7": 0.6855,
+        "11": 0.6303,
+        "23": 0.6554
+      }
+    },
+    "forecast.lstm.respiratory_rate.1h.mape_pct": {
+      "mean": 4.411,
+      "sd": 0.2109,
+      "min": 4.223,
+      "max": 4.639,
+      "n": 3,
+      "by_seed": {
+        "7": 4.639,
+        "11": 4.223,
+        "23": 4.371
+      }
+    },
+    "forecast.lstm.respiratory_rate.1h.rmse": {
+      "mean": 1.1822,
+      "sd": 0.0605,
+      "min": 1.1126,
+      "max": 1.2224,
+      "n": 3,
+      "by_seed": {
+        "7": 1.1126,
+        "11": 1.2224,
+        "23": 1.2117
+      }
+    },
+    "forecast.lstm.respiratory_rate.24h.coverage": {
+      "mean": 0.9138,
+      "sd": 0.0159,
+      "min": 0.9042,
+      "max": 0.9322,
+      "n": 3,
+      "by_seed": {
+        "7": 0.905,
+        "11": 0.9042,
+        "23": 0.9322
+      }
+    },
+    "forecast.lstm.respiratory_rate.24h.mae": {
+      "mean": 0.8048,
+      "sd": 0.064,
+      "min": 0.7568,
+      "max": 0.8775,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8775,
+        "11": 0.7568,
+        "23": 0.7801
+      }
+    },
+    "forecast.lstm.respiratory_rate.24h.mape_pct": {
+      "mean": 5.454,
+      "sd": 0.4373,
+      "min": 5.143,
+      "max": 5.954,
+      "n": 3,
+      "by_seed": {
+        "7": 5.954,
+        "11": 5.143,
+        "23": 5.265
+      }
+    },
+    "forecast.lstm.respiratory_rate.24h.rmse": {
+      "mean": 1.367,
+      "sd": 0.0132,
+      "min": 1.3585,
+      "max": 1.3822,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3585,
+        "11": 1.3604,
+        "23": 1.3822
+      }
+    },
+    "forecast.lstm.spo2.1h.coverage": {
+      "mean": 0.8968,
+      "sd": 0.0232,
+      "min": 0.8727,
+      "max": 0.9189,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8727,
+        "11": 0.8988,
+        "23": 0.9189
+      }
+    },
+    "forecast.lstm.spo2.1h.mae": {
+      "mean": 0.282,
+      "sd": 0.0408,
+      "min": 0.2437,
+      "max": 0.3249,
+      "n": 3,
+      "by_seed": {
+        "7": 0.3249,
+        "11": 0.2437,
+        "23": 0.2774
+      }
+    },
+    "forecast.lstm.spo2.1h.mape_pct": {
+      "mean": 0.293,
+      "sd": 0.0441,
+      "min": 0.251,
+      "max": 0.339,
+      "n": 3,
+      "by_seed": {
+        "7": 0.339,
+        "11": 0.251,
+        "23": 0.289
+      }
+    },
+    "forecast.lstm.spo2.1h.rmse": {
+      "mean": 0.6098,
+      "sd": 0.1388,
+      "min": 0.451,
+      "max": 0.7078,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7078,
+        "11": 0.451,
+        "23": 0.6706
+      }
+    },
+    "forecast.lstm.spo2.24h.coverage": {
+      "mean": 0.898,
+      "sd": 0.0394,
+      "min": 0.8623,
+      "max": 0.9403,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8623,
+        "11": 0.8913,
+        "23": 0.9403
+      }
+    },
+    "forecast.lstm.spo2.24h.mae": {
+      "mean": 0.4084,
+      "sd": 0.1024,
+      "min": 0.3182,
+      "max": 0.5198,
+      "n": 3,
+      "by_seed": {
+        "7": 0.5198,
+        "11": 0.3182,
+        "23": 0.3873
+      }
+    },
+    "forecast.lstm.spo2.24h.mape_pct": {
+      "mean": 0.425,
+      "sd": 0.109,
+      "min": 0.328,
+      "max": 0.543,
+      "n": 3,
+      "by_seed": {
+        "7": 0.543,
+        "11": 0.328,
+        "23": 0.404
+      }
+    },
+    "forecast.lstm.spo2.24h.rmse": {
+      "mean": 0.856,
+      "sd": 0.2459,
+      "min": 0.5968,
+      "max": 1.0861,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0861,
+        "11": 0.5968,
+        "23": 0.8851
+      }
+    },
+    "forecast.lstm.temperature_c.1h.coverage": {
+      "mean": 0.8944,
+      "sd": 0.014,
+      "min": 0.8842,
+      "max": 0.9103,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8886,
+        "11": 0.8842,
+        "23": 0.9103
+      }
+    },
+    "forecast.lstm.temperature_c.1h.mae": {
+      "mean": 0.0803,
+      "sd": 0.0049,
+      "min": 0.0769,
+      "max": 0.0859,
+      "n": 3,
+      "by_seed": {
+        "7": 0.0859,
+        "11": 0.0769,
+        "23": 0.0782
+      }
+    },
+    "forecast.lstm.temperature_c.1h.rmse": {
+      "mean": 0.13,
+      "sd": 0.0096,
+      "min": 0.1199,
+      "max": 0.1391,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1391,
+        "11": 0.1199,
+        "23": 0.1311
+      }
+    },
+    "forecast.lstm.temperature_c.24h.coverage": {
+      "mean": 0.8979,
+      "sd": 0.0421,
+      "min": 0.8715,
+      "max": 0.9465,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8757,
+        "11": 0.8715,
+        "23": 0.9465
+      }
+    },
+    "forecast.lstm.temperature_c.24h.mae": {
+      "mean": 0.1117,
+      "sd": 0.0078,
+      "min": 0.1035,
+      "max": 0.119,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1127,
+        "11": 0.119,
+        "23": 0.1035
+      }
+    },
+    "forecast.lstm.temperature_c.24h.rmse": {
+      "mean": 0.1809,
+      "sd": 0.0133,
+      "min": 0.1655,
+      "max": 0.189,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1882,
+        "11": 0.189,
+        "23": 0.1655
+      }
+    },
+    "forecast.persistence.heart_rate.1h.coverage": {
+      "mean": 0.9061,
+      "sd": 0.0024,
+      "min": 0.9041,
+      "max": 0.9088,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9041,
+        "11": 0.9088,
+        "23": 0.9053
+      }
+    },
+    "forecast.persistence.heart_rate.1h.mae": {
+      "mean": 7.1429,
+      "sd": 0.0788,
+      "min": 7.0616,
+      "max": 7.219,
+      "n": 3,
+      "by_seed": {
+        "7": 7.1481,
+        "11": 7.0616,
+        "23": 7.219
+      }
+    },
+    "forecast.persistence.heart_rate.1h.mape_pct": {
+      "mean": 10.0737,
+      "sd": 0.1407,
+      "min": 9.937,
+      "max": 10.218,
+      "n": 3,
+      "by_seed": {
+        "7": 10.066,
+        "11": 9.937,
+        "23": 10.218
+      }
+    },
+    "forecast.persistence.heart_rate.1h.rmse": {
+      "mean": 13.0177,
+      "sd": 0.2004,
+      "min": 12.8273,
+      "max": 13.2268,
+      "n": 3,
+      "by_seed": {
+        "7": 12.9989,
+        "11": 12.8273,
+        "23": 13.2268
+      }
+    },
+    "forecast.persistence.heart_rate.24h.coverage": {
+      "mean": 0.9104,
+      "sd": 0.0073,
+      "min": 0.9036,
+      "max": 0.9181,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9095,
+        "11": 0.9036,
+        "23": 0.9181
+      }
+    },
+    "forecast.persistence.heart_rate.24h.mae": {
+      "mean": 5.5864,
+      "sd": 0.2577,
+      "min": 5.3959,
+      "max": 5.8797,
+      "n": 3,
+      "by_seed": {
+        "7": 5.8797,
+        "11": 5.4837,
+        "23": 5.3959
+      }
+    },
+    "forecast.persistence.heart_rate.24h.mape_pct": {
+      "mean": 8.4577,
+      "sd": 0.3423,
+      "min": 8.237,
+      "max": 8.852,
+      "n": 3,
+      "by_seed": {
+        "7": 8.852,
+        "11": 8.284,
+        "23": 8.237
+      }
+    },
+    "forecast.persistence.heart_rate.24h.rmse": {
+      "mean": 9.3396,
+      "sd": 0.4199,
+      "min": 9.0529,
+      "max": 9.8216,
+      "n": 3,
+      "by_seed": {
+        "7": 9.8216,
+        "11": 9.0529,
+        "23": 9.1443
+      }
+    },
+    "forecast.persistence.respiratory_rate.1h.coverage": {
+      "mean": 0.9078,
+      "sd": 0.0063,
+      "min": 0.9013,
+      "max": 0.9139,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9139,
+        "11": 0.9013,
+        "23": 0.9082
+      }
+    },
+    "forecast.persistence.respiratory_rate.1h.mae": {
+      "mean": 1.453,
+      "sd": 0.0293,
+      "min": 1.4193,
+      "max": 1.4726,
+      "n": 3,
+      "by_seed": {
+        "7": 1.4193,
+        "11": 1.467,
+        "23": 1.4726
+      }
+    },
+    "forecast.persistence.respiratory_rate.1h.mape_pct": {
+      "mean": 9.4097,
+      "sd": 0.1933,
+      "min": 9.189,
+      "max": 9.549,
+      "n": 3,
+      "by_seed": {
+        "7": 9.189,
+        "11": 9.491,
+        "23": 9.549
+      }
+    },
+    "forecast.persistence.respiratory_rate.1h.rmse": {
+      "mean": 2.5845,
+      "sd": 0.0837,
+      "min": 2.4907,
+      "max": 2.6515,
+      "n": 3,
+      "by_seed": {
+        "7": 2.4907,
+        "11": 2.6515,
+        "23": 2.6113
+      }
+    },
+    "forecast.persistence.respiratory_rate.24h.coverage": {
+      "mean": 0.8982,
+      "sd": 0.0298,
+      "min": 0.8766,
+      "max": 0.9322,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8766,
+        "11": 0.8858,
+        "23": 0.9322
+      }
+    },
+    "forecast.persistence.respiratory_rate.24h.mae": {
+      "mean": 1.2352,
+      "sd": 0.0649,
+      "min": 1.1857,
+      "max": 1.3087,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3087,
+        "11": 1.2111,
+        "23": 1.1857
+      }
+    },
+    "forecast.persistence.respiratory_rate.24h.mape_pct": {
+      "mean": 8.4503,
+      "sd": 0.4669,
+      "min": 8.137,
+      "max": 8.987,
+      "n": 3,
+      "by_seed": {
+        "7": 8.987,
+        "11": 8.227,
+        "23": 8.137
+      }
+    },
+    "forecast.persistence.respiratory_rate.24h.rmse": {
+      "mean": 2.0888,
+      "sd": 0.0853,
+      "min": 2.0317,
+      "max": 2.1868,
+      "n": 3,
+      "by_seed": {
+        "7": 2.0317,
+        "11": 2.1868,
+        "23": 2.0479
+      }
+    },
+    "forecast.persistence.spo2.1h.coverage": {
+      "mean": 0.8988,
+      "sd": 0.0108,
+      "min": 0.8866,
+      "max": 0.9072,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8866,
+        "11": 0.9072,
+        "23": 0.9026
+      }
+    },
+    "forecast.persistence.spo2.1h.mae": {
+      "mean": 0.3376,
+      "sd": 0.0236,
+      "min": 0.3106,
+      "max": 0.354,
+      "n": 3,
+      "by_seed": {
+        "7": 0.3483,
+        "11": 0.3106,
+        "23": 0.354
+      }
+    },
+    "forecast.persistence.spo2.1h.mape_pct": {
+      "mean": 0.3483,
+      "sd": 0.0256,
+      "min": 0.319,
+      "max": 0.366,
+      "n": 3,
+      "by_seed": {
+        "7": 0.36,
+        "11": 0.319,
+        "23": 0.366
+      }
+    },
+    "forecast.persistence.spo2.1h.rmse": {
+      "mean": 0.7091,
+      "sd": 0.1367,
+      "min": 0.5635,
+      "max": 0.8348,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7289,
+        "11": 0.5635,
+        "23": 0.8348
+      }
+    },
+    "forecast.persistence.spo2.24h.coverage": {
+      "mean": 0.905,
+      "sd": 0.0443,
+      "min": 0.8623,
+      "max": 0.9508,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8623,
+        "11": 0.9018,
+        "23": 0.9508
+      }
+    },
+    "forecast.persistence.spo2.24h.mae": {
+      "mean": 0.5853,
+      "sd": 0.1334,
+      "min": 0.4599,
+      "max": 0.7254,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7254,
+        "11": 0.4599,
+        "23": 0.5705
+      }
+    },
+    "forecast.persistence.spo2.24h.mape_pct": {
+      "mean": 0.6057,
+      "sd": 0.1406,
+      "min": 0.473,
+      "max": 0.753,
+      "n": 3,
+      "by_seed": {
+        "7": 0.753,
+        "11": 0.473,
+        "23": 0.591
+      }
+    },
+    "forecast.persistence.spo2.24h.rmse": {
+      "mean": 1.1707,
+      "sd": 0.3113,
+      "min": 0.8354,
+      "max": 1.4506,
+      "n": 3,
+      "by_seed": {
+        "7": 1.4506,
+        "11": 0.8354,
+        "23": 1.2261
+      }
+    },
+    "forecast.persistence.temperature_c.1h.coverage": {
+      "mean": 0.8974,
+      "sd": 0.0047,
+      "min": 0.892,
+      "max": 0.9002,
+      "n": 3,
+      "by_seed": {
+        "7": 0.892,
+        "11": 0.9002,
+        "23": 0.9001
+      }
+    },
+    "forecast.persistence.temperature_c.1h.mae": {
+      "mean": 0.0984,
+      "sd": 0.0017,
+      "min": 0.0971,
+      "max": 0.1003,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1003,
+        "11": 0.0977,
+        "23": 0.0971
+      }
+    },
+    "forecast.persistence.temperature_c.1h.rmse": {
+      "mean": 0.1633,
+      "sd": 0.0037,
+      "min": 0.1598,
+      "max": 0.1672,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1628,
+        "11": 0.1598,
+        "23": 0.1672
+      }
+    },
+    "forecast.persistence.temperature_c.24h.coverage": {
+      "mean": 0.8823,
+      "sd": 0.03,
+      "min": 0.8622,
+      "max": 0.9168,
+      "n": 3,
+      "by_seed": {
+        "7": 0.868,
+        "11": 0.8622,
+        "23": 0.9168
+      }
+    },
+    "forecast.persistence.temperature_c.24h.mae": {
+      "mean": 0.1401,
+      "sd": 0.0145,
+      "min": 0.1234,
+      "max": 0.1485,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1484,
+        "11": 0.1485,
+        "23": 0.1234
+      }
+    },
+    "forecast.persistence.temperature_c.24h.rmse": {
+      "mean": 0.2334,
+      "sd": 0.0231,
+      "min": 0.2068,
+      "max": 0.2476,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2476,
+        "11": 0.2458,
+        "23": 0.2068
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.1h.coverage": {
+      "mean": 0.9068,
+      "sd": 0.0105,
+      "min": 0.8956,
+      "max": 0.9164,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9084,
+        "11": 0.8956,
+        "23": 0.9164
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.1h.mae": {
+      "mean": 5.6582,
+      "sd": 0.2721,
+      "min": 5.4857,
+      "max": 5.9719,
+      "n": 3,
+      "by_seed": {
+        "7": 5.9719,
+        "11": 5.5169,
+        "23": 5.4857
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.1h.mape_pct": {
+      "mean": 8.5713,
+      "sd": 0.3841,
+      "min": 8.326,
+      "max": 9.014,
+      "n": 3,
+      "by_seed": {
+        "7": 9.014,
+        "11": 8.326,
+        "23": 8.374
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.1h.rmse": {
+      "mean": 9.4872,
+      "sd": 0.5213,
+      "min": 9.1062,
+      "max": 10.0812,
+      "n": 3,
+      "by_seed": {
+        "7": 10.0812,
+        "11": 9.1062,
+        "23": 9.2741
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.24h.coverage": {
+      "mean": 0.9104,
+      "sd": 0.0073,
+      "min": 0.9036,
+      "max": 0.9181,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9095,
+        "11": 0.9036,
+        "23": 0.9181
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.24h.mae": {
+      "mean": 5.5864,
+      "sd": 0.2577,
+      "min": 5.3959,
+      "max": 5.8797,
+      "n": 3,
+      "by_seed": {
+        "7": 5.8797,
+        "11": 5.4837,
+        "23": 5.3959
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.24h.mape_pct": {
+      "mean": 8.4577,
+      "sd": 0.3423,
+      "min": 8.237,
+      "max": 8.852,
+      "n": 3,
+      "by_seed": {
+        "7": 8.852,
+        "11": 8.284,
+        "23": 8.237
+      }
+    },
+    "forecast.seasonal_naive.heart_rate.24h.rmse": {
+      "mean": 9.3396,
+      "sd": 0.4199,
+      "min": 9.0529,
+      "max": 9.8216,
+      "n": 3,
+      "by_seed": {
+        "7": 9.8216,
+        "11": 9.0529,
+        "23": 9.1443
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.1h.coverage": {
+      "mean": 0.8971,
+      "sd": 0.0299,
+      "min": 0.8797,
+      "max": 0.9316,
+      "n": 3,
+      "by_seed": {
+        "7": 0.88,
+        "11": 0.8797,
+        "23": 0.9316
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.1h.mae": {
+      "mean": 1.2395,
+      "sd": 0.0511,
+      "min": 1.2034,
+      "max": 1.2979,
+      "n": 3,
+      "by_seed": {
+        "7": 1.2979,
+        "11": 1.2171,
+        "23": 1.2034
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.1h.mape_pct": {
+      "mean": 8.4703,
+      "sd": 0.3889,
+      "min": 8.229,
+      "max": 8.919,
+      "n": 3,
+      "by_seed": {
+        "7": 8.919,
+        "11": 8.263,
+        "23": 8.229
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.1h.rmse": {
+      "mean": 2.0946,
+      "sd": 0.0913,
+      "min": 2.0132,
+      "max": 2.1933,
+      "n": 3,
+      "by_seed": {
+        "7": 2.0132,
+        "11": 2.1933,
+        "23": 2.0774
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.24h.coverage": {
+      "mean": 0.8982,
+      "sd": 0.0298,
+      "min": 0.8766,
+      "max": 0.9322,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8766,
+        "11": 0.8858,
+        "23": 0.9322
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.24h.mae": {
+      "mean": 1.2352,
+      "sd": 0.0649,
+      "min": 1.1857,
+      "max": 1.3087,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3087,
+        "11": 1.2111,
+        "23": 1.1857
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.24h.mape_pct": {
+      "mean": 8.4503,
+      "sd": 0.4669,
+      "min": 8.137,
+      "max": 8.987,
+      "n": 3,
+      "by_seed": {
+        "7": 8.987,
+        "11": 8.227,
+        "23": 8.137
+      }
+    },
+    "forecast.seasonal_naive.respiratory_rate.24h.rmse": {
+      "mean": 2.0888,
+      "sd": 0.0853,
+      "min": 2.0317,
+      "max": 2.1868,
+      "n": 3,
+      "by_seed": {
+        "7": 2.0317,
+        "11": 2.1868,
+        "23": 2.0479
+      }
+    },
+    "forecast.seasonal_naive.spo2.1h.coverage": {
+      "mean": 0.9046,
+      "sd": 0.0428,
+      "min": 0.8645,
+      "max": 0.9497,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8645,
+        "11": 0.8995,
+        "23": 0.9497
+      }
+    },
+    "forecast.seasonal_naive.spo2.1h.mae": {
+      "mean": 0.5866,
+      "sd": 0.1312,
+      "min": 0.4638,
+      "max": 0.7248,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7248,
+        "11": 0.4638,
+        "23": 0.5711
+      }
+    },
+    "forecast.seasonal_naive.spo2.1h.mape_pct": {
+      "mean": 0.6073,
+      "sd": 0.1376,
+      "min": 0.478,
+      "max": 0.752,
+      "n": 3,
+      "by_seed": {
+        "7": 0.752,
+        "11": 0.478,
+        "23": 0.592
+      }
+    },
+    "forecast.seasonal_naive.spo2.1h.rmse": {
+      "mean": 1.173,
+      "sd": 0.3103,
+      "min": 0.8378,
+      "max": 1.4501,
+      "n": 3,
+      "by_seed": {
+        "7": 1.4501,
+        "11": 0.8378,
+        "23": 1.2312
+      }
+    },
+    "forecast.seasonal_naive.spo2.24h.coverage": {
+      "mean": 0.905,
+      "sd": 0.0443,
+      "min": 0.8623,
+      "max": 0.9508,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8623,
+        "11": 0.9018,
+        "23": 0.9508
+      }
+    },
+    "forecast.seasonal_naive.spo2.24h.mae": {
+      "mean": 0.5853,
+      "sd": 0.1334,
+      "min": 0.4599,
+      "max": 0.7254,
+      "n": 3,
+      "by_seed": {
+        "7": 0.7254,
+        "11": 0.4599,
+        "23": 0.5705
+      }
+    },
+    "forecast.seasonal_naive.spo2.24h.mape_pct": {
+      "mean": 0.6057,
+      "sd": 0.1406,
+      "min": 0.473,
+      "max": 0.753,
+      "n": 3,
+      "by_seed": {
+        "7": 0.753,
+        "11": 0.473,
+        "23": 0.591
+      }
+    },
+    "forecast.seasonal_naive.spo2.24h.rmse": {
+      "mean": 1.1707,
+      "sd": 0.3113,
+      "min": 0.8354,
+      "max": 1.4506,
+      "n": 3,
+      "by_seed": {
+        "7": 1.4506,
+        "11": 0.8354,
+        "23": 1.2261
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.1h.coverage": {
+      "mean": 0.8634,
+      "sd": 0.0345,
+      "min": 0.8276,
+      "max": 0.8964,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8661,
+        "11": 0.8276,
+        "23": 0.8964
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.1h.mae": {
+      "mean": 0.1417,
+      "sd": 0.0139,
+      "min": 0.1257,
+      "max": 0.1503,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1492,
+        "11": 0.1503,
+        "23": 0.1257
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.1h.rmse": {
+      "mean": 0.2346,
+      "sd": 0.02,
+      "min": 0.2116,
+      "max": 0.2477,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2477,
+        "11": 0.2445,
+        "23": 0.2116
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.24h.coverage": {
+      "mean": 0.8823,
+      "sd": 0.03,
+      "min": 0.8622,
+      "max": 0.9168,
+      "n": 3,
+      "by_seed": {
+        "7": 0.868,
+        "11": 0.8622,
+        "23": 0.9168
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.24h.mae": {
+      "mean": 0.1401,
+      "sd": 0.0145,
+      "min": 0.1234,
+      "max": 0.1485,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1484,
+        "11": 0.1485,
+        "23": 0.1234
+      }
+    },
+    "forecast.seasonal_naive.temperature_c.24h.rmse": {
+      "mean": 0.2334,
+      "sd": 0.0231,
+      "min": 0.2068,
+      "max": 0.2476,
+      "n": 3,
+      "by_seed": {
+        "7": 0.2476,
+        "11": 0.2458,
+        "23": 0.2068
+      }
+    },
+    "forecast.tcn.heart_rate.1h.coverage": {
+      "mean": 0.9084,
+      "sd": 0.0102,
+      "min": 0.8988,
+      "max": 0.9191,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9073,
+        "11": 0.8988,
+        "23": 0.9191
+      }
+    },
+    "forecast.tcn.heart_rate.1h.mae": {
+      "mean": 3.1041,
+      "sd": 0.1407,
+      "min": 2.9461,
+      "max": 3.2157,
+      "n": 3,
+      "by_seed": {
+        "7": 3.2157,
+        "11": 2.9461,
+        "23": 3.1505
+      }
+    },
+    "forecast.tcn.heart_rate.1h.mape_pct": {
+      "mean": 4.694,
+      "sd": 0.1573,
+      "min": 4.518,
+      "max": 4.821,
+      "n": 3,
+      "by_seed": {
+        "7": 4.821,
+        "11": 4.518,
+        "23": 4.743
+      }
+    },
+    "forecast.tcn.heart_rate.1h.rmse": {
+      "mean": 5.204,
+      "sd": 0.5715,
+      "min": 4.5606,
+      "max": 5.6526,
+      "n": 3,
+      "by_seed": {
+        "7": 5.6526,
+        "11": 4.5606,
+        "23": 5.3987
+      }
+    },
+    "forecast.tcn.heart_rate.24h.coverage": {
+      "mean": 0.9015,
+      "sd": 0.0147,
+      "min": 0.89,
+      "max": 0.9181,
+      "n": 3,
+      "by_seed": {
+        "7": 0.89,
+        "11": 0.8965,
+        "23": 0.9181
+      }
+    },
+    "forecast.tcn.heart_rate.24h.mae": {
+      "mean": 3.7439,
+      "sd": 0.2277,
+      "min": 3.4943,
+      "max": 3.9402,
+      "n": 3,
+      "by_seed": {
+        "7": 3.9402,
+        "11": 3.4943,
+        "23": 3.7972
+      }
+    },
+    "forecast.tcn.heart_rate.24h.mape_pct": {
+      "mean": 5.7447,
+      "sd": 0.3011,
+      "min": 5.399,
+      "max": 5.95,
+      "n": 3,
+      "by_seed": {
+        "7": 5.95,
+        "11": 5.399,
+        "23": 5.885
+      }
+    },
+    "forecast.tcn.heart_rate.24h.rmse": {
+      "mean": 5.8706,
+      "sd": 0.6675,
+      "min": 5.1424,
+      "max": 6.4536,
+      "n": 3,
+      "by_seed": {
+        "7": 6.4536,
+        "11": 5.1424,
+        "23": 6.0157
+      }
+    },
+    "forecast.tcn.respiratory_rate.1h.coverage": {
+      "mean": 0.9056,
+      "sd": 0.012,
+      "min": 0.8931,
+      "max": 0.9171,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9066,
+        "11": 0.8931,
+        "23": 0.9171
+      }
+    },
+    "forecast.tcn.respiratory_rate.1h.mae": {
+      "mean": 0.6594,
+      "sd": 0.0271,
+      "min": 0.6287,
+      "max": 0.68,
+      "n": 3,
+      "by_seed": {
+        "7": 0.68,
+        "11": 0.6287,
+        "23": 0.6694
+      }
+    },
+    "forecast.tcn.respiratory_rate.1h.mape_pct": {
+      "mean": 4.4507,
+      "sd": 0.2246,
+      "min": 4.203,
+      "max": 4.641,
+      "n": 3,
+      "by_seed": {
+        "7": 4.641,
+        "11": 4.203,
+        "23": 4.508
+      }
+    },
+    "forecast.tcn.respiratory_rate.1h.rmse": {
+      "mean": 1.1722,
+      "sd": 0.0809,
+      "min": 1.0788,
+      "max": 1.2197,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0788,
+        "11": 1.2182,
+        "23": 1.2197
+      }
+    },
+    "forecast.tcn.respiratory_rate.24h.coverage": {
+      "mean": 0.904,
+      "sd": 0.0271,
+      "min": 0.877,
+      "max": 0.9311,
+      "n": 3,
+      "by_seed": {
+        "7": 0.877,
+        "11": 0.9038,
+        "23": 0.9311
+      }
+    },
+    "forecast.tcn.respiratory_rate.24h.mae": {
+      "mean": 0.7969,
+      "sd": 0.0633,
+      "min": 0.7427,
+      "max": 0.8664,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8664,
+        "11": 0.7427,
+        "23": 0.7816
+      }
+    },
+    "forecast.tcn.respiratory_rate.24h.mape_pct": {
+      "mean": 5.4153,
+      "sd": 0.4406,
+      "min": 5.023,
+      "max": 5.892,
+      "n": 3,
+      "by_seed": {
+        "7": 5.892,
+        "11": 5.023,
+        "23": 5.331
+      }
+    },
+    "forecast.tcn.respiratory_rate.24h.rmse": {
+      "mean": 1.3541,
+      "sd": 0.018,
+      "min": 1.3396,
+      "max": 1.3743,
+      "n": 3,
+      "by_seed": {
+        "7": 1.3396,
+        "11": 1.3484,
+        "23": 1.3743
+      }
+    },
+    "forecast.tcn.spo2.1h.coverage": {
+      "mean": 0.8901,
+      "sd": 0.0138,
+      "min": 0.8752,
+      "max": 0.9023,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8752,
+        "11": 0.8929,
+        "23": 0.9023
+      }
+    },
+    "forecast.tcn.spo2.1h.mae": {
+      "mean": 0.2759,
+      "sd": 0.0259,
+      "min": 0.2467,
+      "max": 0.296,
+      "n": 3,
+      "by_seed": {
+        "7": 0.296,
+        "11": 0.2467,
+        "23": 0.285
+      }
+    },
+    "forecast.tcn.spo2.1h.mape_pct": {
+      "mean": 0.2863,
+      "sd": 0.0285,
+      "min": 0.254,
+      "max": 0.308,
+      "n": 3,
+      "by_seed": {
+        "7": 0.308,
+        "11": 0.254,
+        "23": 0.297
+      }
+    },
+    "forecast.tcn.spo2.1h.rmse": {
+      "mean": 0.5811,
+      "sd": 0.1229,
+      "min": 0.4414,
+      "max": 0.6729,
+      "n": 3,
+      "by_seed": {
+        "7": 0.6289,
+        "11": 0.4414,
+        "23": 0.6729
+      }
+    },
+    "forecast.tcn.spo2.24h.coverage": {
+      "mean": 0.8999,
+      "sd": 0.0266,
+      "min": 0.877,
+      "max": 0.929,
+      "n": 3,
+      "by_seed": {
+        "7": 0.877,
+        "11": 0.8936,
+        "23": 0.929
+      }
+    },
+    "forecast.tcn.spo2.24h.mae": {
+      "mean": 0.3919,
+      "sd": 0.0752,
+      "min": 0.3191,
+      "max": 0.4692,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4692,
+        "11": 0.3191,
+        "23": 0.3874
+      }
+    },
+    "forecast.tcn.spo2.24h.mape_pct": {
+      "mean": 0.408,
+      "sd": 0.0811,
+      "min": 0.329,
+      "max": 0.491,
+      "n": 3,
+      "by_seed": {
+        "7": 0.491,
+        "11": 0.329,
+        "23": 0.404
+      }
+    },
+    "forecast.tcn.spo2.24h.rmse": {
+      "mean": 0.8457,
+      "sd": 0.2267,
+      "min": 0.5994,
+      "max": 1.0457,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0457,
+        "11": 0.5994,
+        "23": 0.8919
+      }
+    },
+    "forecast.tcn.temperature_c.1h.coverage": {
+      "mean": 0.8884,
+      "sd": 0.0258,
+      "min": 0.8683,
+      "max": 0.9175,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8795,
+        "11": 0.8683,
+        "23": 0.9175
+      }
+    },
+    "forecast.tcn.temperature_c.1h.mae": {
+      "mean": 0.0807,
+      "sd": 0.0023,
+      "min": 0.079,
+      "max": 0.0833,
+      "n": 3,
+      "by_seed": {
+        "7": 0.0833,
+        "11": 0.0797,
+        "23": 0.079
+      }
+    },
+    "forecast.tcn.temperature_c.1h.rmse": {
+      "mean": 0.1287,
+      "sd": 0.0059,
+      "min": 0.1218,
+      "max": 0.1321,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1321,
+        "11": 0.1218,
+        "23": 0.1321
+      }
+    },
+    "forecast.tcn.temperature_c.24h.coverage": {
+      "mean": 0.8892,
+      "sd": 0.0451,
+      "min": 0.8572,
+      "max": 0.9408,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8695,
+        "11": 0.8572,
+        "23": 0.9408
+      }
+    },
+    "forecast.tcn.temperature_c.24h.mae": {
+      "mean": 0.112,
+      "sd": 0.0071,
+      "min": 0.1067,
+      "max": 0.1201,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1093,
+        "11": 0.1201,
+        "23": 0.1067
+      }
+    },
+    "forecast.tcn.temperature_c.24h.rmse": {
+      "mean": 0.1814,
+      "sd": 0.0117,
+      "min": 0.1681,
+      "max": 0.1897,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1865,
+        "11": 0.1897,
+        "23": 0.1681
+      }
+    },
+    "forecast.xgboost.heart_rate.1h.coverage": {
+      "mean": 0.9043,
+      "sd": 0.0097,
+      "min": 0.8977,
+      "max": 0.9155,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8998,
+        "11": 0.8977,
+        "23": 0.9155
+      }
+    },
+    "forecast.xgboost.heart_rate.1h.mae": {
+      "mean": 2.1892,
+      "sd": 0.1591,
+      "min": 2.0198,
+      "max": 2.3355,
+      "n": 3,
+      "by_seed": {
+        "7": 2.3355,
+        "11": 2.0198,
+        "23": 2.2122
+      }
+    },
+    "forecast.xgboost.heart_rate.1h.mape_pct": {
+      "mean": 3.403,
+      "sd": 0.1955,
+      "min": 3.197,
+      "max": 3.586,
+      "n": 3,
+      "by_seed": {
+        "7": 3.586,
+        "11": 3.197,
+        "23": 3.426
+      }
+    },
+    "forecast.xgboost.heart_rate.1h.rmse": {
+      "mean": 3.9462,
+      "sd": 0.7711,
+      "min": 3.1024,
+      "max": 4.6142,
+      "n": 3,
+      "by_seed": {
+        "7": 4.6142,
+        "11": 3.1024,
+        "23": 4.1221
+      }
+    },
+    "forecast.xgboost.heart_rate.24h.coverage": {
+      "mean": 0.9077,
+      "sd": 0.0173,
+      "min": 0.8934,
+      "max": 0.927,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8934,
+        "11": 0.9027,
+        "23": 0.927
+      }
+    },
+    "forecast.xgboost.heart_rate.24h.mae": {
+      "mean": 3.1469,
+      "sd": 0.2467,
+      "min": 2.9231,
+      "max": 3.4114,
+      "n": 3,
+      "by_seed": {
+        "7": 3.4114,
+        "11": 2.9231,
+        "23": 3.1063
+      }
+    },
+    "forecast.xgboost.heart_rate.24h.mape_pct": {
+      "mean": 4.949,
+      "sd": 0.3013,
+      "min": 4.665,
+      "max": 5.265,
+      "n": 3,
+      "by_seed": {
+        "7": 5.265,
+        "11": 4.665,
+        "23": 4.917
+      }
+    },
+    "forecast.xgboost.heart_rate.24h.rmse": {
+      "mean": 4.9845,
+      "sd": 0.7741,
+      "min": 4.1788,
+      "max": 5.7225,
+      "n": 3,
+      "by_seed": {
+        "7": 5.7225,
+        "11": 4.1788,
+        "23": 5.0521
+      }
+    },
+    "forecast.xgboost.respiratory_rate.1h.coverage": {
+      "mean": 0.9116,
+      "sd": 0.0059,
+      "min": 0.9051,
+      "max": 0.9164,
+      "n": 3,
+      "by_seed": {
+        "7": 0.9134,
+        "11": 0.9051,
+        "23": 0.9164
+      }
+    },
+    "forecast.xgboost.respiratory_rate.1h.mae": {
+      "mean": 0.5133,
+      "sd": 0.0238,
+      "min": 0.4868,
+      "max": 0.533,
+      "n": 3,
+      "by_seed": {
+        "7": 0.533,
+        "11": 0.4868,
+        "23": 0.5201
+      }
+    },
+    "forecast.xgboost.respiratory_rate.1h.mape_pct": {
+      "mean": 3.498,
+      "sd": 0.1815,
+      "min": 3.303,
+      "max": 3.662,
+      "n": 3,
+      "by_seed": {
+        "7": 3.662,
+        "11": 3.303,
+        "23": 3.529
+      }
+    },
+    "forecast.xgboost.respiratory_rate.1h.rmse": {
+      "mean": 0.9836,
+      "sd": 0.0784,
+      "min": 0.8934,
+      "max": 1.0348,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8934,
+        "11": 1.0348,
+        "23": 1.0227
+      }
+    },
+    "forecast.xgboost.respiratory_rate.24h.coverage": {
+      "mean": 0.9104,
+      "sd": 0.0257,
+      "min": 0.888,
+      "max": 0.9385,
+      "n": 3,
+      "by_seed": {
+        "7": 0.888,
+        "11": 0.9047,
+        "23": 0.9385
+      }
+    },
+    "forecast.xgboost.respiratory_rate.24h.mae": {
+      "mean": 0.7019,
+      "sd": 0.0609,
+      "min": 0.6561,
+      "max": 0.771,
+      "n": 3,
+      "by_seed": {
+        "7": 0.771,
+        "11": 0.6561,
+        "23": 0.6787
+      }
+    },
+    "forecast.xgboost.respiratory_rate.24h.mape_pct": {
+      "mean": 4.8267,
+      "sd": 0.4035,
+      "min": 4.525,
+      "max": 5.285,
+      "n": 3,
+      "by_seed": {
+        "7": 5.285,
+        "11": 4.525,
+        "23": 4.67
+      }
+    },
+    "forecast.xgboost.respiratory_rate.24h.rmse": {
+      "mean": 1.2312,
+      "sd": 0.0126,
+      "min": 1.2168,
+      "max": 1.2403,
+      "n": 3,
+      "by_seed": {
+        "7": 1.2168,
+        "11": 1.2365,
+        "23": 1.2403
+      }
+    },
+    "forecast.xgboost.spo2.1h.coverage": {
+      "mean": 0.8872,
+      "sd": 0.0152,
+      "min": 0.8714,
+      "max": 0.9017,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8714,
+        "11": 0.8886,
+        "23": 0.9017
+      }
+    },
+    "forecast.xgboost.spo2.1h.mae": {
+      "mean": 0.2676,
+      "sd": 0.0344,
+      "min": 0.232,
+      "max": 0.3006,
+      "n": 3,
+      "by_seed": {
+        "7": 0.3006,
+        "11": 0.232,
+        "23": 0.2702
+      }
+    },
+    "forecast.xgboost.spo2.1h.mape_pct": {
+      "mean": 0.278,
+      "sd": 0.0376,
+      "min": 0.239,
+      "max": 0.314,
+      "n": 3,
+      "by_seed": {
+        "7": 0.314,
+        "11": 0.239,
+        "23": 0.281
+      }
+    },
+    "forecast.xgboost.spo2.1h.rmse": {
+      "mean": 0.5851,
+      "sd": 0.1264,
+      "min": 0.4393,
+      "max": 0.662,
+      "n": 3,
+      "by_seed": {
+        "7": 0.662,
+        "11": 0.4393,
+        "23": 0.6541
+      }
+    },
+    "forecast.xgboost.spo2.24h.coverage": {
+      "mean": 0.8992,
+      "sd": 0.0336,
+      "min": 0.8659,
+      "max": 0.9331,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8659,
+        "11": 0.8986,
+        "23": 0.9331
+      }
+    },
+    "forecast.xgboost.spo2.24h.mae": {
+      "mean": 0.3853,
+      "sd": 0.0834,
+      "min": 0.308,
+      "max": 0.4737,
+      "n": 3,
+      "by_seed": {
+        "7": 0.4737,
+        "11": 0.308,
+        "23": 0.3741
+      }
+    },
+    "forecast.xgboost.spo2.24h.mape_pct": {
+      "mean": 0.4013,
+      "sd": 0.0895,
+      "min": 0.318,
+      "max": 0.496,
+      "n": 3,
+      "by_seed": {
+        "7": 0.496,
+        "11": 0.318,
+        "23": 0.39
+      }
+    },
+    "forecast.xgboost.spo2.24h.rmse": {
+      "mean": 0.8372,
+      "sd": 0.2298,
+      "min": 0.5906,
+      "max": 1.0453,
+      "n": 3,
+      "by_seed": {
+        "7": 1.0453,
+        "11": 0.5906,
+        "23": 0.8758
+      }
+    },
+    "forecast.xgboost.temperature_c.1h.coverage": {
+      "mean": 0.8932,
+      "sd": 0.0141,
+      "min": 0.8825,
+      "max": 0.9091,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8825,
+        "11": 0.8879,
+        "23": 0.9091
+      }
+    },
+    "forecast.xgboost.temperature_c.1h.mae": {
+      "mean": 0.0624,
+      "sd": 0.0044,
+      "min": 0.0592,
+      "max": 0.0674,
+      "n": 3,
+      "by_seed": {
+        "7": 0.0674,
+        "11": 0.0605,
+        "23": 0.0592
+      }
+    },
+    "forecast.xgboost.temperature_c.1h.rmse": {
+      "mean": 0.1142,
+      "sd": 0.0098,
+      "min": 0.1035,
+      "max": 0.1227,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1227,
+        "11": 0.1035,
+        "23": 0.1165
+      }
+    },
+    "forecast.xgboost.temperature_c.24h.coverage": {
+      "mean": 0.8915,
+      "sd": 0.0423,
+      "min": 0.8659,
+      "max": 0.9403,
+      "n": 3,
+      "by_seed": {
+        "7": 0.8659,
+        "11": 0.8683,
+        "23": 0.9403
+      }
+    },
+    "forecast.xgboost.temperature_c.24h.mae": {
+      "mean": 0.0996,
+      "sd": 0.0081,
+      "min": 0.0906,
+      "max": 0.1064,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1019,
+        "11": 0.1064,
+        "23": 0.0906
+      }
+    },
+    "forecast.xgboost.temperature_c.24h.rmse": {
+      "mean": 0.1708,
+      "sd": 0.0167,
+      "min": 0.1515,
+      "max": 0.1813,
+      "n": 3,
+      "by_seed": {
+        "7": 0.1796,
+        "11": 0.1813,
+        "23": 0.1515
+      }
+    }
+  }
+}

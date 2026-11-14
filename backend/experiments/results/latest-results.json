@@ -1,11 +1,20 @@
 {
-  "version": "v20261112-164739-9c1cd54f",
-  "created_at": "2026-11-12T16:47:40.043910+00:00",
-  "git_commit": "79f7060",
-  "runtime_seconds": 349.0,
+  "version": "v20261114-115210-9c1cd54f",
+  "created_at": "2026-11-14T11:52:11.006508+00:00",
+  "git_commit": "8fae33c",
+  "runtime_seconds": 254.1,
   "environment": {
     "python": "3.11.9",
-    "platform": "Windows-10-10.0.26200-SP0"
+    "platform": "Windows-10-10.0.26200-SP0",
+    "libraries": {
+      "numpy": "2.4.6",
+      "pandas": "3.1.1",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.17.1",
+      "xgboost": "3.2.0",
+      "torch": "2.15.0+cpu",
+      "joblib": "1.6.0"
+    }
   },
   "config": {
     "name": "default",
@@ -194,10 +203,16 @@
       "statistical": {
         "label": "Statistical (personal baseline)",
         "description": "Largest robust z-score against the person's own time-of-day and activity baseline, with sustained deviation weighted up.",
+        "hyperparameters": {
+          "seed": 7,
+          "n_features": 12,
+          "sustained_weight": 1.5,
+          "threshold_rule": "quantile of validation-normal scores at 1 - target false-alarm rate"
+        },
         "selected_features": "level_sustained",
         "n_features": 12,
         "fit_seconds": 0.01,
-        "score_ms_per_1k_windows": 0.12,
+        "score_ms_per_1k_windows": 0.09,
         "val_auprc": 0.7208,
         "threshold": 11.3475,
         "test": {
@@ -207,6 +222,8 @@
           "auroc": 0.9569,
           "auprc": 0.8173,
           "false_alarm_rate": 0.00637,
+          "false_negative_rate": 0.7119,
+          "specificity": 0.99363,
           "false_alarms_per_day": 1.835,
           "tp": 1135,
           "fp": 142,
@@ -303,10 +320,18 @@
       "isolation_forest": {
         "label": "Isolation Forest",
         "description": "Ensemble of random trees; anomalies are isolated in fewer splits.",
+        "hyperparameters": {
+          "seed": 7,
+          "n_features": 6,
+          "n_estimators": 300,
+          "max_samples": 512,
+          "contamination": "auto",
+          "threshold_rule": "quantile of validation-normal scores at 1 - target false-alarm rate"
+        },
         "selected_features": "level_only",
         "n_features": 6,
-        "fit_seconds": 0.77,
-        "score_ms_per_1k_windows": 13.06,
+        "fit_seconds": 0.74,
+        "score_ms_per_1k_windows": 12.58,
         "val_auprc": 0.7599,
         "threshold": 0.57153,
         "test": {
@@ -316,6 +341,8 @@
           "auroc": 0.9324,
           "auprc": 0.7961,
           "false_alarm_rate": 0.01099,
+          "false_negative_rate": 0.467,
+          "specificity": 0.98901,
           "false_alarms_per_day": 3.165,
           "tp": 2100,
           "fp": 245,
@@ -412,10 +439,20 @@
       "lof": {
         "label": "Local Outlier Factor",
         "description": "Density of each window relative to its 40 nearest normal neighbours.",
+        "hyperparameters": {
+          "seed": 7,
+          "n_features": 14,
+          "n_neighbors": 40,
+          "metric": "minkowski",
+          "novelty": true,
+          "max_train_windows": 12000,
+          "scaling": "standard",
+          "threshold_rule": "quantile of validation-normal scores at 1 - target false-alarm rate"
+        },
         "selected_features": "without_dynamics",
         "n_features": 14,
-        "fit_seconds": 1.17,
-        "score_ms_per_1k_windows": 101.79,
+        "fit_seconds": 0.92,
+        "score_ms_per_1k_windows": 74.41,
         "val_auprc": 0.8686,
         "threshold": 1.46961,
         "test": {
@@ -425,6 +462,8 @@
           "auroc": 0.9518,
           "auprc": 0.8888,
           "false_alarm_rate": 0.00798,
+          "false_negative_rate": 0.2688,
+          "specificity": 0.99202,
           "false_alarms_per_day": 2.3,
           "tp": 2881,
           "fp": 178,
@@ -521,10 +560,20 @@
       "one_class_svm": {
         "label": "One-Class SVM",
         "description": "RBF-kernel boundary around normal windows (nu = 0.02).",
+        "hyperparameters": {
+          "seed": 7,
+          "n_features": 6,
+          "kernel": "rbf",
+          "gamma": "scale",
+          "nu": 0.02,
+          "max_train_windows": 4000,
+          "scaling": "standard",
+          "threshold_rule": "quantile of validation-normal scores at 1 - target false-alarm rate"
+        },
         "selected_features": "level_only",
         "n_features": 6,
         "fit_seconds": 0.03,
-        "score_ms_per_1k_windows": 7.76,
+        "score_ms_per_1k_windows": 7.43,
         "val_auprc": 0.8683,
         "threshold": 0.89662,
         "test": {
@@ -534,6 +583,8 @@
           "auroc": 0.9387,
           "auprc": 0.8684,
           "false_alarm_rate": 0.00982,
+          "false_negative_rate": 0.2921,
+          "specificity": 0.99018,
           "false_alarms_per_day": 2.829,
           "tp": 2789,
           "fp": 219,
@@ -630,10 +681,22 @@
       "autoencoder": {
         "label": "Autoencoder",
         "description": "Neural network trained to reconstruct normal windows; large reconstruction error is anomalous.",
+        "hyperparameters": {
+          "seed": 7,
+          "n_features": 32,
+          "architecture": "d-64-16-64-d, ReLU",
+          "optimizer": "Adam",
+          "epochs": 40,
+          "batch_size": 256,
+          "learning_rate": 0.001,
+          "loss": "mean squared reconstruction error",
+          "scaling": "standard",
+          "threshold_rule": "quantile of validation-normal scores at 1 - target false-alarm rate"
+        },
         "selected_features": "all_features",
         "n_features": 32,
-        "fit_seconds": 17.35,
-        "score_ms_per_1k_windows": 0.64,
+        "fit_seconds": 14.33,
+        "score_ms_per_1k_windows": 0.48,
         "val_auprc": 0.7682,
         "threshold": 0.56147,
         "test": {
@@ -643,6 +706,8 @@
           "auroc": 0.9154,
           "auprc": 0.8212,
           "false_alarm_rate": 0.00588,
+          "false_negative_rate": 0.4155,
+          "specificity": 0.99412,
           "false_alarms_per_day": 1.692,
           "tp": 2303,
           "fp": 131,
@@ -755,6 +820,8 @@
         "auroc": 0.9528,
         "auprc": 0.8912,
         "false_alarm_rate": 0.00866,
+        "false_negative_rate": 0.2614,
+        "specificity": 0.99134,
         "false_alarms_per_day": 2.493,
         "tp": 2910,
         "fp": 193,
@@ -858,6 +925,8 @@
         "auroc": 0.7656,
         "auprc": 0.5246,
         "false_alarm_rate": 0.00929,
+        "false_negative_rate": 0.7959,
+        "specificity": 0.99071,
         "false_alarms_per_day": 2.674,
         "tp": 804,
         "fp": 207,
@@ -1230,6 +1299,9 @@
       "persistence": {
         "label": "Persistence (last value)",
         "family": "baseline",
+        "hyperparameters": {
+          "parameters": "none (baseline)"
+        },
         "fit_seconds": 0.0,
         "by_signal": {
           "heart_rate": {
@@ -1237,6 +1309,7 @@
               "n": 4400,
               "mae": 7.1481,
               "rmse": 12.9989,
+              "mape_pct": 10.066,
               "coverage": 0.9041,
               "mean_width": 32.9356
             },
@@ -1244,6 +1317,7 @@
               "n": 4400,
               "mae": 13.9314,
               "rmse": 19.3893,
+              "mape_pct": 21.201,
               "coverage": 0.903,
               "mean_width": 63.2404
             },
@@ -1251,6 +1325,7 @@
               "n": 4400,
               "mae": 16.0695,
               "rmse": 21.6605,
+              "mape_pct": 25.219,
               "coverage": 0.9,
               "mean_width": 71.807
             },
@@ -1258,6 +1333,7 @@
               "n": 4400,
               "mae": 5.8797,
               "rmse": 9.8216,
+              "mape_pct": 8.852,
               "coverage": 0.9095,
               "mean_width": 25.6442
             }
@@ -1267,13 +1343,15 @@
               "n": 4400,
               "mae": 0.3483,
               "rmse": 0.7289,
-              "coverage": 0.8861,
+              "mape_pct": 0.36,
+              "coverage": 0.8866,
               "mean_width": 1.2671
             },
             "6h": {
               "n": 4400,
               "mae": 0.7303,
               "rmse": 1.1841,
+              "mape_pct": 0.755,
               "coverage": 0.885,
               "mean_width": 2.499
             },
@@ -1281,13 +1359,15 @@
               "n": 4400,
               "mae": 0.8431,
               "rmse": 1.373,
-              "coverage": 0.8627,
+              "mape_pct": 0.873,
+              "coverage": 0.8636,
               "mean_width": 2.5694
             },
             "24h": {
               "n": 4400,
               "mae": 0.7254,
               "rmse": 1.4506,
+              "mape_pct": 0.753,
               "coverage": 0.8623,
               "mean_width": 1.9625
             }
@@ -1297,6 +1377,7 @@
               "n": 4400,
               "mae": 1.4193,
               "rmse": 2.4907,
+              "mape_pct": 9.189,
               "coverage": 0.9139,
               "mean_width": 7.7617
             },
@@ -1304,13 +1385,15 @@
               "n": 4400,
               "mae": 2.697,
               "rmse": 3.7367,
-              "coverage": 0.923,
+              "mape_pct": 18.537,
+              "coverage": 0.9234,
               "mean_width": 14.6342
             },
             "12h": {
               "n": 4400,
               "mae": 2.9877,
               "rmse": 4.0957,
+              "mape_pct": 21.055,
               "coverage": 0.9214,
               "mean_width": 15.7635
             },
@@ -1318,6 +1401,7 @@
               "n": 4400,
               "mae": 1.3087,
               "rmse": 2.0317,
+              "mape_pct": 8.987,
               "coverage": 0.8766,
               "mean_width": 5.3518
             }
@@ -1341,14 +1425,14 @@
               "n": 4400,
               "mae": 0.4846,
               "rmse": 0.5648,
-              "coverage": 0.9025,
+              "coverage": 0.903,
               "mean_width": 1.68
             },
             "24h": {
               "n": 4400,
               "mae": 0.1484,
               "rmse": 0.2476,
-              "coverage": 0.8677,
+              "coverage": 0.868,
               "mean_width": 0.5039
             }
           }
@@ -1383,6 +1467,9 @@
       "seasonal_naive": {
         "label": "Seasonal naive (same time yesterday)",
         "family": "baseline",
+        "hyperparameters": {
+          "parameters": "none (baseline)"
+        },
         "fit_seconds": 0.0,
         "by_signal": {
           "heart_rate": {
@@ -1390,6 +1477,7 @@
               "n": 4400,
               "mae": 5.9719,
               "rmse": 10.0812,
+              "mape_pct": 9.014,
               "coverage": 0.9084,
               "mean_width": 25.1923
             },
@@ -1397,6 +1485,7 @@
               "n": 4400,
               "mae": 5.9615,
               "rmse": 10.0774,
+              "mape_pct": 8.991,
               "coverage": 0.9084,
               "mean_width": 25.1923
             },
@@ -1404,6 +1493,7 @@
               "n": 4400,
               "mae": 5.9871,
               "rmse": 10.1382,
+              "mape_pct": 9.013,
               "coverage": 0.9041,
               "mean_width": 24.7677
             },
@@ -1411,6 +1501,7 @@
               "n": 4400,
               "mae": 5.8797,
               "rmse": 9.8216,
+              "mape_pct": 8.852,
               "coverage": 0.9095,
               "mean_width": 25.6442
             }
@@ -1420,6 +1511,7 @@
               "n": 4400,
               "mae": 0.7248,
               "rmse": 1.4501,
+              "mape_pct": 0.752,
               "coverage": 0.8645,
               "mean_width": 1.9752
             },
@@ -1427,13 +1519,15 @@
               "n": 4400,
               "mae": 0.7249,
               "rmse": 1.4503,
-              "coverage": 0.8645,
+              "mape_pct": 0.753,
+              "coverage": 0.865,
               "mean_width": 1.9942
             },
             "12h": {
               "n": 4400,
               "mae": 0.7243,
               "rmse": 1.4499,
+              "mape_pct": 0.752,
               "coverage": 0.8648,
               "mean_width": 1.971
             },
@@ -1441,6 +1535,7 @@
               "n": 4400,
               "mae": 0.7254,
               "rmse": 1.4506,
+              "mape_pct": 0.753,
               "coverage": 0.8623,
               "mean_width": 1.9625
             }
@@ -1450,13 +1545,15 @@
               "n": 4400,
               "mae": 1.2979,
               "rmse": 2.0132,
-              "coverage": 0.8795,
+              "mape_pct": 8.919,
+              "coverage": 0.88,
               "mean_width": 5.4384
             },
             "6h": {
               "n": 4400,
               "mae": 1.3016,
               "rmse": 2.0207,
+              "mape_pct": 8.956,
               "coverage": 0.8855,
               "mean_width": 5.5988
             },
@@ -1464,13 +1561,15 @@
               "n": 4400,
               "mae": 1.315,
               "rmse": 2.0446,
-              "coverage": 0.8761,
+              "mape_pct": 9.017,
+              "coverage": 0.8764,
               "mean_width": 5.391
             },
             "24h": {
               "n": 4400,
               "mae": 1.3087,
               "rmse": 2.0317,
+              "mape_pct": 8.987,
               "coverage": 0.8766,
               "mean_width": 5.3518
             }
@@ -1480,14 +1579,14 @@
               "n": 4400,
               "mae": 0.1492,
               "rmse": 0.2477,
-              "coverage": 0.8659,
+              "coverage": 0.8661,
               "mean_width": 0.5039
             },
             "6h": {
               "n": 4400,
               "mae": 0.1484,
               "rmse": 0.2464,
-              "coverage": 0.8691,
+              "coverage": 0.8693,
               "mean_width": 0.5075
             },
             "12h": {
@@ -1501,7 +1600,7 @@
               "n": 4400,
               "mae": 0.1484,
               "rmse": 0.2476,
-              "coverage": 0.8677,
+              "coverage": 0.868,
               "mean_width": 0.5039
             }
           }
@@ -1536,6 +1635,9 @@
       "climatology": {
         "label": "Personal climatology (baseline for planned activity)",
         "family": "baseline",
+        "hyperparameters": {
+          "parameters": "none (baseline)"
+        },
         "fit_seconds": 0.0,
         "by_signal": {
           "heart_rate": {
@@ -1543,27 +1645,31 @@
               "n": 4400,
               "mae": 4.1705,
               "rmse": 6.6819,
-              "coverage": 0.88,
+              "mape_pct": 6.225,
+              "coverage": 0.8802,
               "mean_width": 15.4205
             },
             "6h": {
               "n": 4400,
               "mae": 4.1715,
               "rmse": 6.6813,
-              "coverage": 0.8809,
+              "mape_pct": 6.224,
+              "coverage": 0.8814,
               "mean_width": 15.4494
             },
             "12h": {
               "n": 4400,
               "mae": 4.1726,
               "rmse": 6.6928,
-              "coverage": 0.8795,
+              "mape_pct": 6.221,
+              "coverage": 0.8798,
               "mean_width": 15.261
             },
             "24h": {
               "n": 4400,
               "mae": 4.1662,
               "rmse": 6.6831,
+              "mape_pct": 6.208,
               "coverage": 0.8914,
               "mean_width": 16.1522
             }
@@ -1573,28 +1679,32 @@
               "n": 4400,
               "mae": 0.4683,
               "rmse": 1.0656,
-              "coverage": 0.8755,
+              "mape_pct": 0.491,
+              "coverage": 0.8764,
               "mean_width": 1.2319
             },
             "6h": {
               "n": 4400,
               "mae": 0.468,
               "rmse": 1.0656,
-              "coverage": 0.8732,
+              "mape_pct": 0.49,
+              "coverage": 0.8741,
               "mean_width": 1.2249
             },
             "12h": {
               "n": 4400,
               "mae": 0.4674,
               "rmse": 1.0654,
-              "coverage": 0.8725,
+              "mape_pct": 0.49,
+              "coverage": 0.8734,
               "mean_width": 1.2029
             },
             "24h": {
               "n": 4400,
               "mae": 0.4666,
               "rmse": 1.0652,
-              "coverage": 0.8732,
+              "mape_pct": 0.489,
+              "coverage": 0.8741,
               "mean_width": 1.2029
             }
           },
@@ -1603,6 +1713,7 @@
               "n": 4400,
               "mae": 0.8866,
               "rmse": 1.37,
+              "mape_pct": 5.946,
               "coverage": 0.8952,
               "mean_width": 3.6887
             },
@@ -1610,6 +1721,7 @@
               "n": 4400,
               "mae": 0.8852,
               "rmse": 1.3692,
+              "mape_pct": 5.935,
               "coverage": 0.8975,
               "mean_width": 3.7044
             },
@@ -1617,6 +1729,7 @@
               "n": 4400,
               "mae": 0.8918,
               "rmse": 1.3944,
+              "mape_pct": 5.96,
               "coverage": 0.8948,
               "mean_width": 3.6887
             },
@@ -1624,6 +1737,7 @@
               "n": 4400,
               "mae": 0.8903,
               "rmse": 1.3923,
+              "mape_pct": 5.954,
               "coverage": 0.8905,
               "mean_width": 3.6048
             }
@@ -1689,13 +1803,33 @@
       "xgboost": {
         "label": "XGBoost (engineered features)",
         "family": "tree",
-        "fit_seconds": 11.01,
+        "hyperparameters": {
+          "objective": "reg:squarederror",
+          "max_depth": 5,
+          "eta": 0.05,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "min_child_weight": 5,
+          "seed": 7,
+          "nthread": 4,
+          "max_boost_rounds": 600,
+          "early_stopping_rounds": 40,
+          "best_iterations": {
+            "heart_rate": 300,
+            "spo2": 85,
+            "respiratory_rate": 178,
+            "temperature_c": 162
+          },
+          "one_model_per": "signal (all horizons share one model; horizon is a feature)"
+        },
+        "fit_seconds": 8.23,
         "by_signal": {
           "heart_rate": {
             "1h": {
               "n": 4400,
               "mae": 2.3355,
               "rmse": 4.6142,
+              "mape_pct": 3.586,
               "coverage": 0.8998,
               "mean_width": 8.6253
             },
@@ -1703,6 +1837,7 @@
               "n": 4400,
               "mae": 3.1664,
               "rmse": 5.4083,
+              "mape_pct": 4.914,
               "coverage": 0.8989,
               "mean_width": 12.2181
             },
@@ -1710,6 +1845,7 @@
               "n": 4400,
               "mae": 3.3385,
               "rmse": 5.631,
+              "mape_pct": 5.151,
               "coverage": 0.8848,
               "mean_width": 12.6452
             },
@@ -1717,6 +1853,7 @@
               "n": 4400,
               "mae": 3.4114,
               "rmse": 5.7225,
+              "mape_pct": 5.265,
               "coverage": 0.8934,
               "mean_width": 13.1021
             }
@@ -1726,6 +1863,7 @@
               "n": 4400,
               "mae": 0.3006,
               "rmse": 0.662,
+              "mape_pct": 0.314,
               "coverage": 0.8714,
               "mean_width": 0.9125
             },
@@ -1733,6 +1871,7 @@
               "n": 4400,
               "mae": 0.4107,
               "rmse": 0.8634,
+              "mape_pct": 0.429,
               "coverage": 0.8607,
               "mean_width": 1.1779
             },
@@ -1740,6 +1879,7 @@
               "n": 4400,
               "mae": 0.4449,
               "rmse": 0.9705,
+              "mape_pct": 0.465,
               "coverage": 0.8661,
               "mean_width": 1.2424
             },
@@ -1747,6 +1887,7 @@
               "n": 4400,
               "mae": 0.4737,
               "rmse": 1.0453,
+              "mape_pct": 0.496,
               "coverage": 0.8659,
               "mean_width": 1.2593
             }
@@ -1756,6 +1897,7 @@
               "n": 4400,
               "mae": 0.533,
               "rmse": 0.8934,
+              "mape_pct": 3.662,
               "coverage": 0.9134,
               "mean_width": 2.2199
             },
@@ -1763,6 +1905,7 @@
               "n": 4400,
               "mae": 0.7073,
               "rmse": 1.1024,
+              "mape_pct": 4.874,
               "coverage": 0.8895,
               "mean_width": 2.7464
             },
@@ -1770,6 +1913,7 @@
               "n": 4400,
               "mae": 0.7573,
               "rmse": 1.1881,
+              "mape_pct": 5.199,
               "coverage": 0.8782,
               "mean_width": 2.811
             },
@@ -1777,6 +1921,7 @@
               "n": 4400,
               "mae": 0.771,
               "rmse": 1.2168,
+              "mape_pct": 5.285,
               "coverage": 0.888,
               "mean_width": 2.9371
             }
@@ -1842,13 +1987,26 @@
       "lstm": {
         "label": "LSTM",
         "family": "neural",
-        "fit_seconds": 36.36,
+        "hyperparameters": {
+          "encoder": "1-layer LSTM, hidden 64",
+          "head": "MLP 256, ReLU, dropout 0.1, predicts residual to climatology",
+          "optimizer": "Adam",
+          "learning_rate": 0.001,
+          "weight_decay": 1e-05,
+          "batch_size": 128,
+          "max_epochs": 60,
+          "early_stopping_patience": 10,
+          "epochs_run": 21,
+          "seed": 7
+        },
+        "fit_seconds": 25.4,
         "by_signal": {
           "heart_rate": {
             "1h": {
               "n": 4400,
               "mae": 3.2395,
               "rmse": 5.6892,
+              "mape_pct": 4.868,
               "coverage": 0.905,
               "mean_width": 12.5111
             },
@@ -1856,6 +2014,7 @@
               "n": 4400,
               "mae": 3.8247,
               "rmse": 6.2666,
+              "mape_pct": 5.8,
               "coverage": 0.8995,
               "mean_width": 14.8966
             },
@@ -1863,6 +2022,7 @@
               "n": 4400,
               "mae": 3.947,
               "rmse": 6.3771,
+              "mape_pct": 5.987,
               "coverage": 0.885,
               "mean_width": 14.9258
             },
@@ -1870,6 +2030,7 @@
               "n": 4400,
               "mae": 3.8754,
               "rmse": 6.4069,
+              "mape_pct": 5.841,
               "coverage": 0.9098,
               "mean_width": 16.2997
             }
@@ -1879,6 +2040,7 @@
               "n": 4400,
               "mae": 0.3249,
               "rmse": 0.7078,
+              "mape_pct": 0.339,
               "coverage": 0.8727,
               "mean_width": 0.9871
             },
@@ -1886,6 +2048,7 @@
               "n": 4400,
               "mae": 0.4768,
               "rmse": 0.9731,
+              "mape_pct": 0.497,
               "coverage": 0.8334,
               "mean_width": 1.2618
             },
@@ -1893,6 +2056,7 @@
               "n": 4400,
               "mae": 0.508,
               "rmse": 1.038,
+              "mape_pct": 0.53,
               "coverage": 0.8514,
               "mean_width": 1.3628
             },
@@ -1900,6 +2064,7 @@
               "n": 4400,
               "mae": 0.5198,
               "rmse": 1.0861,
+              "mape_pct": 0.543,
               "coverage": 0.8623,
               "mean_width": 1.3973
             }
@@ -1909,6 +2074,7 @@
               "n": 4400,
               "mae": 0.6855,
               "rmse": 1.1126,
+              "mape_pct": 4.639,
               "coverage": 0.8939,
               "mean_width": 2.7985
             },
@@ -1916,6 +2082,7 @@
               "n": 4400,
               "mae": 0.8556,
               "rmse": 1.3126,
+              "mape_pct": 5.836,
               "coverage": 0.897,
               "mean_width": 3.6444
             },
@@ -1923,6 +2090,7 @@
               "n": 4400,
               "mae": 0.8886,
               "rmse": 1.3521,
+              "mape_pct": 6.08,
               "coverage": 0.8948,
               "mean_width": 3.7755
             },
@@ -1930,6 +2098,7 @@
               "n": 4400,
               "mae": 0.8775,
               "rmse": 1.3585,
+              "mape_pct": 5.954,
               "coverage": 0.905,
               "mean_width": 3.9173
             }
@@ -1996,13 +2165,26 @@
       "gru": {
         "label": "GRU",
         "family": "neural",
-        "fit_seconds": 75.64,
+        "hyperparameters": {
+          "encoder": "1-layer GRU, hidden 64",
+          "head": "MLP 256, ReLU, dropout 0.1, predicts residual to climatology",
+          "optimizer": "Adam",
+          "learning_rate": 0.001,
+          "weight_decay": 1e-05,
+          "batch_size": 128,
+          "max_epochs": 60,
+          "early_stopping_patience": 10,
+          "epochs_run": 20,
+          "seed": 7
+        },
+        "fit_seconds": 50.47,
         "by_signal": {
           "heart_rate": {
             "1h": {
               "n": 4400,
               "mae": 3.0485,
               "rmse": 5.5518,
+              "mape_pct": 4.545,
               "coverage": 0.9157,
               "mean_width": 12.1473
             },
@@ -2010,6 +2192,7 @@
               "n": 4400,
               "mae": 3.7313,
               "rmse": 6.2072,
+              "mape_pct": 5.628,
               "coverage": 0.8945,
               "mean_width": 14.279
             },
@@ -2017,6 +2200,7 @@
               "n": 4400,
               "mae": 3.8997,
               "rmse": 6.3691,
+              "mape_pct": 5.876,
               "coverage": 0.8845,
               "mean_width": 14.7418
             },
@@ -2024,6 +2208,7 @@
               "n": 4400,
               "mae": 3.9145,
               "rmse": 6.4438,
+              "mape_pct": 5.907,
               "coverage": 0.8959,
               "mean_width": 15.3671
             }
@@ -2033,6 +2218,7 @@
               "n": 4400,
               "mae": 0.2957,
               "rmse": 0.6162,
+              "mape_pct": 0.308,
               "coverage": 0.8893,
               "mean_width": 1.0128
             },
@@ -2040,6 +2226,7 @@
               "n": 4400,
               "mae": 0.4436,
               "rmse": 0.9314,
+              "mape_pct": 0.463,
               "coverage": 0.8627,
               "mean_width": 1.2808
             },
@@ -2047,6 +2234,7 @@
               "n": 4400,
               "mae": 0.4744,
               "rmse": 1.0289,
+              "mape_pct": 0.496,
               "coverage": 0.877,
               "mean_width": 1.3316
             },
@@ -2054,6 +2242,7 @@
               "n": 4400,
               "mae": 0.4985,
               "rmse": 1.0703,
+              "mape_pct": 0.521,
               "coverage": 0.8518,
               "mean_width": 1.299
             }
@@ -2063,6 +2252,7 @@
               "n": 4400,
               "mae": 0.6457,
               "rmse": 1.0592,
+              "mape_pct": 4.383,
               "coverage": 0.9193,
               "mean_width": 2.815
             },
@@ -2070,6 +2260,7 @@
               "n": 4400,
               "mae": 0.8278,
               "rmse": 1.2587,
+              "mape_pct": 5.638,
               "coverage": 0.89,
               "mean_width": 3.3609
             },
@@ -2077,6 +2268,7 @@
               "n": 4400,
               "mae": 0.8724,
               "rmse": 1.3486,
+              "mape_pct": 5.906,
               "coverage": 0.8864,
               "mean_width": 3.5099
             },
@@ -2084,6 +2276,7 @@
               "n": 4400,
               "mae": 0.8758,
               "rmse": 1.3534,
+              "mape_pct": 5.954,
               "coverage": 0.8823,
               "mean_width": 3.4057
             }
@@ -2093,7 +2286,7 @@
               "n": 4400,
               "mae": 0.0828,
               "rmse": 0.1339,
-              "coverage": 0.8741,
+              "coverage": 0.8743,
               "mean_width": 0.297
             },
             "6h": {
@@ -2150,13 +2343,26 @@
       "tcn": {
         "label": "Temporal Convolutional Network",
         "family": "neural",
-        "fit_seconds": 36.07,
+        "hyperparameters": {
+          "encoder": "5 causal residual blocks, 32 channels, kernel 3, dilations 1-16",
+          "head": "MLP 256, ReLU, dropout 0.1, predicts residual to climatology",
+          "optimizer": "Adam",
+          "learning_rate": 0.001,
+          "weight_decay": 1e-05,
+          "batch_size": 128,
+          "max_epochs": 60,
+          "early_stopping_patience": 10,
+          "epochs_run": 13,
+          "seed": 7
+        },
+        "fit_seconds": 25.63,
         "by_signal": {
           "heart_rate": {
             "1h": {
               "n": 4400,
               "mae": 3.2157,
               "rmse": 5.6526,
+              "mape_pct": 4.821,
               "coverage": 0.9073,
               "mean_width": 12.7286
             },
@@ -2164,6 +2370,7 @@
               "n": 4400,
               "mae": 3.8074,
               "rmse": 6.2631,
+              "mape_pct": 5.774,
               "coverage": 0.8877,
               "mean_width": 14.2022
             },
@@ -2171,6 +2378,7 @@
               "n": 4400,
               "mae": 3.9502,
               "rmse": 6.3932,
+              "mape_pct": 5.972,
               "coverage": 0.8859,
               "mean_width": 14.6702
             },
@@ -2178,6 +2386,7 @@
               "n": 4400,
               "mae": 3.9402,
               "rmse": 6.4536,
+              "mape_pct": 5.95,
               "coverage": 0.89,
               "mean_width": 15.0804
             }
@@ -2187,6 +2396,7 @@
               "n": 4400,
               "mae": 0.296,
               "rmse": 0.6289,
+              "mape_pct": 0.308,
               "coverage": 0.8752,
               "mean_width": 0.9642
             },
@@ -2194,6 +2404,7 @@
               "n": 4400,
               "mae": 0.4246,
               "rmse": 0.8774,
+              "mape_pct": 0.443,
               "coverage": 0.8661,
               "mean_width": 1.2627
             },
@@ -2201,6 +2412,7 @@
               "n": 4400,
               "mae": 0.456,
               "rmse": 1.0076,
+              "mape_pct": 0.477,
               "coverage": 0.8761,
               "mean_width": 1.2866
             },
@@ -2208,6 +2420,7 @@
               "n": 4400,
               "mae": 0.4692,
               "rmse": 1.0457,
+              "mape_pct": 0.491,
               "coverage": 0.877,
               "mean_width": 1.2526
             }
@@ -2217,6 +2430,7 @@
               "n": 4400,
               "mae": 0.68,
               "rmse": 1.0788,
+              "mape_pct": 4.641,
               "coverage": 0.9066,
               "mean_width": 2.7974
             },
@@ -2224,6 +2438,7 @@
               "n": 4400,
               "mae": 0.8214,
               "rmse": 1.2418,
+              "mape_pct": 5.646,
               "coverage": 0.8982,
               "mean_width": 3.3642
             },
@@ -2231,6 +2446,7 @@
               "n": 4400,
               "mae": 0.8474,
               "rmse": 1.3194,
+              "mape_pct": 5.733,
               "coverage": 0.8916,
               "mean_width": 3.4342
             },
@@ -2238,6 +2454,7 @@
               "n": 4400,
               "mae": 0.8664,
               "rmse": 1.3396,
+              "mape_pct": 5.892,
               "coverage": 0.877,
               "mean_width": 3.217
             }

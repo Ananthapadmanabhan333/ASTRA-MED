@@ -82,10 +82,10 @@ class AuthService:
                 await asyncio.to_thread(passwords.verify_password, password, passwords.dummy_hash())
                 raise UnauthorizedError(INVALID_LOGIN, details={"reason": "invalid_credentials"})
             if user.locked_until is not None and user.locked_until > now:
-                raise UnauthorizedError(
-                    "This account is temporarily locked after repeated failed sign-ins. Try again later.",
-                    details={"reason": "locked"},
-                )
+                # Same message and the same hashing effort as a wrong password, so a lockout cannot
+                # be used to confirm that a username exists. The audit log keeps the real reason.
+                await asyncio.to_thread(passwords.verify_password, password, passwords.dummy_hash())
+                raise UnauthorizedError(INVALID_LOGIN, details={"reason": "locked"})
             ok = await asyncio.to_thread(passwords.verify_password, password, user.password_hash)
             if not ok or not user.active:
                 if ok and not user.active:

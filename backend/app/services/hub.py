@@ -14,17 +14,21 @@ class ConnectionHub:
     def __init__(self, send_timeout_s: float = 2.0) -> None:
         # One lock per socket: broadcasts and direct replies never interleave frames.
         self._clients: dict[WebSocket, asyncio.Lock] = {}
+        # Permissions each socket's user holds (None: not tracked, e.g. authentication disabled).
+        self._permissions: dict[WebSocket, frozenset[str] | None] = {}
         self.send_timeout_s = send_timeout_s
 
     @property
     def count(self) -> int:
         return len(self._clients)
 
-    def add(self, ws: WebSocket) -> None:
+    def add(self, ws: WebSocket, permissions: frozenset[str] | None = None) -> None:
         self._clients[ws] = asyncio.Lock()
+        self._permissions[ws] = permissions
         logger.info("client connected (%d total)", len(self._clients))
 
     def remove(self, ws: WebSocket) -> None:
+        self._permissions.pop(ws, None)
         if self._clients.pop(ws, None) is not None:
             logger.info("client disconnected (%d total)", len(self._clients))
 
@@ -36,10 +40,12 @@ class ConnectionHub:
         async with lock:
             await asyncio.wait_for(ws.send_text(text), self.send_timeout_s)
 
-    async def broadcast(self, text: str) -> None:
+    async def broadcast(self, text: str, requires: str | None = None) -> None:
+        """Send to every client, or only to clients whose user holds ``requires``."""
         if not self._clients:
             return
-        clients = list(self._clients)
+        clients = [ws for ws in self._clients
+                   if requires is None or (perms := self._permissions.get(ws)) is None or requires in perms]
         results = await asyncio.gather(*(self.send(ws, text) for ws in clients), return_exceptions=True)
         for ws, result in zip(clients, results):
             if isinstance(result, BaseException):

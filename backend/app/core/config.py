@@ -5,8 +5,9 @@ from __future__ import annotations
 from datetime import date
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,8 +21,16 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # Storage. PostgreSQL in Docker; SQLite is accepted for tests and offline development.
+    # postgres:// and postgresql:// URLs (as managed providers hand them out) are accepted and
+    # switched to the asyncpg driver.
     database_url: str = "sqlite+aiosqlite:///./astra_med.db"
     history_retention_days: int = Field(default=30, ge=1)
+    # "create": create missing tables at start-up (development, tests, SQLite).
+    # "migrate": the schema is owned by Alembic; run `alembic upgrade head` before starting, and the
+    # API refuses to start on a database that is not at the latest revision.
+    db_schema_mode: Literal["create", "migrate"] = "create"
+    retention_interval_hours: float = Field(default=6.0, ge=0)  # periodic pruning of old rows (0 disables)
+    api_docs_enabled: bool | None = None  # interactive API docs; unset: on, except in production
 
     # Comma-separated list of allowed browser origins.
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
@@ -72,6 +81,7 @@ class Settings(BaseSettings):
     ai_artifacts_dir: str = ""  # empty: backend/artifacts
     ai_cache_seconds: float = Field(default=30.0, ge=0)
     ai_history_hours: int = Field(default=168, ge=24, le=720)  # history used to fit live baselines
+    ai_model_version: str = ""  # pin a registered model version (rollback); empty: the registry's latest
 
     # NASA open data (phase 4). The API key stays on the backend: it is never returned by the API,
     # logged, or sent to the browser. Empty uses NASA's public DEMO_KEY (heavily rate limited).
@@ -104,9 +114,40 @@ class Settings(BaseSettings):
     mission_sim_max_speed: float = Field(default=120.0, ge=1, le=600)
     mission_sim_max_minutes: int = Field(default=24 * 60, ge=5, le=7 * 24 * 60)  # longest sandbox mission (sim time)
 
+    @field_validator("api_docs_enabled", mode="before")
+    @classmethod
+    def _blank_is_unset(cls, v):
+        return None if isinstance(v, str) and not v.strip() else v
+
+    @field_validator("database_url")
+    @classmethod
+    def _async_driver(cls, v: str) -> str:
+        v = v.strip()
+        for prefix in ("postgres://", "postgresql://"):
+            if v.startswith(prefix):
+                return "postgresql+asyncpg://" + v[len(prefix):]
+        return v
+
     @property
     def is_production(self) -> bool:
         return self.environment.strip().lower() in {"production", "prod"}
+
+    @property
+    def docs_enabled(self) -> bool:
+        return (not self.is_production) if self.api_docs_enabled is None else self.api_docs_enabled
+
+    def production_problems(self) -> list[str]:
+        """Settings that are unsafe when ASTRA_ENVIRONMENT=production (the API refuses to start)."""
+        problems = []
+        if not self.auth_enabled:
+            problems.append("ASTRA_AUTH_ENABLED must be true")
+        if not self.auth_cookie_secure:
+            problems.append("ASTRA_AUTH_COOKIE_SECURE must be true (the session cookie must only travel over HTTPS)")
+        if self.database_url.startswith("sqlite"):
+            problems.append("ASTRA_DATABASE_URL must point to PostgreSQL, not a SQLite file")
+        if self.db_schema_mode != "migrate":
+            problems.append("ASTRA_DB_SCHEMA_MODE must be 'migrate' (run `alembic upgrade head` before deploying)")
+        return problems
 
     @property
     def nasa_api_key_value(self) -> str:

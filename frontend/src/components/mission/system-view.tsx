@@ -74,6 +74,7 @@ function Collectors({ s }: { s: PlatformStatus }) {
 function Consistency() {
   const allowed = useCan("audit:read");
   const operator = useCan("simulation:control");
+  const canRepair = useCan("system:maintain");
   const q = useConsistency();
   const repair = useRepairConsistency();
   if (!allowed && !operator) {
@@ -89,7 +90,7 @@ function Consistency() {
       title="Database consistency"
       icon={<Database />}
       meta={r ? <span className={CHECK_TONE[r.status]}>{r.status}</span> : undefined}
-      actions={
+      actions={canRepair &&
         <Button size="sm" variant="outline" disabled={repair.isPending}
           onClick={() => repair.mutate(undefined, { onSuccess: (d) => toast.success(`Checks ${d.status}`), onError: (e) => toast.error(e instanceof Error ? e.message : "Repair failed") })}>
           <Wrench aria-hidden /> Check and repair

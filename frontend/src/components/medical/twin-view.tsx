@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ChartTable } from "@/components/charts/chart-table";
 import { TrendChart, type ChartRow } from "@/components/charts/trend-chart";
 import { Panel } from "@/components/data/panel";
-import { ErrorState, LoadingState, QueryView } from "@/components/data/states";
+import { EmptyState, ErrorState, LoadingState, QueryView } from "@/components/data/states";
 import { StatusPill } from "@/components/status/status";
 import { useAstronauts } from "@/lib/api/hooks";
 import { useTwin, useTwinStages, useTwinTimeline, useTwinTrend } from "@/lib/api/medical-hooks";
@@ -303,7 +303,7 @@ function Timeline({ aid }: { aid: string }) {
     >
       <QueryView query={q}>
         {(t) => (
-          <div className="max-h-[28rem] overflow-auto">
+          <div className={cn("max-h-[28rem] overflow-auto", q.isPlaceholderData && "opacity-60")}>
             <table className="w-full min-w-[760px] text-left text-sm">
               <caption className="sr-only">Daily twin summaries, newest first</caption>
               <thead className="sticky top-0 bg-hull text-xs text-ink-2">
@@ -367,7 +367,13 @@ export function TwinView() {
       </SimulatedBanner>
       <CrewPicker value={aid} onChange={(v) => setParam(v)} />
       {!aid ? (
-        <LoadingState rows={4} />
+        crew.error ? (
+          <ErrorState title="Couldn't load the crew list" error={crew.error} onRetry={() => crew.refetch()} />
+        ) : crew.data ? (
+          <EmptyState title="No crew members">The digital twin appears once the backend lists a crew member.</EmptyState>
+        ) : (
+          <LoadingState rows={4} />
+        )
       ) : twin.isPending ? (
         <LoadingState label="Building the digital twin" rows={6} />
       ) : twin.error && !twin.data ? (

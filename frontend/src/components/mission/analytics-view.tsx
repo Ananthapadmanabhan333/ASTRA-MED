@@ -18,6 +18,7 @@ import { useAnalytics, type AnalyticsFilters } from "@/lib/api/mission-hooks";
 import type { AnalyticsSummary } from "@/lib/api/types";
 import { crewColor, crewDash } from "@/lib/crew";
 import { fmt, utcDay } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 const TOOLTIP = {
   contentStyle: { background: "var(--popover)", border: "1px solid var(--bulkhead)", borderRadius: 6, fontSize: 12 },
@@ -329,7 +330,7 @@ export function AnalyticsView() {
       {q.isPending ? <LoadingState rows={8} /> : q.error && !a ? <ErrorState error={q.error} onRetry={() => q.refetch()} /> : a ? (
         <>
           <p className="text-xs text-ink-3">{String(a.start)} to {String(a.end)} UTC. {a.notes.join(" ")}</p>
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div className={cn("grid gap-4 xl:grid-cols-2", q.isPlaceholderData && "opacity-60")}>
             <ErrorBoundary label="Crew trends"><CrewTrends a={a} /></ErrorBoundary>
             <ErrorBoundary label="Anomalies">
               <DataCard title="Physiological anomalies over time" meta={<OriginChip origin="simulated" />}>

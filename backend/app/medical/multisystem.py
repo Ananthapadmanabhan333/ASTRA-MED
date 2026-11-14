@@ -144,7 +144,7 @@ class MultisystemEngine:
                 pb = (await self.ai.baseline(aid)).baseline
                 if recent:
                     states = [r[-1] for r in recent if r[-1]]
-                    state = max(set(states), key=states.count) if states else "work"
+                    state = max(dict.fromkeys(states), key=states.count) if states else "work"  # ties: earliest
                     for i, sig in enumerate(SIGNALS, start=1):
                         vals = [r[i] for r in recent if r[i] is not None]
                         if not vals:

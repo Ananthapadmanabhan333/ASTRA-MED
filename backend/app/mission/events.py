@@ -102,6 +102,17 @@ def event_view(row: MissionEventRow) -> dict[str, Any]:
     }
 
 
+# Event sources that need a permission beyond health:read. Incident reports (titles, IDs, review
+# status) are only for roles with reports:read, so their events are hidden from everyone else in
+# the event APIs, the overview and the live stream.
+SOURCE_PERMISSIONS: dict[str, str] = {"incident_reports": "reports:read"}
+
+
+def hidden_sources(principal) -> frozenset[str]:
+    """Event sources this principal may not see."""
+    return frozenset(src for src, perm in SOURCE_PERMISSIONS.items() if not principal.can(perm))
+
+
 class MissionEventService:
     def __init__(self, settings: Settings, factory: async_sessionmaker[AsyncSession], hub) -> None:
         self.settings = settings
@@ -171,7 +182,7 @@ class MissionEventService:
 
         try:
             msg = WsMissionEvent(event=kind, item=MissionEvent.model_validate(event_view(row)))  # type: ignore[arg-type]
-            await self.hub.broadcast(msg.model_dump_json())
+            await self.hub.broadcast(msg.model_dump_json(), requires=SOURCE_PERMISSIONS.get(row.source))
         except Exception:  # a broadcast failure must never lose the stored event
             logger.exception("could not broadcast mission event %s", row.id)
 
@@ -190,9 +201,12 @@ class MissionEventService:
         end: datetime | None = None,
         q: str | None = None,
         include_crew_wide: bool = True,
+        exclude_sources: frozenset[str] | set[str] = frozenset(),
         limit: int = 200,
     ) -> list[MissionEventRow]:
         stmt = select(MissionEventRow)
+        if exclude_sources:
+            stmt = stmt.where(MissionEventRow.source.not_in(sorted(exclude_sources)))
         if categories:
             stmt = stmt.where(MissionEventRow.category.in_(categories))
         if sources:
@@ -226,7 +240,8 @@ class MissionEventService:
             return await session.get(MissionEventRow, event_id)
 
     async def counts(self, start: datetime, end: datetime, context: str | None = "operations",
-                     astronaut_id: str | None = None) -> dict[str, Any]:
+                     astronaut_id: str | None = None,
+                     exclude_sources: frozenset[str] | set[str] = frozenset()) -> dict[str, Any]:
         """Distribution of events by category, source, priority and data origin in a time range."""
         out: dict[str, Any] = {}
         async with self.factory() as session:
@@ -237,6 +252,8 @@ class MissionEventService:
                                                        MissionEventRow.occurred_at <= end)
                 if context:
                     stmt = stmt.where(MissionEventRow.context == context)
+                if exclude_sources:
+                    stmt = stmt.where(MissionEventRow.source.not_in(sorted(exclude_sources)))
                 if astronaut_id:
                     stmt = stmt.where(or_(MissionEventRow.astronaut_id == astronaut_id,
                                           MissionEventRow.astronaut_id.is_(None)))

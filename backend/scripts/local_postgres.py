@@ -2,6 +2,8 @@
 
     pip install -r requirements-pg.txt
     python scripts/local_postgres.py serve      # start PostgreSQL, then the API on it (Ctrl+C stops the API)
+    python scripts/local_postgres.py serve --database astra_med_bench --env ASTRA_LOG_LEVEL=WARNING --port 8010
+                                                # another database and extra settings (benchmarks)
     python scripts/local_postgres.py start      # start PostgreSQL only; prints ASTRA_DATABASE_URL
     python scripts/local_postgres.py url        # print the connection URL of the running server
     python scripts/local_postgres.py status
@@ -33,10 +35,12 @@ def _pgserver():
     return pgserver
 
 
-def start():
+def start(extra: tuple[str, ...] = ()):
     """Start (or attach to) the server and make sure the app databases exist."""
     srv = _pgserver().get_server(PGDATA, cleanup_mode=None)
-    for db in DATABASES:
+    for db in (*DATABASES, *extra):
+        if not db.replace("_", "").isalnum():
+            sys.exit(f"invalid database name: {db}")
         if "(1 row)" not in srv.psql(f"select 1 from pg_database where datname = '{db}';"):
             srv.psql(f"create database {db};")
     return srv
@@ -83,11 +87,25 @@ def main(argv: list[str]) -> None:
     elif cmd == "stop":
         stop()
     elif cmd == "serve":
-        srv = start()
-        url = asyncpg_url(srv)
+        args, database, extra_env = [], "astra_med", {}
+        rest = list(argv[1:])
+        while rest:
+            a = rest.pop(0)
+            if a == "--database" and rest:
+                database = rest.pop(0)
+            elif a == "--env" and rest:
+                key, _, value = rest.pop(0).partition("=")
+                extra_env[key] = value
+            else:
+                args.append(a)
+        srv = start((database,) if database not in DATABASES else ())
+        url = asyncpg_url(srv, database)
         print(f"API on PostgreSQL: {url}")
-        env = {**os.environ, "ASTRA_DATABASE_URL": url}
-        args = argv[1:] or ["--host", "127.0.0.1", "--port", "8000"]
+        env = {**os.environ, **extra_env, "ASTRA_DATABASE_URL": url}
+        if "--host" not in args:
+            args += ["--host", "127.0.0.1"]
+        if "--port" not in args:
+            args += ["--port", "8000"]
         try:
             subprocess.run(
                 [sys.executable, "-m", "uvicorn", "app.main:app", "--app-dir", str(BACKEND), *args],

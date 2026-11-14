@@ -34,12 +34,27 @@ def clean(text: str) -> str:
     return out.encode("cp1252", errors="replace").decode("cp1252")
 
 
+def _char_width(ch: str) -> int:
+    o = ord(ch)
+    return _HELV[o - 32] if 32 <= o <= 126 else 556
+
+
 def text_width(text: str, size: float, bold: bool = False) -> float:
-    total = 0
-    for ch in text:
-        o = ord(ch)
-        total += _HELV[o - 32] if 32 <= o <= 126 else 556
-    return total * size / 1000 * (1.06 if bold else 1.0)
+    return sum(_char_width(ch) for ch in text) * size / 1000 * (1.06 if bold else 1.0)
+
+
+def _break_token(w: str, size: float, width: float, bold: bool) -> list[str]:
+    """Split one over-long token into pieces that each fit ``width`` (single pass, linear time)."""
+    limit = width * 1000 / size / (1.06 if bold else 1.0)
+    pieces, start, used = [], 0, 0
+    for i, ch in enumerate(w):
+        cw = _char_width(ch)
+        if used + cw > limit and i > start:
+            pieces.append(w[start:i])
+            start, used = i, 0
+        used += cw
+    pieces.append(w[start:])
+    return pieces
 
 
 def wrap(text: str, size: float, width: float, bold: bool = False) -> list[str]:
@@ -53,12 +68,9 @@ def wrap(text: str, size: float, width: float, bold: bool = False) -> list[str]:
                 continue
             if line:
                 lines.append(line)
-            while text_width(w, size, bold) > width:  # break very long tokens
-                cut = len(w)
-                while cut > 1 and text_width(w[:cut], size, bold) > width:
-                    cut -= 1
-                lines.append(w[:cut])
-                w = w[cut:]
+            if text_width(w, size, bold) > width:  # break very long tokens
+                *full, w = _break_token(w, size, width, bold)
+                lines.extend(full)
             line = w
         lines.append(line)
     return lines

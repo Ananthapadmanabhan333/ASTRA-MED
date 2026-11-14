@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, WifiOff } from "lucide-react";
+import { RefreshCw, TriangleAlert, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -89,6 +89,29 @@ export function EmptyState({
       {children && <p className="max-w-sm text-sm text-ink-2">{children}</p>}
       {action}
     </div>
+  );
+}
+
+/**
+ * Shown when the threshold rules could not be loaded. Without them no value can be coloured as out
+ * of limits, and an uncoloured value must not be read as "within limits".
+ */
+export function ThresholdNotice({
+  rules,
+  className,
+}: {
+  rules: { error: unknown; data: unknown; refetch: () => unknown };
+  className?: string;
+}) {
+  if (!rules.error || rules.data !== undefined) return null;
+  return (
+    <p role="status" className={cn("flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-caution", className)}>
+      <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
+      Threshold limits could not be loaded, so out-of-limit highlighting is unavailable.
+      <Button size="xs" variant="outline" onClick={() => rules.refetch()}>
+        <RefreshCw aria-hidden /> Retry
+      </Button>
+    </p>
   );
 }
 

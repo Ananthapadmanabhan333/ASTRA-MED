@@ -64,7 +64,7 @@ function AlertRow({ a, selected, onSelect }: { a: MissionAlert; selected: boolea
         <span className="min-w-0">
           <span className="line-clamp-2 text-sm font-medium">{a.title}</span>
           <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-ink-3">
-            <SeverityDot severity={a.severity} />
+            <SeverityDot severity={a.severity} announce />
             <span>{STATUS_LABEL[a.status]}</span>
             <span>{a.source_label}</span>
             {a.experimental && <span className="text-advisory">experimental</span>}
@@ -402,7 +402,7 @@ export function AlertCenter() {
                 {context === "simulation" ? "Sandbox alerts appear here while a mission simulation runs." : "New alerts from every module appear here as they open."}
               </EmptyState>
             ) : (
-              <ul className="scroll-quiet max-h-[70vh] overflow-y-auto">
+              <ul className={cn("scroll-quiet max-h-[70vh] overflow-y-auto", q.isPlaceholderData && "opacity-60")}>
                 {rows.map((a) => <AlertRow key={a.id} a={a} selected={a.id === selected} onSelect={() => setAlertId(a.id)} />)}
               </ul>
             )}

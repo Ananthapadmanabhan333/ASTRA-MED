@@ -1,13 +1,16 @@
 "use client";
 
+import { ThresholdNotice } from "@/components/data/states";
 import { Readout } from "@/components/vitals/readout";
 import { Sparkline } from "@/components/vitals/sparkline";
 import { useThresholds } from "@/lib/api/hooks";
 import type { VitalReading } from "@/lib/api/types";
-import { utcTime } from "@/lib/format";
+import { relativeTime, utcTime } from "@/lib/format";
+import { pickReading } from "@/lib/live/freshness";
 import { useLive } from "@/lib/live/store";
 import { ACTIVITY_LABEL } from "@/lib/metrics";
 import { classify } from "@/lib/thresholds";
+import { useNow } from "@/lib/use-now";
 
 type Tile = {
   key: "heart_rate" | "spo2" | "systolic" | "temperature_c" | "respiratory_rate" | "activity_met";
@@ -29,8 +32,12 @@ const TILES: Tile[] = [
 export function LiveVitals({ astronautId, fallback }: { astronautId: string; fallback: VitalReading | null }) {
   const live = useLive((s) => s.latest[astronautId]);
   const trail = useLive((s) => s.trails[astronautId]);
+  const connection = useLive((s) => s.connection);
   const rules = useThresholds();
-  const r = live ?? fallback ?? undefined;
+  const now = useNow(5_000);
+  // The stored reading wins whenever the stream is not live or has nothing newer.
+  const picked = pickReading(live, fallback, connection);
+  const r = picked.reading ?? undefined;
 
   return (
     <div>
@@ -67,9 +74,16 @@ export function LiveVitals({ astronautId, fallback }: { astronautId: string; fal
           );
         })}
       </div>
+      <ThresholdNotice rules={rules} className="mt-2" />
       <p className="mt-2 text-xs text-ink-3">
-        {live ? `Live, last reading ${utcTime(live.ts)} UTC.` : fallback ? `Last stored reading ${utcTime(fallback.ts)} UTC; live stream not connected.` : "No readings yet."}{" "}
-        Rhythm from synthetic ECG: {r?.rhythm === "irregular" ? "irregular" : "regular"}
+        {!r
+          ? "No readings yet."
+          : picked.live
+            ? `Live, last reading ${utcTime(r.ts)} UTC.`
+            : `Last reading ${utcTime(r.ts)} UTC${now ? ` (${relativeTime(r.ts, now)})` : ""}; ${
+                connection === "live" ? "no newer reading on the live stream" : "live stream not connected"
+              }.`}{" "}
+        Rhythm from synthetic ECG: {r ? r.rhythm : "no reading"}
         {r?.hrv_rmssd_ms ? `, RMSSD ${r.hrv_rmssd_ms.toFixed(0)} ms` : ""}.
       </p>
     </div>

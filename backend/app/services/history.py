@@ -45,8 +45,13 @@ def bucket_rows(
 
 
 def history_points(rows: Sequence[tuple], start: datetime, resolution_s: int) -> list[HistoryPoint]:
+    return points_from_buckets(bucket_rows(rows, start, resolution_s, len(HISTORY_COLUMNS)))
+
+
+def points_from_buckets(buckets: Sequence[tuple[datetime, list[float], int]]) -> list[HistoryPoint]:
+    """HistoryPoints from (bucket_ts, means in HISTORY_COLUMNS order, count) tuples."""
     points = []
-    for ts, means, count in bucket_rows(rows, start, resolution_s, len(HISTORY_COLUMNS)):
+    for ts, means, count in buckets:
         values = dict(zip(HISTORY_COLUMNS, means))
         points.append(
             HistoryPoint(

@@ -136,9 +136,13 @@ export function RadiationView() {
                 <span className="ml-1 text-base text-ink-3">mSv/day</span>
               </p>
               <p className="mt-2 text-sm text-ink-2">
-                {elevated
-                  ? "Elevated: a solar particle event scenario is running. Crew would shelter in the storm shelter."
-                  : `At the galactic cosmic ray background of ${data.gcr_reference_rate_msv_day} mSv/day (reference value from MSL RAD cruise measurements).`}
+                {rate === undefined
+                  ? mission.isFetching
+                    ? "Loading the current habitat dose rate."
+                    : `Current habitat dose rate unavailable${mission.error instanceof Error ? `: ${mission.error.message}` : "."}`
+                  : elevated
+                    ? "Elevated: a solar particle event scenario is running. Crew would shelter in the storm shelter."
+                    : `At the galactic cosmic ray background of ${data.gcr_reference_rate_msv_day} mSv/day (reference value from MSL RAD cruise measurements).`}
               </p>
               <ul className="mt-4 space-y-1.5 text-sm">
                 {data.crew.map((c) => (

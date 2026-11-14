@@ -20,6 +20,23 @@ team, during a long-duration mission.
 | Risk scoring, v1 | Configurable point rules (`risk_config.json`) | Inspectable and adjustable; a probabilistic risk model only after validation on real data. |
 | Insights, v1 | Deterministic rule engine with cited evidence | Every statement can be traced to data. LLM summarisation is a later, optional layer. |
 
+## Status (2026-11-14, phase 7)
+
+Phase 7 audited, validated and packaged phases 1–6 (see the [readiness report](PHASE7_REPORT.md)):
+
+- **Audit:** [PHASE7_AUDIT.md](PHASE7_AUDIT.md). 9 high, 27 medium and 29 low findings; every high
+  one is fixed or handled by deployment configuration.
+- **Science:** [SCIENTIFIC_VALIDATION.md](SCIENTIFIC_VALIDATION.md). False-negative rate and MAPE
+  added, hyperparameters recorded, a three-dataset replication, an experiment index and a
+  reproducibility check.
+- **Performance:** [BENCHMARKS.md](BENCHMARKS.md). SQL time bucketing (6.7× faster history),
+  batched attribution (2.1× faster explanations), inference monitoring.
+- **Production:** Alembic migrations, a production profile, `/livez` and `/readyz`, hardened Docker
+  images, a Render blueprint, and the [deployment guide](DEPLOYMENT.md).
+- **Competition:** [submission package](competition/SUBMISSION.md),
+  [research document](RESEARCH_PAPER.md), [dataset inventory](DATASETS.md), demo script,
+  presentation and video storyboard.
+
 ## Status (2026-11-13, phase 6)
 
 Phase 6 is implemented (see [MISSION_CONTROL.md](MISSION_CONTROL.md) and the
@@ -126,11 +143,17 @@ Still open from the phase 3 brief:
   situational-awareness timeline, command dashboard, mission simulation sandbox, mission analytics,
   component health and consistency checks, redesigned shell. See [MISSION_CONTROL.md](MISSION_CONTROL.md).
 
-### Phase 7 — Hardening (next)
-- Alembic migrations, TimescaleDB hypertables for long histories, browser end-to-end tests
-  (Playwright), accessibility audit, multi-factor authentication, row-level (per crew member)
-  access, a tamper-evident audit store, a shared rate-limit store, multi-instance collectors and
-  sandbox, and an approved aerospace-medicine reference library for the assistant.
+### Phase 7 — Validation, hardening and competition readiness (this iteration)
+- Technical audit and fixes, scientific validation, NASA data provenance, AI optimisation and
+  monitoring, security review, performance benchmarks, Alembic migrations and production
+  configuration, research document and competition package.
+
+### Phase 8 — Next
+- Validation on real analogue-mission data; a crew self-assessment mode (prompted measurements,
+  glucose and mood, guidance tied to approved procedures); the open audit items; TimescaleDB for
+  long histories; browser end-to-end tests (Playwright); multi-factor authentication; row-level
+  access; a tamper-evident audit store; shared rate limits and multi-instance collectors; an approved
+  aerospace-medicine reference library for the assistant.
 
 ## Working agreement
 - Modules land one at a time with tests before the next starts.

@@ -2005,6 +2005,24 @@ export interface components {
             serving_forecaster: string | null;
             /** Torch Available */
             torch_available: boolean;
+            /**
+             * Pinned Version
+             * @description Version pinned with ASTRA_AI_MODEL_VERSION, if any
+             */
+            pinned_version?: string | null;
+            /**
+             * Forecasters Loaded
+             * @description Forecasters loaded so far (others load on first use)
+             */
+            forecasters_loaded?: string[];
+            /**
+             * Library Mismatch
+             * @description Libraries whose version differs from the one the models were trained with
+             */
+            library_mismatch?: {
+                [key: string]: components["schemas"]["LibraryVersions"];
+            };
+            inference?: components["schemas"]["InferenceSnapshot"] | null;
         };
         /** AccessMatrix */
         AccessMatrix: {
@@ -4335,6 +4353,15 @@ export interface components {
             /** Events */
             events: components["schemas"]["SpaceWeatherEvent"][];
         };
+        /** InferenceSnapshot */
+        InferenceSnapshot: {
+            /** Operations */
+            operations: {
+                [key: string]: components["schemas"]["OperationStats"];
+            };
+            /** Process Memory Mb */
+            process_memory_mb: number | null;
+        };
         /** Insight */
         Insight: {
             /** Id */
@@ -4400,6 +4427,13 @@ export interface components {
             p: number | null;
             /** Q */
             q: number | null;
+        };
+        /** LibraryVersions */
+        LibraryVersions: {
+            /** Trained */
+            trained: string | null;
+            /** Running */
+            running: string | null;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -5248,6 +5282,28 @@ export interface components {
             events: components["schemas"]["NearbyEvent"][];
             /** Note */
             note: string;
+        };
+        /** OperationStats */
+        OperationStats: {
+            /** Count */
+            count: number;
+            /** Errors */
+            errors: number;
+            /** Last Error */
+            last_error: string | null;
+            /**
+             * Window
+             * @description Recent calls the percentiles are computed over
+             */
+            window: number;
+            /** Last Ms */
+            last_ms: number;
+            /** P50 Ms */
+            p50_ms: number;
+            /** P95 Ms */
+            p95_ms: number;
+            /** Max Ms */
+            max_ms: number;
         };
         /** OsdrStudy */
         OsdrStudy: {

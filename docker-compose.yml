@@ -2,6 +2,7 @@
 # Copy .env.example to .env first; credentials come only from that file.
 #   docker compose up --build
 # Dashboard: http://localhost:3000   API docs: http://localhost:8000/docs
+# Local stack only (HTTP on localhost). For a public deployment see docs/DEPLOYMENT.md.
 
 services:
   db:
@@ -22,7 +23,11 @@ services:
       retries: 20
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        TRAIN_MODELS: "0"  # faster local builds; models train once on first start into the volume
     restart: unless-stopped
     depends_on:
       db:
@@ -39,11 +44,10 @@ services:
       ASTRA_AUTH_ENABLED: ${ASTRA_AUTH_ENABLED:-true}
       ASTRA_AUTH_COOKIE_SECURE: ${ASTRA_AUTH_COOKIE_SECURE:-false}  # true behind HTTPS
       ASTRA_ASSISTANT_MODE: ${ASTRA_ASSISTANT_MODE:-extractive}
-      ASTRA_ASSISTANT_DOCS_DIR: /app/docs
-      ASTRA_ASSISTANT_KNOWLEDGE_DIR: /app/knowledge
+      ASTRA_DB_SCHEMA_MODE: migrate  # schema owned by Alembic
+      ASTRA_MIGRATE_ON_START: "true"  # single instance: apply migrations before the API starts
     volumes:
       - ai-artifacts:/app/artifacts  # trained model versions persist across restarts
-      - ./docs:/app/docs:ro  # documentation the medical data assistant cites
     ports:
       - "127.0.0.1:8000:8000"
 

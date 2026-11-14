@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useAstronauts } from "@/lib/api/hooks";
+import { useAstronauts, useThresholds } from "@/lib/api/hooks";
 import {
   useAlertCenter,
   useMissionEvents,
@@ -41,6 +41,7 @@ import { useCan } from "@/lib/auth/store";
 import { crewColor, crewDash } from "@/lib/crew";
 import { fmt, utcDayTime, utcTime } from "@/lib/format";
 import { useLive } from "@/lib/live/store";
+import { referenceLines } from "@/lib/thresholds";
 import { cn } from "@/lib/utils";
 
 const SPEEDS = [1, 5, 10, 20, 30, 40, 60, 120];
@@ -226,6 +227,7 @@ function ControlBar({ s }: { s: SimState }) {
 
 function LiveTelemetry({ s }: { s: SimState }) {
   const trail = useLive((st) => st.simTrail);
+  const rules = useThresholds();
   const rows = (trail.id === s.id ? trail.rows : []) as ChartRow[];
   const series = (prefix: string) => s.latest.map((r) => ({ key: `${prefix}_${r.astronaut_id}`, label: r.name.split(" ")[0], color: crewColor(r.astronaut_id), dash: crewDash(r.astronaut_id) }));
   return (
@@ -256,7 +258,7 @@ function LiveTelemetry({ s }: { s: SimState }) {
         </div>
         <div>
           <p className="mb-1 text-xs text-ink-2">SpO₂ (%)</p>
-          {rows.length > 1 ? <TrendChart data={rows} series={series("spo2")} unit="%" decimals={1} height={150} endLabels ariaLabel="Sandbox SpO2 per crew member" refs={[{ value: 92, label: "caution 92%" }]} /> : null}
+          {rows.length > 1 ? <TrendChart data={rows} series={series("spo2")} unit="%" decimals={1} height={150} endLabels ariaLabel="Sandbox SpO2 per crew member" refs={referenceLines("spo2", rules.data)} /> : null}
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 border-t border-bulkhead/50 pt-3 text-sm">
@@ -459,7 +461,11 @@ function SandboxAlerts({ simId }: { simId: string }) {
   return (
     <div className="grid gap-4 xl:grid-cols-2">
       <DataCard sandbox title={`Sandbox alerts (${rows.filter((a) => a.status !== "resolved").length} unresolved)`} href="/alerts" hrefLabel="Alert centre (choose Simulation sandbox)">
-        {rows.length === 0 ? <p className="text-sm text-ink-2">No sandbox alerts yet.</p> : (
+        {alerts.isPending ? (
+          <LoadingState rows={3} />
+        ) : alerts.error && !alerts.data ? (
+          <ErrorState title="Couldn't load sandbox alerts" error={alerts.error} onRetry={() => alerts.refetch()} />
+        ) : rows.length === 0 ? <p className="text-sm text-ink-2">No sandbox alerts yet.</p> : (
           <ul className="scroll-quiet max-h-96 overflow-y-auto">
             {rows.map((a) => (
               <li key={a.id} className="flex items-start gap-2 border-b border-bulkhead/50 py-2 last:border-0">
@@ -480,11 +486,15 @@ function SandboxAlerts({ simId }: { simId: string }) {
         )}
       </DataCard>
       <DataCard sandbox title="Sandbox events" href={`/timeline?simulation=${simId}`} hrefLabel="Open on the timeline">
-        {(events.data ?? []).length === 0 ? <p className="text-sm text-ink-2">No events yet.</p> : (
+        {events.isPending ? (
+          <LoadingState rows={3} />
+        ) : events.error && !events.data ? (
+          <ErrorState title="Couldn't load sandbox events" error={events.error} onRetry={() => events.refetch()} />
+        ) : (events.data ?? []).length === 0 ? <p className="text-sm text-ink-2">No events yet.</p> : (
           <ol className="scroll-quiet max-h-96 overflow-y-auto">
             {(events.data ?? []).map((e) => (
               <li key={e.id} className="flex gap-2 border-b border-bulkhead/40 py-1.5 text-sm last:border-0">
-                <SeverityDot severity={e.severity} className="mt-1.5" />
+                <SeverityDot severity={e.severity} className="mt-1.5" announce />
                 <span className="min-w-0 flex-1"><span className="line-clamp-1">{e.title}</span>
                   <span className="text-xs text-ink-3">{String(e.payload.sim_offset_s != null ? `T+${Math.floor(Number(e.payload.sim_offset_s) / 60)} min` : utcTime(e.occurred_at))}, {e.category_label}</span></span>
               </li>

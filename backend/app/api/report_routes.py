@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
@@ -60,7 +61,7 @@ async def report_pdf(report_id: str, reports: Reports, request: Request, princip
                      download: bool = False) -> Response:
     """The report as a PDF (inline by default; ``download=true`` for an attachment)."""
     view = report_view(await reports.get(report_id))
-    pdf = render_report(view)
+    pdf = await asyncio.to_thread(render_report, view)  # CPU-bound layout; keep the event loop free
     await get_audit(request).record("report_exported", principal=principal, resource_type="report",
                                     resource_id=report_id, ip=client_ip(request), detail={"format": "pdf"})
     disposition = "attachment" if download else "inline"

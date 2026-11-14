@@ -1,6 +1,6 @@
 # NASA data sources: documentation report
 
-Generated 2026-11-12 18:53 UTC from the ASTRA-MED store (`postgresql`). All figures are computed from stored records and synchronisation logs.
+Generated 2026-11-14 12:36 UTC from the ASTRA-MED store (`postgresql`). All figures are computed from stored records and synchronisation logs.
 
 > ASTRA-MED is an independent research prototype. It is not affiliated with or endorsed by NASA. Crew data in ASTRA-MED are simulated; only the sources below are real.
 
@@ -26,9 +26,9 @@ Generated 2026-11-12 18:53 UTC from the ASTRA-MED store (`postgresql`). All figu
 - **Units:** flare class: GOES 1-8 Å X-ray class (A/B/C/M/X); CME speed: km/s; Kp: planetary K index (0-9)
 - **Licence / use:** NASA open data, provided by CCMC as a courtesy to the community, "as is" without warranty. (https://ccmc.gsfc.nasa.gov/tools/DONKI/)
 - **Citation:** Data courtesy of the CCMC DONKI system (https://ccmc.gsfc.nasa.gov/tools/DONKI/). See the CCMC publication policy for acknowledgement wording.
-- **Synchronisation:** 216 runs (ok 216); last run 2026-11-12 18:53 UTC (ok).
-- **Records received / invalid / duplicates skipped:** 3,672 / 0 / 138
-- **Successful runs by endpoint:** ccmc 216
+- **Synchronisation:** 326 runs (ok 326); last run 2026-11-14 12:33 UTC (ok).
+- **Records received / invalid / duplicates skipped:** 3,894 / 0 / 348
+- **Successful runs by endpoint:** ccmc 326
 - **Scientific limitations:**
   - CCMC states that real-time space weather information and simulations in DONKI should be considered prototyping quality and used in a research context.
   - NOAA's Space Weather Prediction Center is the official U.S. Government source for space weather forecasts and warnings; DONKI notifications are experimental.
@@ -36,27 +36,27 @@ Generated 2026-11-12 18:53 UTC from the ASTRA-MED store (`postgresql`). All figu
   - DONKI records carry no particle flux, so solar energetic particle events cannot be given a NOAA S-scale level here.
   - An environmental event is never a dose: no astronaut dose is derived from DONKI records.
 
-Stored: **3,289 events** (2014-09-17 to 2026-11-12) and **239 notifications**.
+Stored: **3,296 events** (2014-09-17 to 2026-11-13) and **241 notifications**.
 
 | Type | Events | First | Last | Classified (scale or class) | Unit of magnitude |
 | --- | --- | --- | --- | --- | --- |
 | FLR (Solar flare) | 640 | 2014-09-18 | 2026-11-11 | 640 | W/m² |
-| CME (Coronal mass ejection) | 2,014 | 2014-09-17 | 2026-11-12 | 2,001 | km/s |
+| CME (Coronal mass ejection) | 2,020 | 2014-09-17 | 2026-11-13 | 2,006 | km/s |
 | SEP (Solar energetic particle event) | 59 | 2014-09-25 | 2026-09-05 | 0 | — |
 | GST (Geomagnetic storm) | 36 | 2016-05-02 | 2026-10-31 | 36 | Kp |
 | RBE (Radiation belt enhancement) | 79 | 2014-10-22 | 2026-11-08 | 0 | — |
 | IPS (Interplanetary shock) | 63 | 2026-05-17 | 2026-10-25 | 0 | — |
 | HSS (High-speed solar wind stream) | 35 | 2026-05-20 | 2026-11-11 | 0 | — |
 | MPC (Magnetopause crossing) | 7 | 2026-06-11 | 2026-10-10 | 0 | — |
-| WSA (WSA-ENLIL solar wind simulation) | 356 | 2026-07-11 | 2026-11-12 | 0 | Kp (modelled) |
+| WSA (WSA-ENLIL solar wind simulation) | 357 | 2026-07-11 | 2026-11-13 | 0 | Kp (modelled) |
 
 Severity distribution (NOAA R for flares, NOAA G for storms, DONKI speed class for CMEs):
 
 | Type | Level | Events |
 | --- | --- | --- |
-| CME | unclassified | 13 |
-| CME | class 1 (minor) | 1,234 |
-| CME | class 2 (moderate) | 678 |
+| CME | unclassified | 14 |
+| CME | class 1 (minor) | 1,238 |
+| CME | class 2 (moderate) | 679 |
 | CME | class 3 (strong) | 85 |
 | CME | class 4 (severe) | 4 |
 | FLR | below scale | 147 |
@@ -68,7 +68,7 @@ Severity distribution (NOAA R for flares, NOAA G for storms, DONKI speed class f
 | GST | G3 (strong) | 9 |
 | GST | G4 (severe) | 3 |
 
-Records by serving endpoint: ccmc 3,289.
+Records by serving endpoint: ccmc 3,296.
 
 ## Environmental Data App (EDA): ISS cabin telemetry and radiation dosimetry
 
@@ -81,9 +81,9 @@ Records by serving endpoint: ccmc 3,289.
 - **Units:** temperature: °C; relative humidity: %; CO2: ppm; GCR / SAA / total dose: mGy/day (absorbed dose in water)
 - **Licence / use:** Distributed under NASA's open access policy (NASA Science Mission Directorate Science Information Policy); a bibliographic citation is requested. (https://www.nasa.gov/reference/osdr-help-terms-and-conditions/)
 - **Citation:** ISS environmental data courtesy of the NASA Open Science Data Repository Environmental Data App (https://visualization.osdr.nasa.gov/eda/).
-- **Synchronisation:** 102 runs (ok 100, partial 2); last run 2026-11-12 18:53 UTC (ok).
-- **Records received / invalid / duplicates skipped:** 8,287,902 / 2,868 / 870,370
-- **Successful runs by endpoint:** eda-api 102
+- **Synchronisation:** 110 runs (ok 108, partial 2); last run 2026-11-14 12:26 UTC (ok).
+- **Records received / invalid / duplicates skipped:** 8,288,094 / 2,868 / 870,370
+- **Successful runs by endpoint:** eda-api 110
 - **Scientific limitations:**
   - Historical measurements from specific Rodent Research and other ISS missions (2014 onward). This is not current ISS telemetry.
   - Radiation values are absorbed dose in water at the experiment location, from a preliminary analysis of ISS instruments by NASA-JSC's Space Radiation Analysis Group. They are not any astronaut's dose.
@@ -117,11 +117,11 @@ Completeness is per distinct timestamp after merging rows that EDA splits across
 | RR-28 | 2024-03-24 to 2024-05-06 | 90.4% | all null | all null | 0 | 7 | 0 | 216 | — | — |
 | VEG-01A | no usable values: all 51,270 published readings are null | — | — | — | — | — | — | — | — | — |
 | APEX-03-1 | no usable values: all 16,302 published readings are null | — | — | — | — | — | — | — | — | — |
-| APEX-03-2 | no usable values: all 14,580 published readings are null | — | — | — | — | — | — | — | — | — |
 | VEG-01C | no usable values: all 482,328 published readings are null | — | — | — | — | — | — | — | — | — |
 | APEX-04 | no usable values: all 21,240 published readings are null | — | — | — | — | — | — | — | — | — |
-| RR-22 | no telemetry or dosimetry published | — | — | — | — | — | — | — | — | — |
+| APEX-03-2 | no usable values: all 14,580 published readings are null | — | — | — | — | — | — | — | — | — |
 | VEG-01B | no telemetry or dosimetry published | — | — | — | — | — | — | — | — | — |
+| RR-22 | no telemetry or dosimetry published | — | — | — | — | — | — | — | — | — |
 
 ## Open Science Data Repository (OSDR) study catalogue
 
@@ -133,9 +133,9 @@ Completeness is per distinct timestamp after merging rows that EDA splits across
 - **Update frequency:** New studies are released continuously; catalogue refreshed daily
 - **Licence / use:** Distributed under NASA's open access policy; cite each study using the citation in its OSDR record. (https://www.nasa.gov/reference/osdr-help-terms-and-conditions/)
 - **Citation:** Study metadata courtesy of the NASA Open Science Data Repository (https://osdr.nasa.gov/bio/repo/). Cite individual studies with their OSDR citation.
-- **Synchronisation:** 25 runs (ok 25); last run 2026-11-12 18:53 UTC (ok).
-- **Records received / invalid / duplicates skipped:** 1,140 / 0 / 0
-- **Successful runs by endpoint:** osdr-search 25
+- **Synchronisation:** 66 runs (ok 66); last run 2026-11-14 12:26 UTC (ok).
+- **Records received / invalid / duplicates skipped:** 3,014 / 0 / 0
+- **Successful runs by endpoint:** osdr-search 66
 - **Scientific limitations:**
   - Only study metadata is ingested (titles, organisms, missions, assays); no study data files are downloaded.
   - Most studies concern cells, plants or rodents, or ground radiation exposures. They inform context, not crew physiology.
@@ -159,8 +159,8 @@ All timestamps are stored and served as UTC (timezone-aware columns; DONKI and E
 
 | Table | Earliest | Latest | Rows |
 | --- | --- | --- | --- |
-| `space_weather_events.start_time` | 2014-09-17 15:25 | 2026-11-12 02:24 | 3,289 |
-| `space_notifications.issue_time` | 2026-07-11 17:44 | 2026-11-11 21:02 | 239 |
+| `space_weather_events.start_time` | 2014-09-17 15:25 | 2026-11-13 21:24 | 3,296 |
+| `space_notifications.issue_time` | 2026-07-11 17:44 | 2026-11-13 16:25 | 241 |
 | `env_measurements.ts` | 2014-09-20 03:00 | 2024-05-06 13:00 | 80,226 |
 | `osdr_studies.release_date` | 2007-11-01 07:00 | 2026-10-28 00:00 | 188 |
 

@@ -19,7 +19,7 @@ from app.mission import analytics as analytics_mod
 from app.mission import system as system_mod
 from app.mission import views
 from app.mission.alerts import action_view, alert_view
-from app.mission.events import event_view
+from app.mission.events import event_view, hidden_sources
 from app.mission.sandbox import run_view
 from app.mission.taxonomy import CATEGORIES, SOURCES
 from app.schemas.common import ERROR_RESPONSES
@@ -99,6 +99,7 @@ def _range(start: datetime | None, end: datetime | None, hours: int) -> tuple[da
 @router.get("/events", response_model=list[MissionEvent], tags=["events"])
 async def list_events(
     request: Request,
+    principal: CurrentUser,
     category: Annotated[list[str] | None, Query()] = None,
     source: Annotated[list[str] | None, Query()] = None,
     severity: Annotated[list[str] | None, Query()] = None,
@@ -116,21 +117,24 @@ async def list_events(
     s, e = _range(start, end, hours) if (start or end or not simulation_id) else (None, None)
     rows = await _state(request).mission_events.list(
         categories=category, sources=source, severities=severity, priorities=priority, astronaut_id=astronaut_id,
-        context=context, simulation_id=simulation_id, start=s, end=e, q=q, limit=limit)
+        context=context, simulation_id=simulation_id, start=s, end=e, q=q, limit=limit,
+        exclude_sources=hidden_sources(principal))
     return [event_view(r) for r in rows]
 
 
 @router.get("/events/counts", response_model=EventCounts, tags=["events"])
-async def event_counts(request: Request, context: Context = "operations", astronaut_id: str | None = None,
-                       start: datetime | None = None, end: datetime | None = None,
+async def event_counts(request: Request, principal: CurrentUser, context: Context = "operations",
+                       astronaut_id: str | None = None, start: datetime | None = None, end: datetime | None = None,
                        hours: Annotated[int, Query(ge=1, le=24 * 90)] = 24) -> dict:
     s, e = _range(start, end, hours)
-    return await _state(request).mission_events.counts(s, e, context, astronaut_id)
+    return await _state(request).mission_events.counts(s, e, context, astronaut_id,
+                                                       exclude_sources=hidden_sources(principal))
 
 
 @router.get("/events/timeline", response_model=MissionTimeline, tags=["events"])
 async def event_timeline(
     request: Request,
+    principal: CurrentUser,
     category: Annotated[list[str] | None, Query()] = None,
     astronaut_id: str | None = None,
     context: Context = "operations",
@@ -150,13 +154,14 @@ async def event_timeline(
     else:
         s, e = _range(start, end, hours)
     return await views.timeline(_state(request).mission_events, start=s, end=e, astronaut_id=astronaut_id,
-                                context=context, simulation_id=simulation_id, categories=category)
+                                context=context, simulation_id=simulation_id, categories=category,
+                                exclude_sources=hidden_sources(principal))
 
 
 @router.get("/events/{event_id}", response_model=MissionEvent, tags=["events"])
-async def get_event(event_id: str, request: Request) -> dict:
+async def get_event(event_id: str, request: Request, principal: CurrentUser) -> dict:
     row = await _state(request).mission_events.get(event_id)
-    if row is None:
+    if row is None or row.source in hidden_sources(principal):
         raise NotFoundError(f"Event {event_id} not found.")
     return event_view(row)
 
@@ -378,7 +383,7 @@ async def system_consistency(request: Request) -> dict:
 
 
 @system_router.post("/consistency/repair", response_model=ConsistencyReport,
-                    dependencies=[require_any("audit:read", "simulation:control")])
+                    dependencies=[require("system:maintain")])
 async def system_consistency_repair(request: Request) -> dict:
     """Run the checks and repair what is safe to repair (mirrors, links, interrupted runs, orphans)."""
     return await system_mod.consistency(_state(request), repair=True)

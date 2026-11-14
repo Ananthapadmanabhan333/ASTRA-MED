@@ -94,11 +94,8 @@ async def compare_metric(
     resolution = history_service.resolution_for(range, max_points)
     series = []
     for row in await astronauts_repo.list_astronauts(session):
-        rows = await vitals_repo.fetch_range(session, row.id, start, end, columns=(metric,))
-        points = [
-            SeriesPoint(ts=ts, value=round(vals[0], 2))
-            for ts, vals, _ in history_service.bucket_rows(rows, start, resolution, 1)
-        ]
+        buckets = await vitals_repo.bucket_means(session, row.id, start, end, resolution, (metric,))
+        points = [SeriesPoint(ts=ts, value=round(vals[0], 2)) for ts, vals, _ in buckets]
         series.append(CrewSeries(astronaut_id=row.id, name=row.name, points=points))
     return ComparisonSeries(
         metric=metric, range=range, start=start, end=end, resolution_seconds=resolution, series=series
@@ -123,14 +120,15 @@ async def health_history(
     now = utcnow()
     start, end = history_service.window(range, now)
     resolution = history_service.resolution_for(range, max_points)
-    rows = await vitals_repo.fetch_range(session, astronaut_id, start, end)
+    buckets = await vitals_repo.bucket_means(session, astronaut_id, start, end, resolution,
+                                             history_service.HISTORY_COLUMNS)
     return HistorySeries(
         astronaut_id=astronaut_id,
         range=range,
         start=start,
         end=end,
         resolution_seconds=resolution,
-        points=history_service.history_points(rows, start, resolution),
+        points=history_service.points_from_buckets(buckets),
     )
 
 

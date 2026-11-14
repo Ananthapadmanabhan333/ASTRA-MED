@@ -6,7 +6,7 @@ import { ChartTable } from "@/components/charts/chart-table";
 import { RangePicker } from "@/components/charts/range-picker";
 import { TrendChart, type ChartSeries } from "@/components/charts/trend-chart";
 import { Panel } from "@/components/data/panel";
-import { QueryView } from "@/components/data/states";
+import { QueryView, ThresholdNotice } from "@/components/data/states";
 import { SimulatedNote } from "@/components/shell/simulated-marker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -15,6 +15,7 @@ import type { Metric, TimeRange } from "@/lib/api/types";
 import { COMPARABLE_METRICS, METRICS, type ChartRange } from "@/lib/metrics";
 import { mergeSeries } from "@/lib/series";
 import { referenceLines } from "@/lib/thresholds";
+import { cn } from "@/lib/utils";
 
 function Legend({ series }: { series: ChartSeries[] }) {
   return (
@@ -46,7 +47,6 @@ export function CrewComparison() {
   const [view, setView] = useState<"chart" | "table">("chart");
   const query = useComparison(metric, range);
   const rules = useThresholds();
-  const meta = METRICS[metric];
 
   return (
     <Panel
@@ -88,10 +88,13 @@ export function CrewComparison() {
     >
       <QueryView query={query} isEmpty={(d) => d.series.every((s) => s.points.length === 0)}>
         {(data) => {
+          // Label, unit and limits follow the data on screen, not the selection still loading.
+          const meta = METRICS[data.metric];
           const { rows, series } = mergeSeries(data);
           const decimals = meta.decimals;
           return (
-            <div className="space-y-3">
+            <div className={cn("space-y-3", query.isPlaceholderData && "opacity-60")}>
+              <ThresholdNotice rules={rules} />
               <Legend series={series} />
               {view === "chart" ? (
                 <TrendChart
@@ -99,10 +102,10 @@ export function CrewComparison() {
                   series={series}
                   unit={meta.unit}
                   decimals={decimals}
-                  refs={referenceLines(metric, rules.data)}
+                  refs={referenceLines(data.metric, rules.data)}
                   endLabels
                   height={320}
-                  ariaLabel={`${meta.label} for all crew, last ${range}`}
+                  ariaLabel={`${meta.label} for all crew, last ${data.range}`}
                 />
               ) : (
                 <ChartTable

@@ -7425,6 +7425,44 @@
           "torch_available": {
             "type": "boolean",
             "title": "Torch Available"
+          },
+          "pinned_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pinned Version",
+            "description": "Version pinned with ASTRA_AI_MODEL_VERSION, if any"
+          },
+          "forecasters_loaded": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Forecasters Loaded",
+            "description": "Forecasters loaded so far (others load on first use)"
+          },
+          "library_mismatch": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LibraryVersions"
+            },
+            "type": "object",
+            "title": "Library Mismatch",
+            "description": "Libraries whose version differs from the one the models were trained with"
+          },
+          "inference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InferenceSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -13516,6 +13554,34 @@
         ],
         "title": "IndicatorBlock"
       },
+      "InferenceSnapshot": {
+        "properties": {
+          "operations": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OperationStats"
+            },
+            "type": "object",
+            "title": "Operations"
+          },
+          "process_memory_mb": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Process Memory Mb"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operations",
+          "process_memory_mb"
+        ],
+        "title": "InferenceSnapshot"
+      },
       "Insight": {
         "properties": {
           "id": {
@@ -13683,6 +13749,38 @@
           "q"
         ],
         "title": "LagRow"
+      },
+      "LibraryVersions": {
+        "properties": {
+          "trained": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trained"
+          },
+          "running": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Running"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trained",
+          "running"
+        ],
+        "title": "LibraryVersions"
       },
       "LoginRequest": {
         "properties": {
@@ -15895,6 +15993,62 @@
           "note"
         ],
         "title": "NearbyEvents"
+      },
+      "OperationStats": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "errors": {
+            "type": "integer",
+            "title": "Errors"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "window": {
+            "type": "integer",
+            "title": "Window",
+            "description": "Recent calls the percentiles are computed over"
+          },
+          "last_ms": {
+            "type": "number",
+            "title": "Last Ms"
+          },
+          "p50_ms": {
+            "type": "number",
+            "title": "P50 Ms"
+          },
+          "p95_ms": {
+            "type": "number",
+            "title": "P95 Ms"
+          },
+          "max_ms": {
+            "type": "number",
+            "title": "Max Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "errors",
+          "last_error",
+          "window",
+          "last_ms",
+          "p50_ms",
+          "p95_ms",
+          "max_ms"
+        ],
+        "title": "OperationStats"
       },
       "OsdrStudy": {
         "properties": {

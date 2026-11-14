@@ -136,6 +136,33 @@ Rule alerts stay owned by the monitor; the alert centre mirrors them and delegat
 back, so the phase 2 `alerts` table and `mission_alerts` cannot disagree for long (the consistency
 check repairs drift). The sandbox never writes `vital_samples`, `alerts` or `simulation_events`.
 
+### Phase 7 at runtime
+
+**Start-up.**
+
+- **Production profile:** with `ASTRA_ENVIRONMENT=production`, `create_app` refuses an unsafe
+  configuration. The API docs are off unless enabled.
+- **Schema check:** with `ASTRA_DB_SCHEMA_MODE=migrate`, the lifespan checks that the database is at
+  Alembic's head revision (`app/db/migrations.py`) instead of running `create_all`. The migration
+  scripts are in `backend/migrations`.
+- **Readiness:** `app.state.ready` turns true after start-up; `/readyz` reports it together with a
+  database probe, and `/livez` only confirms that the process answers.
+- **Retention:** a background task removes vitals older than the retention window and sessions
+  that expired more than a day ago, every `ASTRA_RETENTION_INTERVAL_HOURS`.
+
+**AI service.**
+
+- Loads the pinned (`ASTRA_AI_MODEL_VERSION`) or latest model version.
+- Loads the serving forecaster and the detectors eagerly; the other forecasters load on first use
+  (`LazyModels`).
+- Times every model operation (`InferenceStats`, reported on `/api/ai/status`).
+- Compares the training and running library versions.
+- Attributes all flagged windows of a detection request in one batch per detector.
+
+**Database aggregation.** History and comparison queries bucket samples in SQL
+(`vitals_repo.bucket_means`). The WebSocket hub remembers each connection's permissions and sends
+permission-restricted messages (incident-report events) only to permitted sockets.
+
 ## Frontend modules (`frontend/src`)
 
 | Path | Responsibility |

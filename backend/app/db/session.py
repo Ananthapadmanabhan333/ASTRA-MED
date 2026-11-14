@@ -15,7 +15,7 @@ from app.db.models import Base
 
 def create_engine(database_url: str) -> AsyncEngine:
     if database_url.startswith("sqlite"):
-        engine = create_async_engine(database_url, connect_args={"timeout": 30})
+        engine = create_async_engine(database_url, connect_args={"timeout": 30}, hide_parameters=True)
 
         @event.listens_for(engine.sync_engine, "connect")
         def _sqlite_pragmas(dbapi_conn, _):  # pragma: no cover - driver hook
@@ -25,7 +25,10 @@ def create_engine(database_url: str) -> AsyncEngine:
             cur.close()
 
         return engine
-    return create_async_engine(database_url, pool_size=10, max_overflow=10, pool_pre_ping=True)
+    # hide_parameters: a logged database error never prints bound values (password hashes, token
+    # digests, vital signs).
+    return create_async_engine(database_url, pool_size=10, max_overflow=10, pool_pre_ping=True,
+                               hide_parameters=True)
 
 
 def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
@@ -43,7 +46,7 @@ _POSTGRES_UPGRADES = (
 
 
 async def create_schema(engine: AsyncEngine) -> None:
-    """Prototype schema bootstrap (no Alembic yet)."""
+    """Development schema bootstrap (ASTRA_DB_SCHEMA_MODE=create). Production uses Alembic."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
         if engine.dialect.name == "postgresql":

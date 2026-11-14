@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ChartTable } from "@/components/charts/chart-table";
 import { RangePicker } from "@/components/charts/range-picker";
 import { TrendChart, type ChartRow, type ChartSeries } from "@/components/charts/trend-chart";
 import { Panel } from "@/components/data/panel";
-import { EmptyState, ErrorState, LoadingState } from "@/components/data/states";
+import { EmptyState, ErrorState, LoadingState, ThresholdNotice } from "@/components/data/states";
 import { SimulatedNote } from "@/components/shell/simulated-marker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useHistory, useThresholds } from "@/lib/api/hooks";
@@ -45,12 +45,15 @@ export function HistoryPanel({ astronautId, name }: { astronautId: string; name:
   const [view, setView] = useState<"chart" | "table">("chart");
   const live = range === "live";
   const history = useHistory(astronautId, live ? "1h" : range, !live);
-  const trail = useLive((s) => s.trails[astronautId]);
+  // Subscribe to the 1 Hz trail only on the live range; stored ranges must not re-render every second.
+  const trail = useLive((s) => (live ? s.trails[astronautId] : undefined));
   const rules = useThresholds();
 
-  const rows: ChartRow[] | undefined = live
-    ? trail?.map((p) => ({ ...p }))
-    : history.data?.points.map(({ ts, ...v }) => ({ t: Date.parse(ts), ...v }));
+  const points = history.data?.points;
+  const rows: ChartRow[] | undefined = useMemo(
+    () => (live ? trail?.map((p) => ({ ...p })) : points?.map(({ ts, ...v }) => ({ t: Date.parse(ts), ...v }))),
+    [live, trail, points],
+  );
 
   let body;
   if (!live && history.isPending) body = <LoadingState label="Loading history" rows={5} />;
@@ -125,6 +128,7 @@ export function HistoryPanel({ astronautId, name }: { astronautId: string; name:
         </>
       }
     >
+      <ThresholdNotice rules={rules} className="mb-3" />
       {body}
       <SimulatedNote className="mt-4" />
     </Panel>

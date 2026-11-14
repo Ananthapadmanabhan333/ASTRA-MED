@@ -11,8 +11,10 @@ import asyncio
 import json
 import logging
 import math
+import threading
 import time
-from dataclasses import dataclass
+from collections.abc import Callable, Iterator, Mapping
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -48,6 +50,7 @@ from app.ai.forecasting.models import (
     XGBoostForecaster,
     xgb_feature_group,
 )
+from app.ai.monitoring import InferenceStats, library_versions, version_mismatches
 from app.ai.registry import ModelRegistry
 from app.ai.risk import AnomalyState, ForecastState, RiskConfig, RiskInputs, SignalState, assess
 from app.ai.signals import FORECAST_SIGNALS, LABELS, SIGNALS, UNITS, WINDOW_MINUTES
@@ -83,37 +86,87 @@ class ModelBundle:
     manifest: dict[str, Any]
     detectors: dict[str, Detector]
     ensemble: Ensemble
-    forecasters: dict[str, Forecaster]
+    forecasters: Mapping[str, Forecaster]
     conformal: dict[str, np.ndarray]
     results: dict[str, Any]
     serving: str
     report: str | None
 
     @classmethod
-    def load(cls, root: Path) -> ModelBundle | None:
+    def load(cls, root: Path, version: str | None = None) -> ModelBundle | None:
+        """Load ``version`` (a pinned version) or the registry's latest.
+
+        The serving forecaster and the anomaly detectors load now; the other forecasters (the
+        neural comparison models) load on first use, which keeps start-up fast and memory low.
+        """
         registry = ModelRegistry(root)
-        version = registry.latest()
+        version = version or registry.latest()
         if not version:
             return None
+        known = {v["version"] for v in registry.versions()}
+        if version not in known:
+            raise FileNotFoundError(f"model version {version} is not registered in {root}")
         path = registry.verify(version)  # refuses tampered or missing artifacts before unpickling
         detectors, ensemble = load_detectors(path / "anomaly")
         fdir = path / "forecast"
         fmeta = json.loads((fdir / "forecast.json").read_text())
-        forecasters: dict[str, Forecaster] = {}
+        serving = fmeta.get("serving", "xgboost")
+        loaders: dict[str, Callable[[], Forecaster]] = {}
         for name in fmeta["models"]:
             if name == "xgboost":
-                forecasters[name] = XGBoostForecaster.load(fdir)
+                loaders[name] = lambda: XGBoostForecaster.load(fdir)
             elif name in ("lstm", "gru", "tcn"):
                 if TORCH_AVAILABLE and (fdir / f"{name}.pt").exists():
-                    forecasters[name] = SequenceForecaster.load(fdir, name)
+                    loaders[name] = lambda name=name: SequenceForecaster.load(fdir, name)
             else:
-                forecasters[name] = {"persistence": Persistence, "seasonal_naive": SeasonalNaive,
-                                     "climatology": Climatology}[name]()
+                loaders[name] = {"persistence": Persistence, "seasonal_naive": SeasonalNaive,
+                                 "climatology": Climatology}[name]
+        forecasters = LazyModels(loaders, eager=[serving])
         conformal = {k: np.asarray(v, dtype=np.float32) for k, v in json.loads((fdir / "conformal.json").read_text()).items()}
         results = json.loads((path / "results.json").read_text())
         report = (path / "report.md").read_text(encoding="utf-8") if (path / "report.md").exists() else None
         return cls(version, registry.manifest(version), detectors, ensemble, forecasters, conformal, results,
-                   fmeta.get("serving", "xgboost"), report)
+                   serving, report)
+
+
+class LazyModels(Mapping):
+    """Name -> model mapping whose values are built on first access (thread-safe).
+
+    Keys are known up front, so membership tests and listings never load anything.
+    """
+
+    def __init__(self, loaders: dict[str, Callable[[], Any]], eager: list[str] | tuple = ()) -> None:
+        self._loaders = dict(loaders)
+        self._models: dict[str, Any] = {}
+        self._lock = threading.Lock()
+        for name in eager:
+            if name in self._loaders:
+                self[name]
+
+    def __getitem__(self, name: str) -> Any:
+        model = self._models.get(name)
+        if model is not None:
+            return model
+        if name not in self._loaders:
+            raise KeyError(name)
+        with self._lock:
+            if name not in self._models:
+                started = time.perf_counter()
+                self._models[name] = self._loaders[name]()
+                logger.info("loaded forecaster %s in %.0f ms", name, (time.perf_counter() - started) * 1000)
+            return self._models[name]
+
+    def __contains__(self, name: object) -> bool:  # Mapping's default would call __getitem__ and load
+        return name in self._loaders
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._loaders)
+
+    def __len__(self) -> int:
+        return len(self._loaders)
+
+    def loaded(self) -> list[str]:
+        return [n for n in self._loaders if n in self._models]
 
 
 @dataclass
@@ -138,6 +191,7 @@ class Analysis:
     votes: np.ndarray
     detectors: list[str]
     weights: dict[str, float]
+    contrib: dict[int, np.ndarray] = field(default_factory=dict)  # row -> attribution, filled lazily
 
 
 def _f(x: Any) -> float | None:
@@ -161,6 +215,8 @@ class AIService:
         self._baselines: dict[str, _BaselineEntry] = {}
         self._baseline_locks: dict[str, asyncio.Lock] = {}
         self._cache: dict[tuple, tuple[float, Any]] = {}
+        self.stats = InferenceStats()
+        self.running_libraries = library_versions()
 
     # ------------------------------------------------------------------ models ----
     async def bundle(self) -> ModelBundle | None:
@@ -169,9 +225,15 @@ class AIService:
         async with self._bundle_lock:
             if not self._bundle_loaded:
                 try:
-                    self._bundle = await asyncio.to_thread(ModelBundle.load, self.settings.ai_artifacts_path)
+                    pinned = self.settings.ai_model_version or None
+                    self._bundle = await self._compute("model_load", ModelBundle.load,
+                                                       self.settings.ai_artifacts_path, pinned)
                     if self._bundle:
-                        logger.info("AI models loaded: %s", self._bundle.version)
+                        logger.info("AI models loaded: %s%s", self._bundle.version, " (pinned)" if pinned else "")
+                        mismatch = version_mismatches(self._bundle.manifest.get("libraries"), self.running_libraries)
+                        if mismatch:
+                            logger.warning("model %s was trained with different library versions: %s",
+                                           self._bundle.version, mismatch)
                     else:
                         logger.warning("no AI model version registered; run: python -m app.ai.train")
                 except Exception as exc:  # integrity or deserialisation failure
@@ -195,16 +257,27 @@ class AIService:
 
     async def status(self) -> dict[str, Any]:
         bundle = await self.bundle()
+        trained = bundle.manifest.get("libraries") if bundle else None
+        lazy = bundle is not None and isinstance(bundle.forecasters, LazyModels)
         return {
             "enabled": self.settings.ai_enabled,
             "model_version": bundle.version if bundle else None,
+            "pinned_version": self.settings.ai_model_version or None,
             "loaded": bundle is not None,
             "error": self._bundle_error,
             "detectors": list(bundle.detectors) if bundle else [],
             "forecasters": list(bundle.forecasters) if bundle else [],
+            "forecasters_loaded": bundle.forecasters.loaded() if lazy else list(bundle.forecasters) if bundle else [],
             "serving_forecaster": bundle.serving if bundle else None,
             "torch_available": TORCH_AVAILABLE,
+            "library_mismatch": version_mismatches(trained, self.running_libraries) if bundle else {},
+            "inference": self.stats.snapshot(),
         }
+
+    async def _compute(self, op: str, fn, *args):
+        """Run CPU-bound model work in a worker thread and record how long it took."""
+        with self.stats.measure(op):
+            return await asyncio.to_thread(fn, *args)
 
     # -------------------------------------------------------------------- cache ----
     async def _cached(self, key: tuple, factory):
@@ -347,22 +420,38 @@ class AIService:
             flagged = votes >= math.ceil(len(dets) / 2)
         return Analysis(windows, ff.features, ff.zscores, matrix, score, flagged, votes, list(dets), weights)
 
-    def _contributions(self, a: Analysis, bundle: ModelBundle, i: int) -> np.ndarray:
-        """Weighted per-feature attribution (over the full feature list) for row i."""
+    def _contributions(self, a: Analysis, bundle: ModelBundle, rows: list[int]) -> dict[int, np.ndarray]:
+        """Weighted per-feature attribution (over the full feature list) for each row in ``rows``.
+
+        All rows are scored in one batch per detector: occlusion needs (d + 1) model evaluations
+        per row, and one call over every row costs far less than one call per row.
+        """
+        rows = sorted(set(rows))
         names = list(a.features.columns)
-        total = np.zeros(len(names))
+        position = {f: k for k, f in enumerate(names)}
+        total = np.zeros((len(rows), len(names)))
+        if not rows:
+            return {}
         wsum = 0.0
-        row = a.features.iloc[[i]]
+        sub = a.features.iloc[rows]
         for n in a.detectors:
             det = bundle.detectors[n]
             w = a.weights.get(n, 1.0) or 0.0
             if w <= 0:
                 continue
-            c = det.contributions(det.matrix(row))[0]
-            for value, fname in zip(c, det.feature_names):
-                total[names.index(fname)] += w * value
+            c = det.contributions(det.matrix(sub))
+            cols = [position[f] for f in det.feature_names]
+            total[:, cols] += w * c
             wsum += w
-        return total / wsum if wsum else total
+        if wsum:
+            total /= wsum
+        a.contrib.update({i: total[k] for k, i in enumerate(rows)})
+        return {i: a.contrib[i] for i in rows}
+
+    def _contribution(self, a: Analysis, bundle: ModelBundle, i: int) -> np.ndarray:
+        if i not in a.contrib:
+            self._contributions(a, bundle, [i])
+        return a.contrib[i]
 
     def _refs(self, baseline: PersonalBaseline, windows: pd.DataFrame, ts: pd.Timestamp):
         state = windows.loc[ts, "state"] if isinstance(windows.loc[ts, "state"], str) else "work"
@@ -379,7 +468,7 @@ class AIService:
     def _explain_row(self, a: Analysis, bundle: ModelBundle, baseline: PersonalBaseline, i: int,
                      history_hours: float, onset: int | None = None) -> tuple[Explanation, str, list[str]]:
         names = list(a.features.columns)
-        contrib = self._contributions(a, bundle, i)
+        contrib = self._contribution(a, bundle, i)
         by_signal, by_group = signal_shares(contrib, names)
         ts = a.features.index[i]
         values, refs, state = self._refs(baseline, a.windows, ts)
@@ -440,7 +529,7 @@ class AIService:
             source = "stored"
         b = entry.baseline
         history_hours = ((b.last_ts - b.first_ts).total_seconds() / 3600) if b.first_ts and b.last_ts else 0.0
-        return await asyncio.to_thread(self._detect_sync, bundle, b, windows, names, start, end, source,
+        return await self._compute("anomaly_detection", self._detect_sync, bundle, b, windows, names, start, end, source,
                                        req.include_explanations, removed, history_hours, aid)
 
     def _detect_sync(self, bundle, baseline, windows, names, start, end, source, explain, removed, history_hours, aid):
@@ -449,6 +538,9 @@ class AIService:
         idx = np.flatnonzero(in_range)
         timeline, detections = [], []
         cache: dict[int, tuple[Explanation, str, list[str]]] = {}
+
+        # Attribute every flagged window in range in one batch; explanations below reuse it.
+        self._contributions(a, bundle, [int(i) for i in idx if a.flagged[i]])
 
         def explain_at(i: int):
             if i not in cache:
@@ -540,7 +632,8 @@ class AIService:
             entry = await self.baseline(astronaut_id)
             now = utcnow()
             windows = await self.windows(astronaut_id, now - timedelta(hours=LOOKBACK / 2 + 2), now)
-            return await asyncio.to_thread(self._forecast_sync, bundle, entry.baseline, windows, name, astronaut_id, now)
+            return await self._compute(f"forecast:{name}", self._forecast_sync, bundle, entry.baseline, windows, name,
+                                       astronaut_id, now)
 
         result = await self._cached(("forecast", astronaut_id, name), run)
         return {**result, "series": [s for s in result["series"] if s["signal"] in chosen]}
@@ -697,7 +790,8 @@ class AIService:
         ]
         b = entry.baseline
         history_hours = ((b.last_ts - b.first_ts).total_seconds() / 3600) if b.first_ts and b.last_ts else 0.0
-        return await asyncio.to_thread(self._risk_sync, astronaut_id, b, bundle, windows, forecast, alerts, now, history_hours)
+        return await self._compute("risk_assessment", self._risk_sync, astronaut_id, b, bundle, windows, forecast,
+                                   alerts, now, history_hours)
 
     def _risk_sync(self, aid, baseline, bundle, windows, forecast, alerts, now, history_hours):
         cfg = self.risk_config
@@ -843,7 +937,7 @@ class AIService:
             risk = self._risk_sync(astronaut_id, b, bundle, risk_windows, forecast, alerts or [], now, history_hours)
             return det, forecast, forecast_error, risk
 
-        det, forecast, forecast_error, risk = await asyncio.to_thread(run)
+        det, forecast, forecast_error, risk = await self._compute("stream_analysis", run)
         return {"astronaut_id": astronaut_id, "generated_at": now, "model_version": bundle.version,
                 "detection": det, "forecast": forecast, "forecast_error": forecast_error, "risk": risk}
 
@@ -882,7 +976,8 @@ class AIService:
         windows = await self.windows(record.astronaut_id, opened - WARMUP - timedelta(hours=1), opened + timedelta(minutes=30))
         b = entry.baseline
         history_hours = ((b.last_ts - b.first_ts).total_seconds() / 3600) if b.first_ts and b.last_ts else 0.0
-        return await asyncio.to_thread(self._explain_alert_sync, record, b, bundle, windows, history_hours)
+        return await self._compute("alert_explanation", self._explain_alert_sync, record, b, bundle, windows,
+                                   history_hours)
 
     def _explain_alert_sync(self, record, baseline, bundle, windows, history_hours):
         ts = pd.Timestamp(record.opened_at).floor(f"{WINDOW_MINUTES}min")

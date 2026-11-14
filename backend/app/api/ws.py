@@ -67,7 +67,8 @@ async def health_monitoring(ws: WebSocket) -> None:
 
     await ws.accept()
     await ws.send_text(monitor.hello().model_dump_json())
-    monitor.hub.add(ws)
+    perms = getattr(principal, "permissions", None)
+    monitor.hub.add(ws, None if principal.method == "disabled" or perms is None else frozenset(perms))
     watchdog = asyncio.create_task(_revalidate(ws)) if principal.method != "disabled" else None
     try:
         while True:

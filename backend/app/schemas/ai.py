@@ -354,3 +354,29 @@ class AIStatus(ApiModel):
     forecasters: list[str]
     serving_forecaster: str | None
     torch_available: bool
+    pinned_version: str | None = Field(default=None, description="Version pinned with ASTRA_AI_MODEL_VERSION, if any")
+    forecasters_loaded: list[str] = Field(default_factory=list, description="Forecasters loaded so far (others load on first use)")
+    library_mismatch: dict[str, LibraryVersions] = Field(
+        default_factory=dict, description="Libraries whose version differs from the one the models were trained with")
+    inference: InferenceSnapshot | None = None
+
+
+class LibraryVersions(ApiModel):
+    trained: str | None
+    running: str | None
+
+
+class OperationStats(ApiModel):
+    count: int
+    errors: int
+    last_error: str | None
+    window: int = Field(description="Recent calls the percentiles are computed over")
+    last_ms: float
+    p50_ms: float
+    p95_ms: float
+    max_ms: float
+
+
+class InferenceSnapshot(ApiModel):
+    operations: dict[str, OperationStats]
+    process_memory_mb: float | None

@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCan } from "@/lib/auth/store";
 
 import { api, unwrap } from "./client";
+import { sameSubject } from "./placeholder";
 import type { AlertStatus, Metric, Severity, SimulationEventCreate, TimeRange } from "./types";
 
 /** Query keys in one place so socket events can invalidate the right caches. */
@@ -102,7 +103,8 @@ export function useComparison(metric: Metric, range: TimeRange) {
         api.GET("/api/health/compare", { params: { query: { metric, range, max_points: 240 } } }),
       ),
     refetchInterval: HISTORY_REFRESH[range],
-    placeholderData: (prev) => prev,
+    // Never show another measurement's series under the newly selected one.
+    placeholderData: (prev) => (prev?.metric === metric ? prev : undefined),
   });
 }
 
@@ -119,7 +121,8 @@ export function useAlerts(filters: AlertFilters = {}) {
     queryKey: keys.alerts(filters),
     queryFn: () => unwrap(api.GET("/api/alerts", { params: { query: { ...filters, limit: 200 } } })),
     refetchInterval: 15_000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[1], filters, ["astronaut_id"]) ? prev : undefined,
   });
 }
 
@@ -424,7 +427,8 @@ export function useSpaceTimeline(p: TimelineParams) {
     },
     enabled: p.mode === "mission" || !!p.mission,
     refetchInterval: p.mode === "mission" ? 60_000 : false,
-    placeholderData: (prev) => (prev?.mode === p.mode ? prev : undefined),
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[2], p, ["mode", "astronaut_id", "mission"]) ? prev : undefined,
   });
 }
 

@@ -1,0 +1,182 @@
+{
+  "label": "before",
+  "created_at": "2026-11-14T12:10:14.625005+00:00",
+  "base": "http://127.0.0.1:8010",
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "cpu_count": 16
+  },
+  "sequential": {
+    "system health": {
+      "path": "/api/system/health",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 6.0,
+      "p95_ms": 6.5,
+      "max_ms": 7.2,
+      "mean_ms": 6.0
+    },
+    "crew list": {
+      "path": "/api/astronauts",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 8.1,
+      "p95_ms": 9.3,
+      "max_ms": 9.5,
+      "mean_ms": 8.3
+    },
+    "live snapshot": {
+      "path": "/api/health/AST-01",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 11.2,
+      "p95_ms": 13.4,
+      "max_ms": 14.4,
+      "mean_ms": 11.4
+    },
+    "history 1h": {
+      "path": "/api/health/AST-01/history?range=1h",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 17.2,
+      "p95_ms": 21.1,
+      "max_ms": 21.2,
+      "mean_ms": 17.4
+    },
+    "history 24h": {
+      "path": "/api/health/AST-01/history?range=24h",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 100.8,
+      "p95_ms": 287.6,
+      "max_ms": 314.6,
+      "mean_ms": 165.8
+    },
+    "history 7d": {
+      "path": "/api/health/AST-01/history?range=7d",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 967.9,
+      "p95_ms": 1161.5,
+      "max_ms": 1200.4,
+      "mean_ms": 1016.9
+    },
+    "crew comparison 7d": {
+      "path": "/api/health/compare?metric=heart_rate&range=7d",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 3092.7,
+      "p95_ms": 3317.9,
+      "max_ms": 3325.7,
+      "mean_ms": 3101.1
+    },
+    "mission control overview": {
+      "path": "/api/mission-control/overview",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 81.3,
+      "p95_ms": 373.9,
+      "max_ms": 426.7,
+      "mean_ms": 124.5
+    },
+    "crew monitoring": {
+      "path": "/api/crew/monitoring",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 22.5,
+      "p95_ms": 157.3,
+      "max_ms": 328.9,
+      "mean_ms": 50.8
+    },
+    "alert centre": {
+      "path": "/api/alert-center",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 12.0,
+      "p95_ms": 12.5,
+      "max_ms": 13.1,
+      "mean_ms": 11.7
+    },
+    "event history": {
+      "path": "/api/events?hours=168",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 9.8,
+      "p95_ms": 11.7,
+      "max_ms": 12.1,
+      "mean_ms": 10.1
+    },
+    "situational timeline 24h": {
+      "path": "/api/events/timeline?hours=24",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 13.2,
+      "p95_ms": 15.4,
+      "max_ms": 16.5,
+      "mean_ms": 13.5
+    },
+    "analytics 30d": {
+      "path": "/api/analytics/summary",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 20.9,
+      "p95_ms": 24.7,
+      "max_ms": 26.6,
+      "mean_ms": 21.7
+    },
+    "space weather (stored NASA)": {
+      "path": "/api/space/weather/events?days=30",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 11.7,
+      "p95_ms": 13.5,
+      "max_ms": 14.0,
+      "mean_ms": 11.7
+    },
+    "AI risk assessment": {
+      "path": "/api/ai/astronaut/AST-01/risk-assessment",
+      "status": 200,
+      "n": 15,
+      "p50_ms": 7.8,
+      "p95_ms": 8.6,
+      "max_ms": 8.8,
+      "mean_ms": 7.8
+    }
+  },
+  "concurrent": {
+    "workers": 20,
+    "requests": 300,
+    "errors": 0,
+    "wall_s": 19.17,
+    "throughput_rps": 15.6,
+    "n": 300,
+    "p50_ms": 681.7,
+    "p95_ms": 2953.0,
+    "max_ms": 7436.6,
+    "mean_ms": 1047.2
+  },
+  "websocket": {
+    "clients": 50,
+    "seconds": 30,
+    "failed_to_connect": 0,
+    "closed_early": 0,
+    "messages_per_client_min": 31,
+    "messages_per_client_median": 31.0,
+    "messages_per_client_per_s": 1.03,
+    "client0_gap_p95_ms": 1024.3
+  },
+  "history_query_plan": [
+    "vital_samples rows: 2,013,264",
+    "Sort  (cost=59785.92..60094.46 rows=123415 width=16) (actual time=54.834..62.640 rows=123126 loops=1)",
+    "  Sort Key: ts",
+    "  Sort Method: external merge  Disk: 3136kB",
+    "  ->  Bitmap Heap Scan on vital_samples  (cost=3441.44..47238.74 rows=123415 width=16) (actual time=11.328..32.890 rows=123126 loops=1)",
+    "        Recheck Cond: (((astronaut_id)::text = 'AST-01'::text) AND (ts >= (now() - '7 days'::interval)))",
+    "        Heap Blocks: exact=2151",
+    "        ->  Bitmap Index Scan on ix_vitals_astronaut_ts  (cost=0.00..3410.58 rows=123415 width=0) (actual time=11.121..11.122 rows=123126 loops=1)",
+    "              Index Cond: (((astronaut_id)::text = 'AST-01'::text) AND (ts >= (now() - '7 days'::interval)))",
+    "Planning Time: 2.543 ms",
+    "Execution Time: 76.150 ms"
+  ]
+}

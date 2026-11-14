@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCan } from "@/lib/auth/store";
 
 import { api, unwrap } from "./client";
+import { sameSubject } from "./placeholder";
 import type { AlertCenterStatus, MissionContext, SimInject, SimStart, SimTelemetryReading } from "./types";
 
 /** Query keys for phase 6 data, invalidated by mission_event / mission_alert / sim_state socket messages. */
@@ -69,6 +70,9 @@ export interface AnalyticsFilters {
   astronaut_id?: string;
 }
 
+/** Filters that change whose data a list shows; previous results are kept only while these match. */
+const SUBJECT = ["astronaut_id", "context", "simulation_id"] as const;
+
 const clean = <T extends object>(o: T) =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== "" && v !== null)) as T;
 
@@ -95,7 +99,8 @@ export function useMissionEvents(filters: EventFilters, enabled = true) {
     queryKey: mcKeys.events(filters),
     queryFn: () => unwrap(api.GET("/api/events", { params: { query: clean(filters) } })),
     refetchInterval: 20_000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[1], filters, SUBJECT) ? prev : undefined,
     enabled,
   });
 }
@@ -105,16 +110,19 @@ export function useMissionTimeline(filters: TimelineFilters) {
     queryKey: mcKeys.timeline(filters),
     queryFn: () => unwrap(api.GET("/api/events/timeline", { params: { query: clean(filters) } })),
     refetchInterval: 30_000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[1], filters, SUBJECT) ? prev : undefined,
   });
 }
 
-export function useAlertCenter(filters: AlertCenterFilters) {
+export function useAlertCenter(filters: AlertCenterFilters, enabled = true) {
   return useQuery({
     queryKey: mcKeys.alerts(filters),
     queryFn: () => unwrap(api.GET("/api/alert-center", { params: { query: { ...clean(filters), limit: 300 } } })),
     refetchInterval: 15_000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[1], filters, SUBJECT) ? prev : undefined,
+    enabled,
   });
 }
 
@@ -303,7 +311,8 @@ export function useAnalytics(filters: AnalyticsFilters) {
     queryKey: mcKeys.analytics(filters),
     queryFn: () => unwrap(api.GET("/api/analytics/summary", { params: { query: clean(filters) } })),
     staleTime: 60_000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, prevQuery) =>
+      sameSubject(prevQuery?.queryKey[1], filters, ["astronaut_id", "context"]) ? prev : undefined,
   });
 }
 
@@ -352,7 +361,8 @@ export function useSimFrame(id: string | null, at: string | null) {
     queryFn: () =>
       unwrap(api.GET("/api/mission-sim/runs/{run_id}/frame", { params: { path: { run_id: id! }, query: { at: at! } } })),
     enabled: !!id && !!at,
-    placeholderData: (prev) => prev,
+    // Scrubbing within one run keeps the last frame; switching runs does not.
+    placeholderData: (prev, prevQuery) => (prevQuery?.queryKey[1] === id ? prev : undefined),
     staleTime: Infinity,
   });
 }

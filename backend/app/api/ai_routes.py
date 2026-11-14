@@ -96,8 +96,12 @@ async def explain_alert(alert_id: str, ai: AI) -> AlertExplanationResponse:
     return AlertExplanationResponse.model_validate(await ai.explain_alert(alert_id))
 
 
-@router.post("/models/reload", response_model=AIStatus, responses={403: {"model": ErrorResponse}},
-             dependencies=[require("models:manage")])
+# Mounted separately (no health:read): administrators manage models without seeing crew data.
+admin_router = APIRouter(prefix="/api/ai", tags=["ai"], responses=ERROR_RESPONSES)
+
+
+@admin_router.post("/models/reload", response_model=AIStatus, responses={403: {"model": ErrorResponse}},
+                   dependencies=[require("models:manage")])
 async def reload_models(ai: AI) -> AIStatus:
     """Load the newest registered model version (after running the training script)."""
     if not ai.settings.simulation_control_enabled:

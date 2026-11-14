@@ -28,6 +28,9 @@ SENSITIVE_READ_PREFIXES = (
     "/api/health/", "/api/alerts", "/api/insights", "/api/radiation", "/api/ai/", "/api/twin",
     "/api/multisystem", "/api/decision-support", "/api/reports", "/api/emergency", "/api/overview",
     "/api/assistant", "/api/astronauts/",
+    # phase 6: crew monitoring, the unified alert centre and event history, analytics and the sandbox
+    "/api/crew/", "/api/alert-center", "/api/events", "/api/mission-control", "/api/analytics",
+    "/api/mission-sim",
 )
 SKIP_PREFIXES = ("/api/auth/",)  # the auth routes write their own, more specific entries
 

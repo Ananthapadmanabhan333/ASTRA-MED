@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from sqlalchemy import delete, func, insert, select
+from sqlalchemy import Integer, cast, delete, func, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import VitalSampleRow
@@ -73,6 +73,42 @@ async def fetch_range(
         .order_by(VitalSampleRow.ts)
     )
     return [tuple(row) for row in (await session.execute(stmt)).all()]
+
+
+async def bucket_means(
+    session: AsyncSession,
+    astronaut_id: str,
+    start: datetime,
+    end: datetime,
+    resolution_s: int,
+    columns: Sequence[str],
+) -> list[tuple[datetime, list[float], int]]:
+    """Average stored samples into fixed buckets inside the database: (bucket_centre, means, count).
+
+    Same buckets as ``services.history.bucket_rows`` (index = floor((ts - start) / resolution)), but
+    only one row per bucket leaves the database, so a 7-day range moves a few hundred rows instead of
+    ~120,000 per crew member and no Python loop runs on the event loop.
+    """
+    base = start.timestamp()
+    if session.bind.dialect.name == "postgresql":
+        epoch = func.extract("epoch", VitalSampleRow.ts)
+        idx = func.floor((epoch - base) / resolution_s)
+    else:  # SQLite stores naive UTC text; julianday() gives fractional days since noon, 4713 BC
+        epoch = (func.julianday(VitalSampleRow.ts) - 2440587.5) * 86400.0
+        idx = cast((epoch - base) / resolution_s, Integer)  # non-negative, so truncation equals floor
+    bucket = idx.label("bucket")
+    stmt = (
+        select(bucket, *(func.avg(getattr(VitalSampleRow, c)) for c in columns), func.count())
+        .where(VitalSampleRow.astronaut_id == astronaut_id, VitalSampleRow.ts >= start, VitalSampleRow.ts <= end)
+        .group_by(bucket)
+        .order_by(bucket)
+    )
+    out = []
+    for row in (await session.execute(stmt)).all():
+        k = int(row[0])
+        ts = start + timedelta(seconds=k * resolution_s + resolution_s / 2)
+        out.append((ts, [float(v) for v in row[1:-1]], int(row[-1])))
+    return out
 
 
 async def mean_metric(

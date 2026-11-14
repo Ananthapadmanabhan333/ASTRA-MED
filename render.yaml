@@ -1,0 +1,41 @@
+# Render Blueprint for the ASTRA-MED API and its managed PostgreSQL database.
+# NOT DEPLOYED: written for the deployment guide (docs/DEPLOYMENT.md) and reviewed, never applied.
+# Check instance plans and regions against Render's current offering before using it, and read the
+# guide first: the frontend and the API must share a registrable domain for sign-in to work.
+services:
+  - type: web
+    name: astra-med-api
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./backend/Dockerfile   # TRAIN_MODELS=1 by default: models are trained during the build
+    healthCheckPath: /readyz
+    preDeployCommand: alembic upgrade head  # schema migrations run once per deploy, before traffic moves
+    numInstances: 1                          # the simulator, live stream and sandbox are single-process
+    envVars:
+      - key: ASTRA_ENVIRONMENT
+        value: production
+      - key: ASTRA_DATABASE_URL               # postgres:// is converted to the asyncpg driver
+        fromDatabase:
+          name: astra-med-db
+          property: connectionString
+      - key: ASTRA_DB_SCHEMA_MODE
+        value: migrate
+      - key: ASTRA_AUTH_ENABLED
+        value: "true"
+      - key: ASTRA_AUTH_COOKIE_SECURE
+        value: "true"
+      - key: ASTRA_CORS_ORIGINS                # e.g. https://app.example.org  (set in the dashboard)
+        sync: false
+      - key: ASTRA_NASA_API_KEY                # optional personal api.nasa.gov key (secret)
+        sync: false
+      - key: ASTRA_SIMULATION_CONTROL_ENABLED
+        value: "true"
+      - key: ASTRA_TRAIN_ON_START             # the image already contains the trained models
+        value: "false"
+      - key: FORWARDED_ALLOW_IPS               # Render's proxy is the only route to the container
+        value: "*"
+
+databases:
+  - name: astra-med-db
+    databaseName: astra_med
+    user: astra

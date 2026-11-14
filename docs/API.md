@@ -52,6 +52,8 @@ curl -s localhost:8000/api/twin/AST-01 -H "Authorization: Bearer $TOKEN"
 | Method | Path | Returns |
 | --- | --- | --- |
 | GET | `/api/system/health` | `SystemHealth`: API status, database check, simulator state, WebSocket client count |
+| GET | `/livez` | `{"status": "alive"}`: liveness probe, no dependencies, no auth *(phase 7)* |
+| GET | `/readyz` | `{"status": "ready"}`, or **503** `starting` / `database_unavailable`: readiness probe for load balancers, no auth *(phase 7)* |
 
 ### Crew
 | Method | Path | Returns |
@@ -140,7 +142,7 @@ data limitations. None of it is a diagnosis. Methods and results are in [AI_ENGI
 
 | Method | Path | Returns |
 | --- | --- | --- |
-| GET | `/api/ai/status` | `AIStatus`: enabled, loaded model version, available detectors and forecasters, last error |
+| GET | `/api/ai/status` | `AIStatus`: enabled, loaded model version, available detectors and forecasters, last error; *(phase 7)* `pinned_version` (`ASTRA_AI_MODEL_VERSION`), `forecasters_loaded` (neural forecasters load on first use), `library_mismatch` (training vs running versions), `inference` (per operation: count, errors, p50/p95/max over the last 200 calls; process memory) |
 | POST | `/api/ai/anomaly-detection` | `AnomalyDetectionResponse`: per-window ensemble and per-detector scores (score ÷ threshold, flagged at ≥ 1), detector votes, detections of 10 min or more with explanations, data quality |
 | GET | `/api/ai/astronaut/{id}/baseline` | `BaselineResponse`: per signal, the reference for the current state and time of day (center, scale, percentiles, depth), current z and percentile, rolling 24 h / 7 d statistics, the profile by state |
 | GET | `/api/ai/astronaut/{id}/forecast` | `ForecastResponse`: per signal, observed history and 30-min forecast steps to 24 h with 90 % intervals, summaries at 1/6/12/24 h with the test MAE and coverage, explanation (TreeSHAP drivers for XGBoost) |
@@ -302,6 +304,9 @@ Every event and alert says where it came from (`source`, `data_origin`: `simulat
 | GET | `/api/events/timeline` | `category` (repeatable), `astronaut_id`, `context`, `simulation_id` (the run's whole clock range), `start`, `end`, `hours` | `MissionTimeline`: lanes per category, counts, notes |
 | GET | `/api/events/{event_id}` | | `MissionEvent` |
 
+*(phase 7)* All four hide `incident_reports` events from roles without `reports:read` (the single
+event returns 404).
+
 ### Alert centre
 
 | Method | Path | Permission | Returns |
@@ -345,7 +350,7 @@ Rule alerts acknowledged or resolved here are updated in the phase 2 store too, 
 | --- | --- | --- | --- |
 | GET | `/api/system/status` | signed in | `SystemStatus`: overall status, components with detail and metrics, orchestrator and collector health |
 | GET | `/api/system/consistency` | `audit:read` or `simulation:control` | `ConsistencyReport` (read-only) |
-| POST | `/api/system/consistency/repair` | `audit:read` or `simulation:control` | `ConsistencyReport` after safe repairs |
+| POST | `/api/system/consistency/repair` | `system:maintain` *(phase 7)* | `ConsistencyReport` after safe repairs |
 
 ## WebSocket: `/ws/health-monitoring`
 

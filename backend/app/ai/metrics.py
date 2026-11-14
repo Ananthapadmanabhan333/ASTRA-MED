@@ -34,7 +34,9 @@ def classification(y_true: np.ndarray, scores: np.ndarray, threshold: float) -> 
         "f1": round(_safe_div(2 * precision * recall, precision + recall), 4),
         "auroc": round(float(roc_auc_score(y, scores)), 4) if both else math.nan,
         "auprc": round(float(average_precision_score(y, scores)), 4) if both else math.nan,
-        "false_alarm_rate": round(_safe_div(fp, fp + tn), 5),
+        "false_alarm_rate": round(_safe_div(fp, fp + tn), 5),  # false-positive rate
+        "false_negative_rate": round(_safe_div(fn, fn + tp), 4),  # 1 - recall (missed anomalous windows)
+        "specificity": round(_safe_div(tn, tn + fp), 5),
         "false_alarms_per_day": round(_safe_div(fp, (fp + tn) / WINDOWS_PER_DAY), 3),
         "tp": tp,
         "fp": fp,
@@ -75,7 +77,13 @@ def event_detection(
     return out
 
 
-def regression(y: np.ndarray, pred: np.ndarray, lo: np.ndarray | None = None, hi: np.ndarray | None = None) -> dict[str, float]:
+# MAPE is only meaningful on a ratio scale (a true zero): heart rate, SpO2 and respiratory rate.
+# Body temperature in degrees Celsius has an arbitrary zero, so a percentage error is not reported.
+RATIO_SCALE_SIGNALS = frozenset({"heart_rate", "spo2", "respiratory_rate"})
+
+
+def regression(y: np.ndarray, pred: np.ndarray, lo: np.ndarray | None = None, hi: np.ndarray | None = None,
+               mape: bool = False) -> dict[str, float]:
     y, pred = np.asarray(y, float), np.asarray(pred, float)
     ok = np.isfinite(y) & np.isfinite(pred)
     err = pred[ok] - y[ok]
@@ -84,6 +92,9 @@ def regression(y: np.ndarray, pred: np.ndarray, lo: np.ndarray | None = None, hi
         "mae": round(float(np.mean(np.abs(err))), 4) if ok.any() else math.nan,
         "rmse": round(float(np.sqrt(np.mean(err**2))), 4) if ok.any() else math.nan,
     }
+    if mape:
+        nz = ok & (np.abs(y) > 1e-9)
+        out["mape_pct"] = round(float(np.mean(np.abs((pred[nz] - y[nz]) / y[nz])) * 100), 3) if nz.any() else math.nan
     if lo is not None and hi is not None:
         lo, hi = np.asarray(lo, float)[ok], np.asarray(hi, float)[ok]
         out["coverage"] = round(float(np.mean((y[ok] >= lo) & (y[ok] <= hi))), 4)

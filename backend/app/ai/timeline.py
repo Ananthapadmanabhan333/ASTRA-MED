@@ -24,6 +24,8 @@ def planned_steps(astronaut_id: str, index: pd.DatetimeIndex, seed: int, step_mi
         rows.append({
             "activity_met": sum(m for _, m in samples) / len(samples),
             "sleep_frac": states.count("sleep") / len(states),
-            "state": max(set(states), key=states.count),
+            # dominant state; ties go to the earliest state, as in training (to_steps). Never max(set(...)):
+            # set order depends on per-process string hashing, which made forecasts irreproducible.
+            "state": max(dict.fromkeys(states), key=states.count),
         })
     return pd.DataFrame(rows, index=index)

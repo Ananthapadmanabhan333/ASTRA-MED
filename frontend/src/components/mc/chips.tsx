@@ -115,8 +115,27 @@ const SEV_DOT: Record<EventSeverity, string> = {
   critical: "bg-critical",
 };
 
-export function SeverityDot({ severity, className }: { severity: EventSeverity; className?: string }) {
-  return <span className={cn("inline-block size-2 shrink-0 rounded-full", SEV_DOT[severity], className)} aria-hidden />;
+/**
+ * Colour dot for an event severity. Pass `announce` where no nearby text names the severity, so
+ * screen readers get it as words rather than colour alone.
+ */
+export function SeverityDot({
+  severity,
+  className,
+  announce = false,
+}: {
+  severity: EventSeverity;
+  className?: string;
+  announce?: boolean;
+}) {
+  const dot = <span className={cn("inline-block size-2 shrink-0 rounded-full", SEV_DOT[severity], className)} aria-hidden />;
+  if (!announce) return dot;
+  return (
+    <>
+      {dot}
+      <span className="sr-only">Severity: {severity}.</span>
+    </>
+  );
 }
 
 /** Amber test-range tape label for anything that belongs to the simulation sandbox. */

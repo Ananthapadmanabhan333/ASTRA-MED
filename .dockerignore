@@ -1,0 +1,23 @@
+# Build context is the repository root (backend/Dockerfile copies backend/ and docs/; the frontend
+# image builds from frontend/ with its own .dockerignore).
+**/.git
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/*.db
+**/*.db-*
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/.next
+backend/tests
+backend/openapi.json
+backend/artifacts
+backend/experiments
+backend/exports
+backend/.pgdata
+backend/.dev-users.json
+frontend

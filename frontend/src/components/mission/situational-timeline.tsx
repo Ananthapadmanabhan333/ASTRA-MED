@@ -225,7 +225,7 @@ export function SituationalTimeline() {
           <EmptyState title="No events in this window">Widen the time range or clear the filters. The event store records from the first start of the phase 6 backend.</EmptyState>
         ) : t ? (
           <div className="overflow-x-auto">
-            <div className="min-w-[640px]"><Swimlanes t={t} selected={selected?.id ?? null} onSelect={setSelected} /></div>
+            <div className={cn("min-w-[640px]", q.isPlaceholderData && "opacity-60")}><Swimlanes t={t} selected={selected?.id ?? null} onSelect={setSelected} /></div>
           </div>
         ) : null}
         {t && <p className="mt-3 text-xs text-ink-3">{t.notes.join(" ")}</p>}

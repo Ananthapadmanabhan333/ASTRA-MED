@@ -26,6 +26,39 @@ mission analytics and platform health checks.
 > never shown as live telemetry. A solar event is never turned into a crew dose. Correlations are
 > exploratory and do not establish causation. ASTRA-MED is not affiliated with or endorsed by NASA.
 
+## NASA Space Apps Challenge 2026
+
+**Challenge:** [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/).
+
+ASTRA-MED learns each crew member's own normal, flags unusual patterns, forecasts the next 24 hours
+with honest uncertainty, explains every alert, and places it in its space-environment context using
+real NASA DONKI and OSDR data. Results on simulated data, over three independent datasets:
+
+| Measure | Learned methods | Baseline |
+| --- | --- | --- |
+| Anomaly detection F1 | 0.62–0.81 | 0.36 for fixed alarm limits |
+| Heart-rate forecast error at 1 h | 2.2 bpm | 3.9 bpm for a personal baseline |
+| Coverage of 90 % prediction intervals | 89–91 % | (nominal 90 %) |
+
+There is no clinical validation ([details](docs/SCIENTIFIC_VALIDATION.md)).
+
+| Start here | |
+| --- | --- |
+| [Submission package](docs/competition/SUBMISSION.md) | Verified 2026 requirements, draft submission text, challenge-fit analysis, items the team must resolve |
+| [Research document](docs/RESEARCH_PAPER.md) | Architecture, methods, results, limitations, verified references |
+| [Scientific validation](docs/SCIENTIFIC_VALIDATION.md) | Evaluation framework, results, replication, what is and is not shown |
+| [Dataset inventory](docs/DATASETS.md) | Every dataset with source, licence, units, processing, limitations |
+| [Demo script](docs/competition/DEMO_SCRIPT.md) · [presentation](docs/competition/PRESENTATION.md) · [30 s video storyboard](docs/competition/VIDEO_STORYBOARD.md) | The ten-step scenario and the pitch |
+| [Deployment guide](docs/DEPLOYMENT.md) · [benchmarks](docs/BENCHMARKS.md) · [technical audit](docs/PHASE7_AUDIT.md) · [readiness report](docs/PHASE7_REPORT.md) | Production readiness |
+
+### Use of AI in building ASTRA-MED
+
+The source code, tests and documentation were written with the help of an AI coding assistant
+(Anthropic's Claude, used through Claude Code), working from the team's specifications. Commits it
+co-wrote carry a `Co-Authored-By: Claude` trailer. The application's own models (anomaly detectors
+and forecasters) are conventional machine-learning models trained on the simulated data in this
+repository. The optional Claude mode of the medical data assistant is off by default.
+
 ## What's inside
 
 | | |
@@ -41,7 +74,7 @@ mission analytics and platform health checks.
 | **Mission control** | Event orchestration (timestamp synchronisation, P1–P4 prioritisation, de-duplication, history) fed by monitoring, AI, NASA DONKI, the habitat, emergency runs and reports; unified alert centre with acknowledgement, required resolution notes, correlations and an audit trail (experimental AI capped at P3); mission simulation sandbox with its own clock (speed, pause, reset, presets, event injection, telemetry ingestion, AI analysis, reports, playback); analytics with CSV / JSON / Markdown export; component health and database consistency checks |
 | **Dashboard** | Next.js 16, TypeScript, Tailwind CSS v4, shadcn/ui, Recharts. Collapsible sidebar, mission header, notification centre. Types generated from the API's OpenAPI document |
 
-Docs: [phase 6 report](docs/PHASE6_REPORT.md) · [mission control](docs/MISSION_CONTROL.md) ·
+Docs: [phase 7 readiness report](docs/PHASE7_REPORT.md) · [phase 6 report](docs/PHASE6_REPORT.md) · [mission control](docs/MISSION_CONTROL.md) ·
 [development plan](docs/DEVELOPMENT_PLAN.md) · [architecture](docs/ARCHITECTURE.md) ·
 [API reference](docs/API.md) · [AI engine](docs/AI_ENGINE.md) · [space environment](docs/SPACE_ENVIRONMENT.md) ·
 [NASA data sources](docs/NASA_DATA_SOURCES.md) · [data source report](docs/reports/nasa-data-sources-report.md) ·
@@ -59,8 +92,10 @@ docker compose up --build
 ```
 
 Open http://localhost:3000 for the dashboard and http://localhost:8000/docs for the interactive API docs.
-The first start trains the AI models into the `ai-artifacts` volume (about 6 minutes on CPU) before the
-API comes up; later starts reuse them.
+The first start applies the database migrations and trains the AI models into the `ai-artifacts`
+volume (about 6 minutes on CPU) before the API comes up; later starts reuse them. Compose is a local
+stack; for a public deployment follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). (Docker could not be
+run on the development machine, so the images and Compose file are reviewed but untested.)
 
 ### Option B: local development (no Docker; SQLite by default)
 
@@ -190,7 +225,10 @@ cd backend && .venv/Scripts/python -m pytest -q tests/ai   # AI only; trains a q
 cd backend && .venv/Scripts/python -m pytest -q tests/space   # NASA data: normalisation, failures, provenance, correlation (no network)
 cd backend && .venv/Scripts/python -m pytest -q tests/phase5 tests/security   # twin, multisystem, decision support, emergency, reports, assistant, auth, RBAC, audit
 cd backend && .venv/Scripts/python -m pytest -q tests/phase6   # events, alert centre, sandbox, live socket, permissions, 11-step workflow
+cd backend && .venv/Scripts/python -m pytest -q tests/phase7   # phase 7 fixes: access, probes, production profile, migrations, retention, metrics, serving
 cd backend && .venv/Scripts/python scripts/e2e_mission.py       # the same workflow against a running API (demo accounts)
+cd backend && .venv/Scripts/python scripts/demo_phase7.py --sync  # the ten-step demonstration scenario (docs/competition/DEMO_SCRIPT.md)
+cd backend && alembic upgrade head && alembic check             # migrations (ASTRA_DATABASE_URL); see docs/DEPLOYMENT.md
 # PostgreSQL integration test (option C running; skipped unless the URL is set):
 cd backend && ASTRA_TEST_POSTGRES_URL=$(.venv/Scripts/python scripts/local_postgres.py url | sed 's/astra_med$/astra_med_test/') .venv/Scripts/python -m pytest tests/test_postgres.py tests/space/test_space_postgres.py tests/phase5/test_phase5_postgres.py
 cd backend && .venv/Scripts/python -m ruff check app tests scripts

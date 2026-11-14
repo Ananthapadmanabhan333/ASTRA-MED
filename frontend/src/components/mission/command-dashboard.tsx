@@ -26,6 +26,7 @@ import { useMissionControl } from "@/lib/api/mission-hooks";
 import type { ComponentStatus, DashboardSection, MissionControlOverview, SimState } from "@/lib/api/types";
 import { crewColor } from "@/lib/crew";
 import { duration, fmt, relativeTime, utcDay, utcTime } from "@/lib/format";
+import { preferLive } from "@/lib/live/freshness";
 import { liveStatus } from "@/lib/live/reducer";
 import { useLive } from "@/lib/live/store";
 import { ACTIVITY_LABEL, SCENARIO_LABEL } from "@/lib/metrics";
@@ -118,12 +119,16 @@ function KpiBand({ o }: { o: MissionControlOverview }) {
 }
 
 // ------------------------------------------------------------------- crew status ----
-function CrewTile({ m }: { m: CrewSectionData["members"][number] }) {
-  const reading = useLive((s) => s.latest[m.astronaut_id]);
+function CrewTile({ m, asOf }: { m: CrewSectionData["members"][number]; asOf: string }) {
+  const latest = useLive((s) => s.latest[m.astronaut_id]);
   const trail = useLive((s) => s.trails[m.astronaut_id]);
   const connection = useLive((s) => s.connection);
   const alerts = useLive((s) => s.openAlerts);
   const status = connection === "live" ? liveStatus(Object.values(alerts).filter((a) => a.astronaut_id === m.astronaut_id)) : m.status;
+  // The overview's values were current at `asOf`; a frozen socket reading must not override them.
+  const reading = latest && preferLive(connection, latest.ts, asOf) ? latest : undefined;
+  // Fields only the stream carries are shown only while it is live, never frozen after a disconnect.
+  const streamed = connection === "live" ? latest : undefined;
   const hr = reading?.heart_rate ?? m.heart_rate;
   const spo2 = reading?.spo2 ?? m.spo2;
   const act = reading?.activity_state ?? m.activity_state;
@@ -154,7 +159,7 @@ function CrewTile({ m }: { m: CrewSectionData["members"][number] }) {
       <div className="relative mt-2 h-12 overflow-hidden rounded bg-abyss/60 ring-1 ring-bulkhead/50">
         <EcgTrace astronautId={m.astronaut_id} label={`Live synthetic ECG, ${m.name}`} />
         <span className="pointer-events-none absolute top-1 left-1.5 text-[10px] text-ink-3">
-          ECG {reading?.rhythm === "irregular" ? <span className="text-caution">irregular</span> : "synthetic"}
+          ECG {streamed?.rhythm === "irregular" ? <span className="text-caution">irregular</span> : "synthetic"}
         </span>
       </div>
       <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
@@ -164,11 +169,11 @@ function CrewTile({ m }: { m: CrewSectionData["members"][number] }) {
         </div>
         <div>
           <dt className="text-ink-3">Resp.</dt>
-          <dd className="font-medium tabular-nums">{fmt(reading?.respiratory_rate, 0)}/min</dd>
+          <dd className="font-medium tabular-nums">{fmt(streamed?.respiratory_rate, 0)}/min</dd>
         </div>
         <div>
           <dt className="text-ink-3">Temp</dt>
-          <dd className="font-medium tabular-nums">{fmt(reading?.temperature_c, 1)}°C</dd>
+          <dd className="font-medium tabular-nums">{fmt(streamed?.temperature_c, 1)}°C</dd>
         </div>
       </dl>
       <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-ink-2">
@@ -195,7 +200,7 @@ function CrewStatusCard({ o }: { o: MissionControlOverview }) {
       meta={
         <span className="inline-flex items-center gap-1.5">
           {connection === "live" && <LivePulse />}
-          {connection === "live" ? "Live, 1 Hz" : connection}
+          {connection === "live" ? "Live, 1 Hz" : `${connection}, values as of ${utcTime(o.generated_at)} UTC`}
           <OriginChip origin="simulated" />
         </span>
       }
@@ -206,7 +211,7 @@ function CrewStatusCard({ o }: { o: MissionControlOverview }) {
       {crew ? (
         <ul className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
           {crew.members.map((m) => (
-            <CrewTile key={m.astronaut_id} m={m} />
+            <CrewTile key={m.astronaut_id} m={m} asOf={o.generated_at} />
           ))}
         </ul>
       ) : (
@@ -558,7 +563,7 @@ function SpaceWeatherCard({ o }: { o: MissionControlOverview }) {
             <ul className="mt-3 space-y-1 border-t border-bulkhead/50 pt-2">
               {s.radiation_alerts.slice(0, 3).map((a) => (
                 <li key={a.id} className="flex items-start gap-2 text-xs">
-                  <SeverityDot severity={a.severity as "advisory"} className="mt-1" />
+                  <SeverityDot severity={a.severity as "advisory"} className="mt-1" announce />
                   <span className="min-w-0 flex-1 truncate">{a.title}</span>
                   <span className="text-ink-3">{a.status}</span>
                 </li>
